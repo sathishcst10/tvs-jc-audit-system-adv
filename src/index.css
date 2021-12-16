@@ -1,3 +1,10 @@
+:root {
+  --brand-text-color: #E74C3C;
+}
+html,body{
+  width: 100%;
+  height: 100%;
+}
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -5,9 +12,106 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #ecf0f1;
+  padding-top: 42px;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+div#root{
+  height: 100%;
+}
+.bg-Login{
+  background-image:url(./assets/login-bg.png);
+  background-position: top center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  padding-top: 0;
+}
+.app-logo{
+  width: 136px;
+  margin: 20px 0 0 20px;
+}
+.default-font-size{
+  font-size: 0.9rem;
+}
+
+ul.navbar-nav .nav-link{
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #6c757d !important;
+}
+ul.navbar-nav .nav-link.active{
+  color: #e74c3c !important;
+}
+
+.userInfo{
+  color: #1e272e;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: block;
+  padding: 0;
+  padding-left: 38px !important;
+  background-image: url('./assets/_user.png');
+  background-repeat: no-repeat;
+  background-size: 32px;
+  background-position: center left;
+}
+.userInfo small{
+  color: #9a9a9a;
+  font-size: 0.725rem;
+  font-weight: 500;
+  display: block;
+}
+.dropdown-item{
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+}
+
+
+table.table-custom thead th{
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.navbar-toggler {
+  padding: .25rem .75rem;
+  font-size: 1.0rem;
+  line-height: 1;
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: .25rem;
+  transition: box-shadow .15s ease-in-out;
+}
+.chart-Holder{
+  width: 350px;
+}
+
+.form-label{
+  font-size: 0.9rem;
+  margin-bottom: 0.15rem;
+}
+
+.breadcrumb{
+
+  font-size: 0.9rem;
+  margin-bottom: .5rem;
+}
+.breadcrumb li.breadcrumb-item a{
+  color: var(--brand-text-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+.breadcrumb li.active{
+  font-weight: 500;
+}
+.breadcrumb-item+.breadcrumb-item::before {
+  float: left;
+  padding-right: .5rem;
+  color: #6c757d;
+  content: var(--bs-breadcrumb-divider, "\00BB");
 }
