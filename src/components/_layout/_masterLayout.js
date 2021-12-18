@@ -1,9 +1,46 @@
+import { useCallback, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import logo from "../../assets/tvs-logo.png";
 
 
+import {logout} from '../../actions/auth';
+import { clearMessage } from '../../actions/message'
 
-const masterLayout = ({ title = "", desc = "", children }) => {
+import {history} from '../../helpers/history';
+import eventBus from "../../common/eventBus";
+
+
+const MasterLayout = ({ title = "", desc = "", children }) => {
+
+  const {user : currentUser} = useSelector((state)=>state.auth);
+  const dispatch = useDispatch();
+  
+  useEffect(()=>{
+    history.listen((location)=>{
+      dispatch(clearMessage())
+    });
+
+
+  }, [dispatch]);
+
+  const logOut = useCallback(()=>{
+    //debugger
+    //e.preventDefault();
+    dispatch(logout());
+  }, [dispatch]);
+
+
+  useEffect(()=>{
+    //console.log(currentUser);
+
+    eventBus.on("logout", ()=>{
+      logOut();
+    })
+  }, [currentUser, logOut])
+  
+  const _userName = currentUser.data.user.firstName;
+    
     document.body.classList.remove("bg-Login");
     return (
       <>
@@ -103,8 +140,8 @@ const masterLayout = ({ title = "", desc = "", children }) => {
                       data-bs-toggle="dropdown"
                       aria-expanded="false"
                     >
-                      <small>Welcome!</small>
-                      Admin
+                     <small>Welcome!</small>                      
+                      {_userName}
                     </Link>
                     <ul
                       className="dropdown-menu dropdown-menu-end border-0 shadow-sm"
@@ -129,7 +166,7 @@ const masterLayout = ({ title = "", desc = "", children }) => {
                         <hr className="dropdown-divider" />
                       </li>
                       <li>
-                        <Link className="dropdown-item" to="/">
+                        <Link className="dropdown-item" to="/" onClick={logOut}>
                           Logout
                         </Link>
                       </li>
@@ -156,4 +193,4 @@ const masterLayout = ({ title = "", desc = "", children }) => {
     );
   };
   
-  export default masterLayout;
+  export default MasterLayout;

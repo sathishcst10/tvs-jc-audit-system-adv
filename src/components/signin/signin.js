@@ -1,17 +1,56 @@
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, Redirect, Navigate, useNavigate} from 'react-router-dom';
+import { login } from '../../actions/auth';
 import logo from '../../assets/tvs-logo.png';
 import './signin.css';
 
-export const SignIn = ()=>{
+export const SignIn = (props) =>{
     //adding class for Login screen only
     document.body.classList.add("bg-Login");
 
     const _navigateTo = useNavigate();
 
-    const onSubmit = () =>{
-        _navigateTo("/dealerMaster");
+    const [userName, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const {isLoggedIn} = useSelector(state => state.auth);
+    // const {message} = useSelector(state => state.message);
+
+    const dispatch = useDispatch();
+
+    const onChangeUsername = (e)=>{
+      const userName = e.target.value;
+      setUsername(userName);
+    }
+    const onChangePassword = (e)=>{
+      const password = e.target.value;
+      setPassword(password);
     }
 
+
+    const handleLogin=(e)=>{
+      e.preventDefault();
+
+      setLoading(true);
+
+      dispatch(login(userName, password))
+        .then(()=>{
+          debugger;
+          props.history.push("/dealerMaster");
+          window.location.reload();
+        })
+        .catch((error)=>{
+          console.log('h', error);
+          setLoading(false);
+        })
+    };
+
+    if(isLoggedIn){
+      return _navigateTo("/dealerMaster");
+    }
+   
 
 
 
@@ -28,7 +67,7 @@ export const SignIn = ()=>{
     return(
         <>
       <main className="form-signin">
-        <form className="login-form" onSubmit={onSubmit}>
+        <form className="login-form" onSubmit={handleLogin}>
           <h1 className="h3 mb-4 text-center">
             {/* <img src={avatar} alt="avatar" className="img-avatar"/> */}
             <img src={logo} alt="TVS Logo" className="app-logo" />
@@ -41,6 +80,8 @@ export const SignIn = ()=>{
               id="floatingInput"
               placeholder="name@example.com"
               autoComplete="off"
+              value={userName}
+              onChange={onChangeUsername}
             />
             <label htmlFor="floatingInput">Username</label>
           </div>
@@ -52,6 +93,8 @@ export const SignIn = ()=>{
               placeholder="Password"
               className="form-control"
               type="password"
+              value={password}
+              onChange={onChangePassword}
             />
             <label htmlFor="floatingPassword">Password</label>
           </div>
@@ -79,6 +122,14 @@ export const SignIn = ()=>{
             </Link>
           </p>
         </form>
+{/* 
+        {message && (
+            <div className="form-group">
+              <div className="alert alert-danger" role="alert">
+                {message}
+              </div>
+            </div>
+          )} */}
       </main>
     </>
     )
