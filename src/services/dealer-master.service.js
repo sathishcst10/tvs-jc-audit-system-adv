@@ -22,6 +22,10 @@ const getDealerById = (argID) =>{
     return axios.get(APP_API_URL + '/Dealer/' + argID, {headers: authHeader()});
 }
 
+const updateDealer = (argItems) =>{
+    return axios.put(APP_API_URL + '/Dealer', argItems, {headers:authHeader()});
+}
+
 const deleteDealerById = (argID) =>{
     return axios.delete(APP_API_URL + '/Dealer/' + argID, {headers:authHeader()});
 }
@@ -31,5 +35,6 @@ export default {
     getAllDealersByPaging,
     addNewDealer,
     getDealerById,
-    deleteDealerById
+    deleteDealerById,
+    updateDealer
 }

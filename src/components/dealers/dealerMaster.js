@@ -1,17 +1,28 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
+import 'primeicons/primeicons.css';
+import 'primereact/resources/themes/lara-light-indigo/theme.css';
+import 'primereact/resources/primereact.css';
+// import 'primeflex/primeflex.css';
+import { Toast } from "primereact/toast";
+import { Paginator } from 'primereact/paginator';
+
 import MasterLayout from "../_layout/_masterLayout";
+
 import dealerMasterService from "../../services/dealer-master.service";
-import authServices from "../../services/auth.services";
+
 
 import loadingIcon from "../../assets/icons8-dots-loading.gif";
 
 // import { Toast } from "bootstrap";
 
 export const DealerMaster = () => {
+  const toast =  useRef(null);
   const dealerItems = [{}];
   const [stateDetails, setStates] = useState([]);
   const [dealerDetails, setDetails] = useState([]);
+  const [basicFirst, setBasicFirst] = useState(1);
+  const [basicRows, setBasicRows] = useState(3);
   const [initialItems, setInitial] = useState({
     pageNumber: 1,
     pageSize: 10,
@@ -28,8 +39,7 @@ export const DealerMaster = () => {
     dealerLocation: "",
     address: "",
     mailID: "",
-    phone: "",
-    formData: new FormData(),
+    phone: ""
   });
   const [values, setValues] = useState({
     error : "",
@@ -55,42 +65,68 @@ export const DealerMaster = () => {
     address,
     mailID,
     phone,
-    formData,
   } = dealer;
 
   const handleChange = (name) => (event) => {
     const value = event.target.value;
     //formData = new FormData()
 
-    formData.set(name, value);
+    //formData.set(name, value);
     setDealer({ ...dealer, [name]: value });
     //console.log(dealer);
   };
 
   const handleSubmit = (event) => {
-    event.preventDefault();
-    formData.append("isActive", true);
-    formData.append("dealerID", 0);
-    
-    dealerMasterService
-      .addNewDealer({
-        isActive,
-        dealerID,
-        dealerName,
-        dealerCode,
-        dealerLocation,
-        mailID,
-        phone,
-        stateID,
-        address,
-      })
-      .then((response) => {        
-        getAllDealersList();
-        clearForm();
-      })
-      .catch((error)=>console.log(error));
+    event.preventDefault();   
+    if(!update){
 
-    console.log(formData);
+      dealerMasterService
+        .addNewDealer({
+          isActive,
+          dealerID,
+          dealerName,
+          dealerCode,
+          dealerLocation,
+          mailID,
+          phone,
+          stateID,
+          address,
+        })
+        .then((response) => {        
+          toast.current.show(
+            {
+              severity:'success', 
+              summary: 'Success Message', 
+              detail:'Dealer saved Successfully', 
+              life: 3000
+            }
+          );
+          getAllDealersList();
+          clearForm();
+
+        })
+        .catch((error)=>console.log(error));
+      
+      }else{
+        console.log('update enables');
+        dealerMasterService.updateDealer({
+          isActive,
+          dealerID,
+          dealerName,
+          dealerCode,
+          dealerLocation,
+          mailID,
+          phone,
+          stateID,
+          address,
+        }).then((response)=>{
+          console.log(response);
+          getAllDealersList();
+        })
+      }
+        
+      
+    
   };
 
   const getStatesList = () => {
@@ -100,6 +136,12 @@ export const DealerMaster = () => {
   };
 
   const getAllDealersList = () => {
+    // setInitial({
+    //   ...initialItems,
+    //   pageNumber : 1,
+    //   pageSize : 4
+    // })
+
     dealerMasterService
       .getAllDealersByPaging({
         pageNumber,
@@ -113,6 +155,7 @@ export const DealerMaster = () => {
         setDetails(response.data.data.data);
       });
   };
+
   const clearForm=()=>{
     setDealer({
       stateID: 0,
@@ -137,6 +180,7 @@ export const DealerMaster = () => {
           console.log(response.data.data);
           setDealer({
             ...dealer,
+            dealerID : dealerID,
             stateID: response.data.data.stateID,
             dealerName: response.data.data.dealerName,
             dealerCode: response.data.data.dealerCode,
@@ -153,15 +197,35 @@ export const DealerMaster = () => {
       )
   }
   const deleteDealer=(dealerId)=>{
-    debugger
+    
     dealerMasterService.deleteDealerById(dealerId).then(
       (response)=>{
         console.log(response);
+        toast.current.show(
+          {
+            severity:'info', 
+            summary: 'Info Message', 
+            detail:'Dealer deleted successfully.', 
+            life: 3000
+          }
+        )
         getAllDealersList();
       }
       )
   }
+  
+  const onBasicPageChange = (event) => {
+    // debugger;
+    setBasicFirst(event.first);
+    setBasicRows(event.rows);
 
+    setInitial({
+      ...initialItems,
+      pageNumber : pageNumber + event.page
+    });
+
+    getAllDealersList();
+}
   useEffect(() => {
     getStatesList();
     getAllDealersList();
@@ -226,11 +290,22 @@ export const DealerMaster = () => {
                   </tbody>
                 </table>
               </div>
+
+
+              <Paginator 
+                first={basicFirst} 
+                rows={basicRows} 
+                totalRecords={8}
+                onPageChange={onBasicPageChange}
+                className="justify-content-end"
+              >
+              </Paginator>
+ 
             </div>
           </div>
         </div>
         <div className="col-3">
-          <div className="card">
+          <div className="card h-100">
             <div className="card-body p-2">
               <form onSubmit={handleSubmit}>
                 <div className="mb-2">
@@ -373,16 +448,8 @@ export const DealerMaster = () => {
         )
       }
 
-    <div className="position-fixed top-0 end-0 p-3 zIndex">
-      <div id="liveToast" class="toast align-items-center text-white bg-danger" role="alert" aria-live="assertive" aria-atomic="true">
-        <div className="d-flex">
-          <div className="toast-body">
-            Hello, world! This is a toast message.
-          </div>
-          <button type="button" className="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-      </div>
-    </div>
+
+    <Toast ref={toast} />
     </MasterLayout>
   );
 };
