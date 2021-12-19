@@ -79,6 +79,7 @@ table.table-custom thead th{
 }
 table.table-custom tbody td{
   font-size: 0.9rem;
+  vertical-align:middle;
 }
 .navbar-toggler {
   padding: .25rem .75rem;
@@ -116,4 +117,12 @@ table.table-custom tbody td{
   padding-right: .5rem;
   color: #6c757d;
   content: var(--bs-breadcrumb-divider, "\00BB");
+}
+
+
+.form-control,.form-select {
+  font-size: 0.9rem;
+}
+.zIndex{
+  z-index: 100000;
 }

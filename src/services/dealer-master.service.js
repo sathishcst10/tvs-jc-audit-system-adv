@@ -14,12 +14,22 @@ const getAllDealersByPaging=(argItems)=>{
 }
 
 const addNewDealer = (argItems) =>{
-    console.log(argItems);
+    //console.log(argItems);
     return axios.post(APP_API_URL + '/Dealer', argItems, {headers: authHeader()});
+}
+
+const getDealerById = (argID) =>{
+    return axios.get(APP_API_URL + '/Dealer/' + argID, {headers: authHeader()});
+}
+
+const deleteDealerById = (argID) =>{
+    return axios.delete(APP_API_URL + '/Dealer/' + argID, {headers:authHeader()});
 }
 
 export default {
     getStates,
     getAllDealersByPaging,
-    addNewDealer
+    addNewDealer,
+    getDealerById,
+    deleteDealerById
 }
