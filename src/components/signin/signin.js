@@ -1,59 +1,64 @@
-import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link, Redirect, Navigate, useNavigate} from 'react-router-dom';
-import { login } from '../../actions/auth';
-import authServices from '../../services/auth.services';
-import logo from '../../assets/tvs-logo.png';
-import './signin.css';
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, Redirect, Navigate, useNavigate } from "react-router-dom";
+import { login } from "../../actions/auth";
+import authServices from "../../services/auth.services";
+import logo from "../../assets/tvs-logo.png";
+import "./signin.css";
 
-export const SignIn = (props) =>{
-    //adding class for Login screen only
-    document.body.classList.add("bg-Login");
+export const SignIn = (props) => {
+  //adding class for Login screen only
+  document.body.classList.add("bg-Login");
 
-    const _navigateTo = useNavigate();
+  const _navigateTo = useNavigate();
 
-    const [userName, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [loading, setLoading] = useState(false);
+  const [userName, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-    const {isLoggedIn} = useSelector(state => state.auth);
-    // const {message} = useSelector(state => state.message);
+  const { isLoggedIn } = useSelector((state) => state.auth);
+  // const {message} = useSelector(state => state.message);
 
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-    const onChangeUsername = (e)=>{
-      const userName = e.target.value;
-      setUsername(userName);
-    }
-    const onChangePassword = (e)=>{
-      const password = e.target.value;
-      setPassword(password);
-    }
+  const onChangeUsername = (e) => {
+    const userName = e.target.value;
+    setUsername(userName);
+  };
+  const onChangePassword = (e) => {
+    const password = e.target.value;
+    setPassword(password);
+  };
 
+  const handleLogin = (e) => {
+    e.preventDefault();
 
-    const handleLogin=(e)=>{
-      e.preventDefault();
-
-      setLoading(true);     
-      dispatch(login(userName, password))
-        .then(()=>{          
-          //console.log(response)
-          props.history.push("/masters/dealerMaster");
-          window.location.reload();
-        })
-        .catch((error)=>{
-          console.log('h', error);
-          setLoading(false);
-        })
-    };
-
-    if(isLoggedIn){
+    setLoading(true);
+    dispatch(login(userName, password))
+      .then(() => {
+        //console.log(response)
+        _navigateTo("/masters/dealerMaster");
+       
+        // setTimeout(() => {
+        //   props.history.push("/masters/dealerMaster");
+        //   window.location.reload();
+        // }, 10000);
+       
+      })
+      .catch((error) => {
+        console.log("h", error);
+        setLoading(false);
+      });
+  };
+  useEffect(()=>{
+    if (isLoggedIn) {
       return _navigateTo("/masters/dealerMaster");
     }
-   
+  },[]);
+  
 
-    return(
-        <>
+  return (
+    <>
       <main className="form-signin">
         <form className="login-form" onSubmit={handleLogin}>
           <h1 className="h3 mb-4 text-center">
@@ -96,10 +101,7 @@ export const SignIn = (props) =>{
             </Link>
           </div>
           <div className="d-grid gap-1">
-            <button
-              className="btn btn-sm btn-primary"
-              type="submit"                            
-            >
+            <button className="btn btn-sm btn-primary" type="submit">
               Login
             </button>
           </div>
@@ -110,8 +112,7 @@ export const SignIn = (props) =>{
             </Link>
           </p>
         </form>
-
       </main>
     </>
-  )
-}
+  );
+};

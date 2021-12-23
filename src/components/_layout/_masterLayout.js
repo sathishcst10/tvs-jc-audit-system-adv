@@ -16,13 +16,13 @@ const MasterLayout = ({ title = "", desc = "", pageMap = [], children }) => {
   const {user : currentUser} = useSelector((state)=>state.auth);
   const dispatch = useDispatch();
   
-  useEffect(()=>{
-    history.listen((location)=>{
-      dispatch(clearMessage())
-    });
+  // useEffect(()=>{
+  //   history.listen((location)=>{
+  //     dispatch(clearMessage())
+  //   });
 
 
-  }, [dispatch]);
+  // }, [dispatch]);
 
   const logOut = useCallback(()=>{
     //debugger
@@ -69,7 +69,7 @@ const MasterLayout = ({ title = "", desc = "", pageMap = [], children }) => {
                     </Link>
                   </li>
                   <li className="nav-item">
-                    <Link className="nav-link" to="/">
+                    <Link className="nav-link" to="/jobCardInformation">
                       Job Card
                     </Link>
                   </li>
