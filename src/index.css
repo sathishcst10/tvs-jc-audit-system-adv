@@ -76,10 +76,18 @@ ul.navbar-nav .nav-link.active{
 table.table-custom thead th{
   font-size: 0.9rem;
   font-weight: 500;
+  color: rgb(236 240 241 / 85%);
+}
+table.table-custom tbody tr{
+  cursor: pointer;
 }
 table.table-custom tbody td{
   font-size: 0.9rem;
   vertical-align:middle;
+  font-weight: 500;
+  color: #1e272e;
+
+  border-color: #ecf0f1 !important;
 }
 .navbar-toggler {
   padding: .25rem .75rem;
@@ -119,10 +127,26 @@ table.table-custom tbody td{
   content: var(--bs-breadcrumb-divider, "\00BB");
 }
 
+p.secondary-text.mb-0 {
+  color: #7F8C8D;
+}
 
 .form-control,.form-select {
   font-size: 0.9rem;
 }
 .zIndex{
   z-index: 100000;
+}
+
+
+.badge.bg-danger{
+  background-color: rgb(220 53 69 / 15%) !important;
+  border: 1px solid rgb(220 53 69 / 12%);
+  color: #F92313;
+}
+
+.badge.bg-success{
+  background-color: rgb(87 206 151 / 15%) !important;
+  border: 1px solid rgb(87 206 151 / 12%);
+  color: #16941B;
 }

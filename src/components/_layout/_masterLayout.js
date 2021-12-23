@@ -11,7 +11,7 @@ import {history} from '../../helpers/history';
 import eventBus from "../../common/eventBus";
 
 
-const MasterLayout = ({ title = "", desc = "", children }) => {
+const MasterLayout = ({ title = "", desc = "", pageMap = [], children }) => {
 
   const {user : currentUser} = useSelector((state)=>state.auth);
   const dispatch = useDispatch();
@@ -32,7 +32,7 @@ const MasterLayout = ({ title = "", desc = "", children }) => {
 
 
   useEffect(()=>{
-    //console.log(currentUser);
+    console.log(pageMap);
 
     eventBus.on("logout", ()=>{
       logOut();
@@ -117,16 +117,26 @@ const MasterLayout = ({ title = "", desc = "", children }) => {
                     </Link>
                     <ul className="dropdown-menu border-0 shadow-sm" aria-labelledby="navbarDropdown">
                       <li>
-                        <Link className="dropdown-item" to="/Dashboard">
+                        <Link className="dropdown-item" to="/masters/userMaster">
                           User Master
                         </Link>
                       </li>
                       <li>
-                        <Link className="dropdown-item" to="#">
+                        <Link className="dropdown-item" to="/masters/dealerMaster">
                           Dealer Master
                         </Link>
-                      </li>                      
-                    </ul>
+                      </li>
+                      <li>
+                        <Link className="dropdown-item" to="/masters/modelMaster">
+                          Model Master
+                        </Link>
+                      </li>   
+                      <li>
+                        <Link className="dropdown-item" to="/masters/aggregateMaster">
+                          Aggregate Master
+                        </Link>
+                      </li>                        
+                    </ul>                    
                   </li>
                 </ul>
   
@@ -180,9 +190,15 @@ const MasterLayout = ({ title = "", desc = "", children }) => {
         <main className="container-fluid g-1">
         <nav aria-label="breadcrumb">
             <ol className="breadcrumb">
-                <li className="breadcrumb-item"><a href="#">Home</a></li>
-                <li className="breadcrumb-item"><a href="#">Masters</a></li>
-                <li className="breadcrumb-item active" aria-current="page">Dealer Master</li>
+              {
+                pageMap.map((items,idx)=>(
+                  idx != pageMap.length - 1 ?
+                  <li key={idx} className="breadcrumb-item"><a href="#">{items}</a></li>
+                  :
+                  <li key={idx} className="breadcrumb-item active">{items}</li>
+                ))
+              }
+
             </ol>
         </nav>
             {children}

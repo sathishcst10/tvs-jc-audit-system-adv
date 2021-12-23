@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, Redirect, Navigate, useNavigate} from 'react-router-dom';
 import { login } from '../../actions/auth';
+import authServices from '../../services/auth.services';
 import logo from '../../assets/tvs-logo.png';
 import './signin.css';
 
@@ -33,12 +34,11 @@ export const SignIn = (props) =>{
     const handleLogin=(e)=>{
       e.preventDefault();
 
-      setLoading(true);
-
+      setLoading(true);     
       dispatch(login(userName, password))
-        .then(()=>{
-          debugger;
-          props.history.push("/dealerMaster");
+        .then(()=>{          
+          //console.log(response)
+          props.history.push("/masters/dealerMaster");
           window.location.reload();
         })
         .catch((error)=>{
@@ -48,21 +48,9 @@ export const SignIn = (props) =>{
     };
 
     if(isLoggedIn){
-      return _navigateTo("/dealerMaster");
+      return _navigateTo("/masters/dealerMaster");
     }
    
-
-
-
-
-
-
-
-
-
-
-
-
 
     return(
         <>
@@ -122,15 +110,8 @@ export const SignIn = (props) =>{
             </Link>
           </p>
         </form>
-{/* 
-        {message && (
-            <div className="form-group">
-              <div className="alert alert-danger" role="alert">
-                {message}
-              </div>
-            </div>
-          )} */}
+
       </main>
     </>
-    )
+  )
 }

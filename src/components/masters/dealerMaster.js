@@ -15,7 +15,7 @@ import loadingIcon from "../../assets/icons8-dots-loading.gif";
 
 // import { Toast } from "bootstrap";
 
-const DealerMaster = () => {
+export const DealerMaster = () => {
   const toast =  useRef(null);
   const dealerItems = [{}];
   const [stateDetails, setStates] = useState([]);
@@ -235,7 +235,7 @@ const DealerMaster = () => {
             Swal.fire('Deleted!','Dealer details has been deleted.', 'success');
             getAllDealersList();
           }
-          )
+        )
         
       }
     })
@@ -261,13 +261,13 @@ const DealerMaster = () => {
   }, []);
 
   return (
-    <MasterLayout>
+    <MasterLayout pageMap={['Home', 'Masters','Dealer Master']}>
       <div className="row g-1">
         <div className="col-9">
           <div className="card h-100">
             <div className="card-body p-1">
               <div className="table-responsive">
-                <table className="table table-striped table-hover table-custom">
+                <table className="table table-hover table-custom">
                   <thead className="table-dark">
                     <tr>
                       <th>Dealer Name</th>
