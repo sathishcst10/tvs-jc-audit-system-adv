@@ -28,7 +28,7 @@ function App() {
   const {isLoggedIn} = useSelector(state => state.auth);
   
   useEffect(()=>{
-    debugger
+    
     history.listen((location)=>{
       console.log('loc',location);
       dispatch(clearMessage())
