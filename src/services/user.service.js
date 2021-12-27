@@ -27,11 +27,11 @@ const deleteUser = (userID) =>{
 }
 
 const changeUserPassword = (argItems)=>{
-    return axios.post(APP_API_URL + "User/ChangePassword", argItems, {headers : authHeader()});
+    return axios.post(APP_API_URL + "/User/ChangePassword", argItems, {headers : authHeader()});
 }
 
 const resetUserPassword = (argItems)=>{
-    return axios.post(APP_API_URL + "/ResetPassword", argItems, {headers : authHeader()});
+    return axios.post(APP_API_URL + "/User/ResetPassword", argItems);
 }
 
 export default {

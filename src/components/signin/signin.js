@@ -5,6 +5,7 @@ import { login } from "../../actions/auth";
 import authServices from "../../services/auth.services";
 import logo from "../../assets/tvs-logo.png";
 import "./signin.css";
+import userService from "../../services/user.service";
 
 export const SignIn = (props) => {
   //adding class for Login screen only
@@ -15,7 +16,14 @@ export const SignIn = (props) => {
   const [userName, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [fPass, setFPass] = useState({
+    isSuccess : false,
+    isFail : false,
+    message : ""
+  });
 
+  const {isFail, isSuccess, message} = fPass;
   const { isLoggedIn } = useSelector((state) => state.auth);
   // const {message} = useSelector(state => state.message);
 
@@ -38,24 +46,59 @@ export const SignIn = (props) => {
       .then(() => {
         //console.log(response)
         _navigateTo("/masters/dealerMaster");
-       
+
         // setTimeout(() => {
         //   props.history.push("/masters/dealerMaster");
         //   window.location.reload();
         // }, 10000);
-       
+
       })
       .catch((error) => {
         console.log("h", error);
         setLoading(false);
       });
   };
-  useEffect(()=>{
+  useEffect(() => {
     if (isLoggedIn) {
       return _navigateTo("/masters/dealerMaster");
     }
-  },[]);
-  
+  }, []);
+
+  const handleChange = name =>event=>{
+    const value = event.target.value;
+    setEmail(value);
+  }
+
+  const forgotPassword = ()=>{
+    userService.resetUserPassword({email}).then(
+      (response)=>{
+        debugger;
+        response.data.success ?
+          setFPass({
+            ...fPass,
+            isSuccess : true,
+            message : response.data.message
+          })
+        :
+          setFPass({
+            ...fPass,
+            isFail : true,
+            message : response.data.message
+          })
+
+        console.log(response)
+      }
+    ).catch((err)=>console.log(err))
+  }
+
+  const closeModal = ()=>{
+    setEmail("");
+    setFPass({
+      ...fPass,
+      isFail: false,
+      isSuccess:false
+    });
+  }
 
   return (
     <>
@@ -96,7 +139,7 @@ export const SignIn = (props) => {
             <label className="text-muted default-font-size">
               <input type="checkbox" value="remember-me" /> Remember me
             </label>
-            <Link to="/" className="link-default">
+            <Link to="/" className="link-default" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
               Forgot Password?
             </Link>
           </div>
@@ -113,6 +156,64 @@ export const SignIn = (props) => {
           </p>
         </form>
       </main>
+
+
+
+
+
+
+
+
+
+
+
+
+
+      <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="staticBackdropLabel">Forgot Password</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div className="mb-2">
+                <label>E-Mail ID</label>
+                <input 
+                  className="form-control" 
+                  name="email" 
+                  id="email" 
+                  value={email}
+                  onChange={handleChange("email")} />
+              </div>
+              {
+                isSuccess ? (
+                  <div class="alert alert-success" role="alert">
+                    {message} "Please check your mail inbox."
+                  </div>
+                ) :
+                isFail ?(
+                  <div class="alert alert-danger" role="alert">
+                    {message}
+                  </div>
+                )
+                :
+                (
+                  <>
+
+                  </>
+                )
+
+              }
+              
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onClick={closeModal}>Close</button>
+              <button type="button" class="btn btn-primary" onClick={forgotPassword}>Reset Password</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   );
 };

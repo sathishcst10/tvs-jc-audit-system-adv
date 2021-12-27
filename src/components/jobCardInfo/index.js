@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import jobCardInfoService from "../../services/job-card-info.service";
 import MasterLayout from "../_layout/_masterLayout";
 
 
 const JobCardInfo = () => {
+    const { user: currentUser } = useSelector((state) => state.auth);
+    console.log('th', currentUser.data.user.dealerID);
     const [jobCard, setJobCard] = useState({
         newJobCard: false,
         updateJobCard: false,
@@ -14,22 +17,100 @@ const JobCardInfo = () => {
     const [getFinalFindings, setFinalFindings] = useState([]);
     const [getActionTaken, setActionTaken] = useState([]);
     const { newJobCard, updateJobCard, closeJobCard } = jobCard;
+    const [fileUpload, setFileUpload] = useState({
+        jcfront: 0,
+        jcback: 0
+    });
+
+    const formData_front = new FormData();
+    const formData_back = new FormData();
+    const { jcfront, jcback } = fileUpload;
+
+    const [_customerVoice, setCustomerVoice] = useState([]);
 
     const [jobcardDocument, setJobCardDocument] = useState({
-        "DocumentId" : 0,
-        "DocumentType" : "",
-        "FileName":"",
-        "FilePath" : "",
-        "ContentType" : "",
-        "DocumentDate" : "",
-        "DocumentFile" : "",
-        "IsActive" : true,
-        "CreatedDate" : "",
-        "CreatedBy" : "",
-        "ModifiedDate" : "",
-        "ModifiedBy" : "",
-        "IsDeleted" : false
+        "DocumentId": 0,
+        "DocumentType": "",
+        "FileName": "",
+        "FilePath": "",
+        "ContentType": "",
+        "DocumentDate": "",
+        "DocumentFile": "",
+        "IsActive": true,
+        "CreatedDate": "",
+        "CreatedBy": "",
+        "ModifiedDate": "",
+        "ModifiedBy": "",
+        "IsDeleted": false
     });
+
+    const [saveJobCard, setSaveJobCard] = useState({
+        "jcid": 0,
+        "userID": currentUser.data.user.userId,
+        "dealerID": currentUser.data.user.dealerID,
+        "jcNumber": "",
+        "jobcardNumber": "",
+        "jcFront": 0,
+        "jcBack": 0,
+        "isDataEntryTaken": false,
+        "dataEntryTakenBy": 0,
+        "isDataEntryCompleted": false,
+        "isTelecallCompleted": false,
+        "dmsNumber": "",
+        "engineFrameNumber": "",
+        "modelID": 0,
+        "vehicleNumber": "",
+        "kMs": "",
+        "serviceDate": new Date(),
+        "customerName": "",
+        "customerMobile": "",
+        "customerAddress": "",
+        "saName": "",
+        "technicianName": "",
+        "customerVoice": "",
+        "initialObservation": "",
+        "finalFinding": "",
+        "actionTaken": "",
+        "dealerObservation": "",
+        "serviceTypeID": 0,
+        "isActive": true,
+        "assignTeleCallerID": 0
+    });
+
+    const {
+        jcid,
+        userID,
+        dealerID,
+        jcNumber,
+        jobcardNumber,
+        jcBack,
+        jcFront,
+        isDataEntryTaken,
+        dataEntryTakenBy,
+        isDataEntryCompleted,
+        isTelecallCompleted,
+        dmsNumber,
+        engineFrameNumber,
+        modelID,
+        vehicleNumber,
+        kMs,
+        serviceDate,
+        customerName,
+        customerMobile,
+        customerAddress,
+        saName,
+        technicianName,
+        customerVoice,
+        initialObservation,
+        finalFinding,
+        actionTaken,
+        dealerObservation,
+        serviceTypeID,
+        isActive,
+        assignTeleCallerID
+
+    } = saveJobCard;
+
 
     const {
         DocumentId,
@@ -45,8 +126,8 @@ const JobCardInfo = () => {
         ModifiedBy,
         ModifiedDate,
         IsDeleted
-        
-    }= jobcardDocument
+
+    } = jobcardDocument
 
 
     const createJobCard = () => {
@@ -55,33 +136,57 @@ const JobCardInfo = () => {
         });
     }
 
-    const addTags = (event, items) => {
+    const addTags = async (event, items) => {
         if (event.target.value !== "") {
             if (items === "CustomerVoice") {
                 setTagDesc([...getTagDesc, event.target.value]);
                 //props.selectedTags([...tags, event.target.value]);
+
+                setSaveJobCard({
+                    ...saveJobCard,
+                    customerVoice: [...customerVoice, event.target.value]
+                });
+
                 event.target.value = "";
+
             }
             else if (items === "InitialObs") {
                 setInitialObs([...getInitialObs, event.target.value]);
                 //props.selectedTags([...tags, event.target.value]);
+                setSaveJobCard({
+                    ...saveJobCard,
+                    initialObservation: [...initialObservation, event.target.value]
+                })
                 event.target.value = "";
+
             }
             else if (items === "FinalFindings") {
                 setFinalFindings([...getFinalFindings, event.target.value]);
                 //props.selectedTags([...tags, event.target.value]);
+
+                setSaveJobCard({
+                    ...saveJobCard,
+                    finalFinding: [...finalFinding, event.target.value]
+                });
+
                 event.target.value = "";
             }
             else if (items === "ActionTaken") {
                 setActionTaken([...getActionTaken, event.target.value]);
                 //props.selectedTags([...tags, event.target.value]);
+
+                setSaveJobCard({
+                    ...saveJobCard,
+                    actionTaken: [...actionTaken, event.target.value]
+                });
+
                 event.target.value = "";
             }
         }
     };
     const removeTags = (indexToRemove, items) => {
         if (items === "CustomerVoice") {
-            setTagDesc([...getTagDesc.filter((_, index) => index !== indexToRemove)]);    
+            setTagDesc([...getTagDesc.filter((_, index) => index !== indexToRemove)]);
         }
         else if (items === "InitialObs") {
             setInitialObs([...getInitialObs.filter((_, index) => index !== indexToRemove)]);
@@ -91,29 +196,121 @@ const JobCardInfo = () => {
         }
         else if (items === "ActionTaken") {
             setActionTaken([...getActionTaken.filter((_, index) => index !== indexToRemove)]);
-        }        
+        }
     };
 
-    const handleFiles = event =>{
-        debugger
-
-        setJobCardDocument({
-            ...jobcardDocument,
-            "DocumentFile" : event.target.files[0],
-            "DocumentType" : "JCFront"
-        });
-        const formData = new FormData();
-        formData.append("DocumentFile" , event.target.files[0],);
-        formData.append("DocumentType" , "JCFront");
-
-        console.log(event);
-
-        jobCardInfoService.uploadJobCard(formData).then(
-            (res)=>{
-                console.log(res);
-            }
-        ).catch((err)=>console.log(err))
+    const handleFiles = dType => event => {
+        if (dType === "JCFront") {
+            formData_front.append("DocumentFile", event.target.files[0]);
+            formData_front.append("DocumentType", dType);
+            uploadFront();
+        }
+        else {
+            formData_back.append("DocumentFile", event.target.files[0]);
+            formData_back.append("DocumentType", dType);
+            uploadBack();
+        }
     }
+    const handleChange = (name) => (event) => {
+        const value = event.target.value;
+        setSaveJobCard({
+            ...saveJobCard,
+            [name]: value
+        });
+    }
+
+    const uploadFront = () => {
+        jobCardInfoService.uploadJobCard(formData_front).then(
+            (res) => {
+                debugger;
+                console.log(res);
+                // setSaveJobCard({
+                //     ...saveJobCard,
+                //     jcFront : res.data.data.documentId
+                // })
+
+                setFileUpload({
+                    ...fileUpload,
+                    jcfront: res.data.data.documentId
+                })
+            }
+        ).catch((err) => console.log(err))
+    }
+    const uploadBack = () => {
+
+        jobCardInfoService.uploadJobCard(formData_back).then(
+            (response) => {
+                console.log(response);
+
+                setFileUpload({
+                    ...fileUpload,
+                    jcback: response.data.data.documentId
+                })
+                // setSaveJobCard({
+                //     ...saveJobCard,
+                //     jcBack : res.data.data.documentId
+                // })
+            }
+        ).catch((err) => console.log(err))
+
+    }
+
+    const handleSubmit = () => {
+
+
+
+
+        jobCardInfoService.createJobCard({
+            jcid,
+            userID,
+            dealerID,
+            jcNumber,
+            jobcardNumber,
+            jcBack: jcback,
+            jcFront: jcfront,
+            isDataEntryTaken,
+            dataEntryTakenBy,
+            isDataEntryCompleted,
+            isTelecallCompleted,
+            dmsNumber,
+            engineFrameNumber,
+            modelID,
+            vehicleNumber,
+            kMs,
+            serviceDate,
+            customerName,
+            customerMobile,
+            customerAddress,
+            saName,
+            technicianName,
+            customerVoice: JSON.stringify(customerVoice),
+            initialObservation: JSON.stringify(initialObservation),
+            finalFinding: JSON.stringify(finalFinding),
+            actionTaken: JSON.stringify(actionTaken),
+            dealerObservation,
+            serviceTypeID,
+            isActive,
+            assignTeleCallerID
+        }).then(
+            (response) => {
+                console.log(response);
+            }
+        ).catch((err) => console.log(err));
+
+        console.log("FN", saveJobCard);
+
+
+    }
+    useEffect(() => {
+        setSaveJobCard({
+            ...saveJobCard
+        })
+        //    console.log("state",saveJobCard)
+    }, [])
+    useEffect(() => {
+
+        console.log("state", saveJobCard)
+    }, [saveJobCard])
 
     return (
         <MasterLayout pageMap={['Home', 'Job Card Information']}>
@@ -211,7 +408,10 @@ const JobCardInfo = () => {
                                             <button className="btn btn-sm btn-outline-danger me-1">
                                                 Cancel
                                             </button>
-                                            <button className="btn btn-sm btn-success ms-1">
+                                            <button
+                                                className="btn btn-sm btn-success ms-1"
+                                                onClick={handleSubmit}
+                                            >
                                                 Save Job Card
                                             </button>
                                         </div>
@@ -219,7 +419,7 @@ const JobCardInfo = () => {
                                             <div className="col-4">
                                                 <div className="mb-3">
                                                     <label
-                                                        htmlFor="jobCardNo"
+                                                        htmlFor="jobCardNumber"
                                                         className="form-label"
                                                     >
                                                         Job Card Number
@@ -227,8 +427,11 @@ const JobCardInfo = () => {
                                                     <input
                                                         type="text"
                                                         className="form-control"
-                                                        id="jobCardNo"
+                                                        id="jobCardNumber"
                                                         placeholder="Job Card Number"
+                                                        name="jobcardNumber"
+                                                        value={jobcardNumber}
+                                                        onChange={handleChange("jobcardNumber")}
                                                     />
                                                 </div>
                                                 <div className="mb-3">
@@ -251,7 +454,9 @@ const JobCardInfo = () => {
                                                         <input
                                                             type="text"
                                                             placeholder="Press enter"
+                                                            name="customerVoice"
                                                             onKeyUp={event => event.key === "Enter" ? addTags(event, "CustomerVoice") : null}
+
                                                         />
                                                     </div>
                                                 </div>
@@ -281,6 +486,12 @@ const JobCardInfo = () => {
                                                     </div>
                                                 </div>
 
+
+
+
+                                            </div>
+
+                                            <div className="col-4">
                                                 <div className="mb-3">
                                                     <label htmlFor="frmDesc" className="form-label">Final Findings</label>
                                                     <div className="tags-input">
@@ -331,26 +542,28 @@ const JobCardInfo = () => {
                                                     </div>
                                                 </div>
 
-
+                                                
                                             </div>
 
                                             <div className="col-4">
-                                                <div class="mb-3">
-                                                    <label htmlFor="formFileFront" className="form-label">Upload Job Card Front</label>
-                                                    <input 
-                                                        class="form-control" 
-                                                        type="file" 
-                                                        id="formFileFront" 
-                                                        onChange={handleFiles}    
-                                                    />                                                    
-                                                </div>
-                                                <div class="mb-2">
-                                                    <label htmlFor="formFile" className="form-label">Upload Job Card Back</label>
-                                                    <input className="form-control" type="file" id="formFileBack" />
-                                                </div>
-                                                <div className="mb-3 text-end">
-                                                    <button className="btn btn-sm btn-success mt-1 ms-auto">Upload files</button>
-                                                </div>
+                                                <div className="mb-3">
+                                                        <label htmlFor="formFileFront" className="form-label">Upload Job Card Front</label>
+                                                        <input
+                                                            className="form-control"
+                                                            type="file"
+                                                            id="formFileFront"
+                                                            onChange={handleFiles("JCFront")}
+                                                        />
+                                                    </div>
+                                                    <div className="mb-2">
+                                                        <label htmlFor="formFile" className="form-label">Upload Job Card Back</label>
+                                                        <input
+                                                            className="form-control"
+                                                            type="file"
+                                                            id="formFileBack"
+                                                            onChange={handleFiles("JCBack")}
+                                                        />
+                                                    </div>                                                            
                                             </div>
                                         </div>
                                     </div>
