@@ -30,11 +30,16 @@ const deleteDealerById = (argID) =>{
     return axios.delete(APP_API_URL + '/Dealer/' + argID, {headers:authHeader()});
 }
 
+const getDealerForDropdown = (argID) =>{
+    return axios.get(APP_API_URL + "/Dealer/Dropdown/" + argID, {headers : authHeader()});
+}
+
 export default {
     getStates,
     getAllDealersByPaging,
     addNewDealer,
     getDealerById,
     deleteDealerById,
-    updateDealer
+    updateDealer,
+    getDealerForDropdown
 }

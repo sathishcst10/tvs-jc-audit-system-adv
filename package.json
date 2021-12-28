@@ -46,6 +46,7 @@
     ]
   },
   "devDependencies": {
+    "path-browserify": "^1.0.1",
     "redux-devtools-extension": "^2.13.9"
   }
 }

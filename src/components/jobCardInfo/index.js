@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Toast } from "primereact/toast";
 import { useSelector } from "react-redux";
 import jobCardInfoService from "../../services/job-card-info.service";
 import MasterLayout from "../_layout/_masterLayout";
 
 
+
 const JobCardInfo = () => {
+    const toast = useRef(null);
     const { user: currentUser } = useSelector((state) => state.auth);
-    console.log('th', currentUser.data.user.dealerID);
     const [jobCard, setJobCard] = useState({
         newJobCard: false,
         updateJobCard: false,
@@ -16,11 +18,24 @@ const JobCardInfo = () => {
     const [getInitialObs, setInitialObs] = useState([]);
     const [getFinalFindings, setFinalFindings] = useState([]);
     const [getActionTaken, setActionTaken] = useState([]);
+    const [getFilter, setFilter] = useState('');
     const { newJobCard, updateJobCard, closeJobCard } = jobCard;
+
     const [fileUpload, setFileUpload] = useState({
         jcfront: 0,
         jcback: 0
     });
+
+
+    const [getJobCardDetails, setJobCardDetails] = useState({
+        "pageNumber": 1,
+        "pageSize": 10,
+        "sortOrderBy": "",
+        "sortOrderColumn": "",
+        "filters": ""
+    });
+    const [showJobCardDetails, setShowJobCardDetails] = useState([]);
+    const { pageNumber, pageSize, sortOrderBy, sortOrderColumn, filters } = getJobCardDetails;
 
     const formData_front = new FormData();
     const formData_back = new FormData();
@@ -135,10 +150,43 @@ const JobCardInfo = () => {
             newJobCard: true
         });
     }
-
+    const getDataForUpdate = (argID)=>{
+        jobCardInfoService.getJobCardById(argID).then(
+            (response)=>{
+                //debugger;
+                setJobCard({
+                    ...jobCard,
+                    updateJobCard : true
+                });
+                setSaveJobCard({
+                    ...saveJobCard,
+                    jcid : argID,
+                    jcNumber : response.data.data.jcNumber,
+                    jobcardNumber : response.data.data.jobcardNumber,
+                    jcBack : response.data.data.jcBack,
+                    jcFront : response.data.data.jcFront,
+                    customerVoice : JSON.parse(response.data.data.customerVoice),
+                    initialObservation : JSON.parse(response.data.data.initialObservation),
+                    finalFinding : JSON.parse(response.data.data.finalFinding),
+                    actionTaken : JSON.parse(response.data.data.actionTaken)
+                });
+                setFileUpload({
+                    ...fileUpload,
+                    jcback : response.data.data.jcBack,
+                    jcfront : response.data.data.jcFront,
+                });
+                setTagDesc(...getTagDesc, JSON.parse(response.data.data.customerVoice));
+                setInitialObs(JSON.parse(response.data.data.initialObservation));
+                setFinalFindings(JSON.parse(response.data.data.initialObservation));
+                setActionTaken(JSON.parse(response.data.data.actionTaken))
+                console.log(response);
+            }
+        ).catch((err)=>console.log(err));
+    }
     const addTags = async (event, items) => {
         if (event.target.value !== "") {
             if (items === "CustomerVoice") {
+                debugger
                 setTagDesc([...getTagDesc, event.target.value]);
                 //props.selectedTags([...tags, event.target.value]);
 
@@ -254,13 +302,102 @@ const JobCardInfo = () => {
         ).catch((err) => console.log(err))
 
     }
-
+    const closeForm = () => {
+        setJobCard({
+            ...jobCard,
+            newJobCard: false,
+            updateJobCard: false,
+            closeJobCard: false
+        });
+        setSaveJobCard({
+            ...saveJobCard,
+            jcFront: 0,
+            jcBack: 0,
+            customerVoice: "",
+            initialObservation: "",
+            actionTaken: "",
+            jobcardNumber: "",
+            finalFinding: ""
+        });
+        setTagDesc([]);
+        setInitialObs([]);
+        setFinalFindings([]);
+        setActionTaken([]);
+    }
     const handleSubmit = () => {
+       if(!updateJobCard) { 
+        if(jobcardNumber != "") {
+            jobCardInfoService.createJobCard({
+                jcid,
+                userID,
+                dealerID,
+                jcNumber,
+                jobcardNumber,
+                jcBack: jcback,
+                jcFront: jcfront,
+                isDataEntryTaken,
+                dataEntryTakenBy,
+                isDataEntryCompleted,
+                isTelecallCompleted,
+                dmsNumber,
+                engineFrameNumber,
+                modelID,
+                vehicleNumber,
+                kMs,
+                serviceDate,
+                customerName,
+                customerMobile,
+                customerAddress,
+                saName,
+                technicianName,
+                customerVoice: customerVoice != "" ? JSON.stringify(customerVoice) : "[]",
+                initialObservation: initialObservation != "" ? JSON.stringify(initialObservation) : "[]",
+                finalFinding: finalFinding != "" ? JSON.stringify(finalFinding) : "[]",
+                actionTaken: actionTaken != "" ? JSON.stringify(actionTaken) : "[]",
+                dealerObservation,
+                serviceTypeID,
+                isActive,
+                assignTeleCallerID
+            }).then(
+                (response) => {
+                    console.log(response);
+                    if (response.data.success) {
 
+                        toast.current.show(
+                            {
+                                severity: 'success',
+                                summary: 'Success Message',
+                                detail: response.data.message,
+                                life: 3000
+                            }
+                        );
 
+                        setJobCard({
+                            ...jobCard,
+                            newJobCard: false
+                        });
+                        getJobCardForDealer();
+                        closeForm();
+                    } else {
 
-
-        jobCardInfoService.createJobCard({
+                        toast.current.show(
+                            {
+                                severity: 'warn',
+                                summary: 'Warning Message',
+                                detail: response.data.message,
+                                life: 3000
+                            }
+                        );
+                    }
+                }
+            ).catch((err) => console.log(err));
+        }
+    }
+    else 
+    {
+        //debugger
+        console.log(jcid);
+        jobCardInfoService.updateJobCard({
             jcid,
             userID,
             dealerID,
@@ -283,45 +420,120 @@ const JobCardInfo = () => {
             customerAddress,
             saName,
             technicianName,
-            customerVoice: JSON.stringify(customerVoice),
-            initialObservation: JSON.stringify(initialObservation),
-            finalFinding: JSON.stringify(finalFinding),
-            actionTaken: JSON.stringify(actionTaken),
+            customerVoice: customerVoice != "" ? JSON.stringify(customerVoice) : "[]",
+            initialObservation: initialObservation != "" ? JSON.stringify(initialObservation) : "[]",
+            finalFinding: finalFinding != "" ? JSON.stringify(finalFinding) : "[]",
+            actionTaken: actionTaken != "" ? JSON.stringify(actionTaken) : "[]",
             dealerObservation,
             serviceTypeID,
             isActive,
             assignTeleCallerID
         }).then(
-            (response) => {
-                console.log(response);
-            }
-        ).catch((err) => console.log(err));
+            (response)=>{
+                if (response.data.success) {
 
-        console.log("FN", saveJobCard);
+                    toast.current.show(
+                        {
+                            severity: 'success',
+                            summary: 'Success Message',
+                            detail: response.data.message,
+                            life: 3000
+                        }
+                    );
+
+                    setJobCard({
+                        ...jobCard,
+                        newJobCard: false,
+                        updateJobCard : false
+                    });
+                    getJobCardForDealer();
+                    closeForm();
+                } else {
+
+                    toast.current.show(
+                        {
+                            severity: 'warn',
+                            summary: 'Warning Message',
+                            detail: response.data.message,
+                            life: 3000
+                        }
+                    );
+                }
+            }
+        )
+    }
+        
 
 
     }
-    useEffect(() => {
-        setSaveJobCard({
-            ...saveJobCard
-        })
-        //    console.log("state",saveJobCard)
-    }, [])
-    useEffect(() => {
 
-        console.log("state", saveJobCard)
-    }, [saveJobCard])
+    const getJobCardForDealer = () => {
+        jobCardInfoService.getJobCardDetailForDealer({
+            pageNumber, pageSize, sortOrderBy, sortOrderColumn, filters
+        }).then(
+            (response) => {
+                console.log(response);
+                setShowJobCardDetails(response.data.data.data);
+            }
+        ).catch((err) => console.log(err));
+    }
+    const handleFilter = (name) => (event) => {
+        const value = event.target.value;
+        setFilter(value);
+        setJobCardDetails({
+            ...getJobCardDetails,
+            "filters": {
+                "jobcardNumber": value
+            }
+        });
+    }
+    const filterJobcardNumber = () => {
+        getJobCardForDealer();
+        setTimeout(() => {
+            setJobCardDetails({
+                ...getJobCardDetails,
+                "filters": ""
+            });
+            setFilter("");
+        }, 5000);
+        console.log(getJobCardDetails);
+    }
+
+    useEffect(() => {
+        getJobCardForDealer();
+    }, [])
 
     return (
         <MasterLayout pageMap={['Home', 'Job Card Information']}>
             <div className="row g-1">
                 {
-                    !newJobCard ?
+                    !newJobCard && !updateJobCard ?
                         (
                             <div className="col-12">
                                 <div className="card shadow-sm">
                                     <div className="card-body p-1">
                                         <div className="d-flex justify-content-end mb-1">
+                                            <div class="input-group me-2 searchBox" >
+                                                <input
+                                                    type="text"
+                                                    className="form-control form-control-sm"
+                                                    placeholder="Search..."
+                                                    aria-label="Search..."
+                                                    aria-describedby="button-addon2"
+                                                    name="getFilter"
+                                                    value={getFilter}
+                                                    onChange={handleFilter("getFilter")}
+                                                />
+                                                <button
+                                                    class="btn btn-sm btn-outline-secondary"
+                                                    type="button"
+                                                    id="button-addon2"
+                                                    onClick={filterJobcardNumber}
+                                                >
+                                                    <i class="bi bi-search"></i>
+                                                </button>
+                                            </div>
+
                                             <button
                                                 className="btn btn-sm btn-primary"
                                                 onClick={createJobCard}
@@ -329,12 +541,12 @@ const JobCardInfo = () => {
                                                 Create Job card
                                             </button>
                                         </div>
-                                        <table className="table table-custom">
+                                        <table className="table table-striped table-hover table-custom">
                                             <thead className="table-dark">
                                                 <tr>
                                                     <th>ID No</th>
                                                     <th>Job Card Number</th>
-                                                    <th>Description</th>
+                                                    <th>Customer Voice</th>
                                                     <th>Initial Observation</th>
                                                     <th>Final Findings</th>
                                                     <th>Action Taken</th>
@@ -343,55 +555,81 @@ const JobCardInfo = () => {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <span className="badge bg-dark p-2">
-                                                            A10000
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                        <input type="text" className="form-control" />
-                                                    </td>
-                                                    <td>
-                                                        <input type="text" className="form-control" />
-                                                    </td>
-                                                    <td>
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            placeholder="Optional"
-                                                        />
-                                                    </td>
-                                                    <td>
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            placeholder="Optional"
-                                                        />
-                                                    </td>
-                                                    <td>
-                                                        <input
-                                                            type="text"
-                                                            className="form-control"
-                                                            placeholder="Optional"
-                                                        />
-                                                    </td>
-                                                    <td className="text-center">
-                                                        <button className="btn text-dark">
-                                                            <i className="bi bi-paperclip"></i>
-                                                        </button>
-                                                    </td>
-                                                    <td>
-                                                        <div className="d-flex">
-                                                            <button className="btn text-primary" title="Save">
-                                                                <i className="bi bi-save2-fill"></i>
-                                                            </button>
-                                                            <button className="btn text-danger" title="Delete">
-                                                                <i className="bi bi-trash"></i>
-                                                            </button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
+
+                                                {
+                                                    showJobCardDetails.map((items, idx) => (
+                                                        <tr key={idx}>
+                                                            <td>
+                                                                {items.jcNumber}
+                                                            </td>
+                                                            <td>
+                                                                <a href="#" className="lnkAction">
+                                                                    {items.jobcardNumber}
+                                                                </a>
+                                                            </td>
+                                                            <td>
+                                                                {
+                                                                    JSON.parse(items.customerVoice).map((_items, _idx) => (
+                                                                        <span key={_idx} className="badge bg-primary mx-1 mb-1">
+                                                                            {_items}
+                                                                        </span>
+                                                                    ))
+                                                                }
+                                                            </td>
+                                                            <td>
+                                                                {
+                                                                    JSON.parse(items.initialObservation).map((_items, _idx) => (
+                                                                        <span key={_idx} className="badge bg-primary mx-1 mb-1">
+                                                                            {_items}
+                                                                        </span>
+                                                                    ))
+                                                                }
+                                                            </td>
+                                                            <td>
+                                                                {
+                                                                    JSON.parse(items.finalFinding).map((_items, _idx) => (
+                                                                        <span key={_idx} className="badge bg-primary mx-1 mb-1">
+                                                                            {_items}
+                                                                        </span>
+                                                                    ))
+                                                                }
+                                                            </td>
+                                                            <td>
+                                                                {
+                                                                    JSON.parse(items.actionTaken).map((_items, _idx) => (
+                                                                        <span key={_idx} className="badge bg-primary mx-1 mb-1">
+                                                                            {_items}
+                                                                        </span>
+                                                                    ))
+                                                                }
+                                                            </td>
+                                                            <td className="text-center">
+                                                                <button className="btn">
+                                                                    <i className="bi bi-file-earmark-arrow-down"></i> Front
+                                                                </button>
+                                                                <button className="btn">
+                                                                    <i className="bi bi-file-earmark-arrow-down"></i> Back
+                                                                </button>
+                                                            </td>
+                                                            <td>
+                                                                <div className="d-flex">
+                                                                    <button 
+                                                                        className="btn text-primary" 
+                                                                        title="Save" 
+                                                                        onClick={()=>getDataForUpdate(items.jcid)}
+                                                                    >
+                                                                        <i class="bi bi-pencil-square"></i>
+                                                                    </button>
+                                                                    {/* <button className="btn text-danger" title="Delete">
+                                                                        <i className="bi bi-trash"></i>
+                                                                    </button> */}
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    ))
+                                                }
+
+
                                             </tbody>
                                         </table>
                                     </div>
@@ -405,14 +643,18 @@ const JobCardInfo = () => {
                                 <div className="card shadow-sm">
                                     <div className="card-body">
                                         <div className="d-flex justify-content-end">
-                                            <button className="btn btn-sm btn-outline-danger me-1">
+                                            <button className="btn btn-sm btn-outline-danger me-1" onClick={closeForm}>
                                                 Cancel
                                             </button>
+                                            
                                             <button
                                                 className="btn btn-sm btn-success ms-1"
                                                 onClick={handleSubmit}
                                             >
-                                                Save Job Card
+                                                {
+                                                    newJobCard ? "Save Job Card" : "Update Job Card"
+                                                }
+                                                
                                             </button>
                                         </div>
                                         <div className="row">
@@ -542,28 +784,28 @@ const JobCardInfo = () => {
                                                     </div>
                                                 </div>
 
-                                                
+
                                             </div>
 
                                             <div className="col-4">
                                                 <div className="mb-3">
-                                                        <label htmlFor="formFileFront" className="form-label">Upload Job Card Front</label>
-                                                        <input
-                                                            className="form-control"
-                                                            type="file"
-                                                            id="formFileFront"
-                                                            onChange={handleFiles("JCFront")}
-                                                        />
-                                                    </div>
-                                                    <div className="mb-2">
-                                                        <label htmlFor="formFile" className="form-label">Upload Job Card Back</label>
-                                                        <input
-                                                            className="form-control"
-                                                            type="file"
-                                                            id="formFileBack"
-                                                            onChange={handleFiles("JCBack")}
-                                                        />
-                                                    </div>                                                            
+                                                    <label htmlFor="formFileFront" className="form-label">Upload Job Card Front</label>
+                                                    <input
+                                                        className="form-control"
+                                                        type="file"
+                                                        id="formFileFront"
+                                                        onChange={handleFiles("JCFront")}
+                                                    />
+                                                </div>
+                                                <div className="mb-2">
+                                                    <label htmlFor="formFile" className="form-label">Upload Job Card Back</label>
+                                                    <input
+                                                        className="form-control"
+                                                        type="file"
+                                                        id="formFileBack"
+                                                        onChange={handleFiles("JCBack")}
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -572,6 +814,7 @@ const JobCardInfo = () => {
                         )
                 }
             </div>
+            <Toast ref={toast} />
         </MasterLayout>
     )
 }

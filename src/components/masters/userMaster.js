@@ -61,13 +61,9 @@ const {error, loading, update} = values;
   };
   const getDealerInfo = () => {
     dealerMasterService
-      .getAllDealersByPaging({
-        pageNumber: 0,
-        pageSize: 0,
-        sortOrderBy: "",
-        sortOrderColumn: "",
-        filters: "",
-      })
+      .getDealerForDropdown(
+       true
+      )
       .then((response) => {
         console.log(response);
         setDealers(response.data.data.data);
@@ -385,25 +381,7 @@ const {error, loading, update} = values;
                     onChange={handleChange("phoneNo")}
                   />
                 </div>
-                <div className="mb-2">
-                  <label htmlFor="dealerName" className="form-label">
-                    Dealer Name
-                  </label>
-                  <select 
-                    className="form-select" 
-                    id="dealerName" 
-                    name="dealerID"
-                    value={dealerID}
-                    onChange={handleChange("dealerID")}
-                  >
-                    <option value={-1}>--Select Dealer--</option>
-                    {dealers.map((items, idx) => (
-                      <option key={idx} value={items.dealerID}>
-                        {items.dealerName}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+               
                 <div className="mb-2">
                   <label htmlFor="userRole" className="form-label">
                     Role
@@ -422,6 +400,31 @@ const {error, loading, update} = values;
                     ))}
                   </select>
                 </div>
+                {
+                  roleId == 3 &&
+                
+                  <div className="mb-2">
+                    <label htmlFor="dealerName" className="form-label">
+                      Dealer Name
+                    </label>
+                    <select 
+                      className="form-select" 
+                      id="dealerName" 
+                      name="dealerID"
+                      value={dealerID}
+                      onChange={handleChange("dealerID")}
+                    >
+                      <option value={-1}>--Select Dealer--</option>
+                      { dealers.map((items, idx) => (
+                          <option key={idx} value={items.id}>
+                            {items.text}
+                          </option>
+                        ))
+                      }
+                    </select>
+                  </div>
+                }
+                
                 <div className="mb-2 text-center">
                   <button className="btn btn-sm btn-outline-danger me-1" type="button">
                     Cancel

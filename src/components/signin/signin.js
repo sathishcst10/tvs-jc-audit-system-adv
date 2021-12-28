@@ -169,14 +169,14 @@ export const SignIn = (props) => {
 
 
 
-      <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="staticBackdropLabel">Forgot Password</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      <div className="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="staticBackdropLabel">Forgot Password</h5>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+            <div className="modal-body">
               <div className="mb-2">
                 <label>E-Mail ID</label>
                 <input 
@@ -188,12 +188,12 @@ export const SignIn = (props) => {
               </div>
               {
                 isSuccess ? (
-                  <div class="alert alert-success" role="alert">
+                  <div className="alert alert-success" role="alert">
                     {message} "Please check your mail inbox."
                   </div>
                 ) :
                 isFail ?(
-                  <div class="alert alert-danger" role="alert">
+                  <div className="alert alert-danger" role="alert">
                     {message}
                   </div>
                 )
@@ -207,9 +207,9 @@ export const SignIn = (props) => {
               }
               
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onClick={closeModal}>Close</button>
-              <button type="button" class="btn btn-primary" onClick={forgotPassword}>Reset Password</button>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={closeModal}>Close</button>
+              <button type="button" className="btn btn-primary" onClick={forgotPassword}>Reset Password</button>
             </div>
           </div>
         </div>

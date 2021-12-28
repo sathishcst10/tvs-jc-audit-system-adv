@@ -77,6 +77,7 @@ table.table-custom thead th{
   font-size: 0.9rem;
   font-weight: 500;
   color: rgb(236 240 241 / 85%);
+  white-space: nowrap;
 }
 table.table-custom tbody tr{
   cursor: pointer;
@@ -155,10 +156,23 @@ p.secondary-text.mb-0 {
   border: 1px solid rgb(33 37 41 / 15%);
   color: #212529;
 }
+
+.badge.bg-primary{
+  background-color: rgb(13 110 253 / 15%) !important;
+  border: 1px solid rgb(1  67 163 / 12%);
+  color: #0143a3;
+}
+
 .btn i.bi{
   font-size: 1.15rem;
 }
-
+a.lnkAction {
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.searchBox {
+  width: 200px;
+}
 .tags-input {
   display: flex;
   align-items: flex-start;
