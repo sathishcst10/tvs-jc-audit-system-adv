@@ -34,6 +34,10 @@ const resetUserPassword = (argItems)=>{
     return axios.post(APP_API_URL + "/User/ResetPassword", argItems);
 }
 
+const getTeleCallersList = (argID) =>{
+    return axios.get(APP_API_URL + "/User/TeleCallers/" + argID, {headers : authHeader()});
+}
+
 export default {
     getUserById,
     getUserRoles,
@@ -42,5 +46,6 @@ export default {
     updateUser,
     deleteUser,
     changeUserPassword,
-    resetUserPassword
+    resetUserPassword,
+    getTeleCallersList
 }

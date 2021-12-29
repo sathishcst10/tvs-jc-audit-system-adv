@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
 
+import { useSelector } from "react-redux";
+import { Loading } from "react-loading-ui";
 // import 'primeflex/primeflex.css';
 import { Toast } from "primereact/toast";
 import { Paginator } from 'primereact/paginator';
@@ -17,6 +18,13 @@ import loadingIcon from "../../assets/icons8-dots-loading.gif";
 
 export const DealerMaster = () => {
   const toast =  useRef(null);
+  const settings = {
+    title: "",
+    text: "",
+    progress: false,
+    progressedClose: false,
+    theme: "dark",
+  }
   const dealerItems = [{}];
   const [stateDetails, setStates] = useState([]);
   const [dealerDetails, setDetails] = useState([]);
@@ -79,6 +87,7 @@ export const DealerMaster = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();   
+    Loading(settings)
     if(!update){
       // for new entry
       dealerMasterService
@@ -93,7 +102,8 @@ export const DealerMaster = () => {
           stateID,
           address,
         })
-        .then((response) => {        
+        .then((response) => {  
+          Loading()      
           toast.current.show(
             {
               severity:'success', 
@@ -106,7 +116,7 @@ export const DealerMaster = () => {
           clearForm();
 
         })
-        .catch((error)=>console.log(error));
+        .catch((error)=>{console.log(error); Loading();});
       
       }else{
         // for update dealer
@@ -121,6 +131,7 @@ export const DealerMaster = () => {
           stateID,
           address,
         }).then((response)=>{
+          Loading();
           toast.current.show(
             {
               severity:'success', 
@@ -131,7 +142,7 @@ export const DealerMaster = () => {
           );
           
           getAllDealersList();
-        })
+        }).catch((err)=>{console.log(err); Loading()})
       }
         
       
@@ -145,12 +156,7 @@ export const DealerMaster = () => {
   };
 
   const getAllDealersList = () => {
-    // setInitial({
-    //   ...initialItems,
-    //   pageNumber : 1,
-    //   pageSize : 4
-    // })
-
+    Loading(settings)
     dealerMasterService
       .getAllDealersByPaging({
         pageNumber,
@@ -160,13 +166,14 @@ export const DealerMaster = () => {
         filters,
       })
       .then((response) => {
+        Loading();
         console.log(response.data.data.totalCount);
         setDetails(response.data.data.data);
         setInitial({
           ...initialItems,
           totalCount : response.data.data.totalCount
         })
-      });
+      }).catch((err)=>{console.log(err); Loading()});
   };
 
   const clearForm=()=>{
@@ -182,14 +189,14 @@ export const DealerMaster = () => {
   }
 
   const getDealerDetails = (dealerID) =>{
-    //debugger;
-    setValues({
-      ...values,
-      update : true
-    })
-    var toastLiveExample = document.getElementById('liveToast')
+   Loading(settings);
+      setValues({
+        ...values,
+        update : true
+      })
       dealerMasterService.getDealerById(dealerID).then(
         (response)=>{
+          Loading();
           console.log(response.data.data);
           setDealer({
             ...dealer,
@@ -202,12 +209,8 @@ export const DealerMaster = () => {
             mailID: response.data.data.mailID,
             phone: response.data.data.phone,
           });
-
-          // var toast = new Toast(toastLiveExample, {autohide:true, delay: 2000})
-
-          // toast.show()
         }
-      )
+      ).catch((err)=>{console.log(err); Loading();})
   }
   const deleteDealer=(dealerId)=>{
 
@@ -224,14 +227,6 @@ export const DealerMaster = () => {
         dealerMasterService.deleteDealerById(dealerId).then(
           (response)=>{
             console.log(response);
-            // toast.current.show(
-            //   {
-            //     severity:'info', 
-            //     summary: 'Info Message', 
-            //     detail:'Dealer deleted successfully.', 
-            //     life: 3000
-            //   }
-            // )
             Swal.fire('Deleted!','Dealer details has been deleted.', 'success');
             getAllDealersList();
           }

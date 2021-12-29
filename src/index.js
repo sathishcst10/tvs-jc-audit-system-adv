@@ -8,12 +8,12 @@ import 'primereact/resources/primereact.css';
 import 'sweetalert2/dist/sweetalert2.css'
 import Popper from '@popperjs/core';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
-import './index.css';
+
 import App from './App';
 import store from './app/store';
 import { Provider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
-
+import './index.css';
 
 ReactDOM.render(
   <React.StrictMode>

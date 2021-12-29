@@ -34,11 +34,39 @@ const deleteJobCard = (argID)=>{
     return axios.delete(APP_API_URL + "/JobCard/" + argID, {headers : authHeader()});
 }
 
+const getDocumnetByID = (argID)=>{
+    return axios.get(APP_API_URL + "/Document/" + argID, {headers: authHeader()});
+}
+
+const downloadDocuments = (argItems)=>{
+    return axios.post(APP_API_URL + "/Document/Download", argItems, {headers : authHeader(), responseType : 'blob'},);
+}
+
+
+const getJobCardDetailsForOperator = (argItems)=>{
+    return axios.post(APP_API_URL + "/JobCard/AllByPagingByDataOperator", argItems, 
+        {headers:authHeader()}
+    );
+}
+
+const getServiceTypes = (argID)=>{
+    return axios.get(APP_API_URL + "/ServiceType/Dropdown/" + argID, {headers : authHeader()});
+}
+
+const updateJobCardStatus = (argID)=>{
+    return axios.post(APP_API_URL + "/JobCard/UpdateJobCardTakenByDataOperator/" + argID, { headers : authHeader() });
+}
+
 export default {
     uploadJobCard,
     createJobCard,
     getJobCardDetailForDealer,
     getJobCardById,
     updateJobCard,
-    deleteJobCard
+    deleteJobCard,
+    getDocumnetByID,
+    downloadDocuments,
+    getJobCardDetailsForOperator,
+    getServiceTypes,
+    updateJobCardStatus
 }

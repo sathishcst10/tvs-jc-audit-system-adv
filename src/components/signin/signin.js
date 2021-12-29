@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { Toast } from "primereact/toast";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Redirect, Navigate, useNavigate } from "react-router-dom";
 import { login } from "../../actions/auth";
@@ -8,6 +9,7 @@ import "./signin.css";
 import userService from "../../services/user.service";
 
 export const SignIn = (props) => {
+  const toast = useRef(null);
   //adding class for Login screen only
   document.body.classList.add("bg-Login");
 
@@ -43,24 +45,26 @@ export const SignIn = (props) => {
 
     setLoading(true);
     dispatch(login(userName, password))
-      .then(() => {
-        //console.log(response)
-        _navigateTo("/masters/dealerMaster");
-
-        // setTimeout(() => {
-        //   props.history.push("/masters/dealerMaster");
-        //   window.location.reload();
-        // }, 10000);
-
+      .then((response) => {
+        console.log(response)
+        _navigateTo("/dashboard");
       })
       .catch((error) => {
-        console.log("h", error);
+          //console.log("h", error);
+          toast.current.show(
+            {
+                severity: 'error',
+                summary: 'Error Message',
+                detail: "Check Username and Password",
+                life: 3000
+            }
+          );
         setLoading(false);
       });
   };
   useEffect(() => {
     if (isLoggedIn) {
-      return _navigateTo("/masters/dealerMaster");
+      return _navigateTo("/dashboard");
     }
   }, []);
 
@@ -71,8 +75,7 @@ export const SignIn = (props) => {
 
   const forgotPassword = ()=>{
     userService.resetUserPassword({email}).then(
-      (response)=>{
-        debugger;
+      (response)=>{        
         response.data.success ?
           setFPass({
             ...fPass,
@@ -214,6 +217,9 @@ export const SignIn = (props) => {
           </div>
         </div>
       </div>
+
+
+      <Toast ref={toast} />
     </>
   );
 };

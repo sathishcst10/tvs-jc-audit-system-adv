@@ -4,9 +4,17 @@ import { Toast } from "primereact/toast";
 import Swal from "sweetalert2";
 import aggregateMasterService from "../../services/aggregate-master.service";
 import MasterLayout from "../_layout/_masterLayout";
+import { Loading } from "react-loading-ui";
 
 export const AggregateMaster = () => {
   const toast = useRef(null);
+  const settings = {
+    title: "",
+    text: "",
+    progress: false,
+    progressedClose: false,
+    theme: "dark",
+  }
   const [allAggregates, setAllAggregates] = useState([]);
   const [aggregate, setAggregate] = useState({
     isActive: true,
@@ -32,6 +40,7 @@ export const AggregateMaster = () => {
   const { error, loading, update } = values;
 
   const getAllAggregatesByPaging = () => {
+    Loading(settings);
     aggregateMasterService
       .getAggregateAllPaging({
         pageNumber,
@@ -41,10 +50,11 @@ export const AggregateMaster = () => {
         filters,
       })
       .then((response) => {
+        Loading();
         console.log(response.data.data.data);
         setAllAggregates(response.data.data.data);
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {console.log(error); Loading();});
   };
 
   const deleteAggregate = (argID) => {
@@ -73,10 +83,12 @@ export const AggregateMaster = () => {
   };
 
   const getAggregateById = (argID) => {
+    Loading(settings);
     setValues({ ...values, update: true });
     aggregateMasterService
       .getAggregateById(argID)
       .then((response) => {
+        Loading();
         console.log("Get", response.data.data.aggregateName);
         setAggregate({
           ...aggregate,
@@ -84,7 +96,7 @@ export const AggregateMaster = () => {
           aggregateName: response.data.data.aggregateName,
         });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {console.log(err); Loading()});
   };
 
   const handleChange = (name) => (event) => {
@@ -99,11 +111,13 @@ export const AggregateMaster = () => {
   };
 
   const handleSubmit = (event) => {
+    Loading(settings);
     event.preventDefault();
     if (!update) {
       aggregateMasterService
         .createAggregate({ isActive, aggregateID, aggregateName })
         .then((response) => {
+          Loading()
           console.log("Created ", response);
           toast.current.show({
             severity: "success",
@@ -114,11 +128,12 @@ export const AggregateMaster = () => {
           getAllAggregatesByPaging();
           clearForm();
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {console.log(err); Loading()});
     } else {
       aggregateMasterService
         .updateAggregate({ isActive, aggregateID, aggregateName })
         .then((response) => {
+          Loading();
           console.log("Updated", response);
           toast.current.show({
             severity: "success",
@@ -128,7 +143,7 @@ export const AggregateMaster = () => {
           });
           getAllAggregatesByPaging();
           clearForm();
-        });
+        }).catch((err)=>{console.log(err); Loading()});
     }
   };
 

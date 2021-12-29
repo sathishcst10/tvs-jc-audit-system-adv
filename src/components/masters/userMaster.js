@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef} from "react";
 import { Toast } from "primereact/toast";
+import { Loading } from "react-loading-ui";
 import Swal from "sweetalert2";
 import userService from "../../services/user.service";
 import MasterLayout from "../_layout/_masterLayout";
@@ -7,6 +8,13 @@ import dealerMasterService from "../../services/dealer-master.service";
 
 export const UserMaster = () => {
   const toast =  useRef(null);
+  const settings = {
+    title: "",
+    text: "",
+    progress: false,
+    progressedClose: false,
+    theme: "dark",
+  }
   const [userRoles, setUserRoles] = useState([]);
   const [dealers, setDealers] = useState([]);
   const [userDetails, setUserDetails] = useState([]);
@@ -71,6 +79,7 @@ const {error, loading, update} = values;
       .catch((error) => console.log(error));
   };
   const getAllUsers = () => {
+    Loading(settings);
     userService
       .getAllUsersByPaging({
         pageNumber,
@@ -81,14 +90,17 @@ const {error, loading, update} = values;
       })
       .then((response) => {
         setUserDetails(response.data.data.data);
+        Loading();
       })
-      .catch((error) => console.log(error));
+      .catch((error) =>{console.log(error); Loading();});
   };
  
   const getUserById = (argID) =>{
+    Loading(settings);
     userService.getUserById(argID).then(
       (response)=>{        
         console.log("user", response);
+        Loading();
         setUsers({
           ...users,
           userId : argID,
@@ -101,12 +113,14 @@ const {error, loading, update} = values;
           phoneNo : response.data.data.phoneNo 
         })
       }
-    )
+    ).catch((err)=>{console.log(err); Loading()})
   }
 
   const updateUser = (argID)=>{
+    
     setValues({...values, update : true});
     getUserById(argID);
+    
   }
   const deleteUser = (argID)=>{
     Swal.fire({
@@ -147,6 +161,7 @@ const {error, loading, update} = values;
   }
   const handleSubmit = (event) =>{
     event.preventDefault();
+    Loading(settings);
     if(!update){
       userService.createUser({
         userId,
@@ -160,10 +175,33 @@ const {error, loading, update} = values;
         phoneNo,
         isActive
       }).then((response)=>{
-        console.log("Created", response);
-
-        getAllUsers();
-        clearForm()
+          if(response.data.success){
+            console.log("Created", response);
+            toast.current.show(
+              {
+                severity:'success', 
+                summary: 'Success Message', 
+                detail:response.data.message, 
+                life: 3000
+              }
+            );
+            getAllUsers();
+            clearForm()
+            Loading();
+          }else{
+            toast.current.show(
+              {
+                severity:'warn', 
+                summary: 'Warning Message', 
+                detail: response.data.message, 
+                life: 3000
+              }
+            );
+            getAllUsers();
+            clearForm()
+            Loading();
+          }
+        
       })
     }else{
       userService.updateUser({
@@ -184,12 +222,13 @@ const {error, loading, update} = values;
           {
             severity:'success', 
             summary: 'Success Message', 
-            detail:'Model deleted Successfully', 
+            detail:'Model updated successfully', 
             life: 3000
           }
       );
         getAllUsers();
         clearForm();
+        Loading();
       })
     }
   }

@@ -1,8 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { Toast } from "primereact/toast";
 import { useSelector } from "react-redux";
+
+import { Loading } from "react-loading-ui";
+
 import jobCardInfoService from "../../services/job-card-info.service";
 import MasterLayout from "../_layout/_masterLayout";
+import { APP_DOWNLOAD_URL } from "../../BackendAccess";
 
 
 
@@ -20,13 +24,26 @@ const JobCardInfo = () => {
     const [getActionTaken, setActionTaken] = useState([]);
     const [getFilter, setFilter] = useState('');
     const { newJobCard, updateJobCard, closeJobCard } = jobCard;
-
+    //const [settings, SetDefault] = useState()
+    
     const [fileUpload, setFileUpload] = useState({
         jcfront: 0,
         jcback: 0
     });
+    const [selectedDocument, setSelectedDocument] = useState({
+        frontType : "",
+        frontFileName : ""
+       
+    });
 
+    const [selectedDoc, setSelectedDoc] = useState({
+        backType : "",
+        backFileName : ""
+    })
 
+    const {frontType, frontFileName} = selectedDocument;
+    const { backType, backFileName } = selectedDoc;
+    
     const [getJobCardDetails, setJobCardDetails] = useState({
         "pageNumber": 1,
         "pageSize": 10,
@@ -151,6 +168,13 @@ const JobCardInfo = () => {
         });
     }
     const getDataForUpdate = (argID)=>{
+        Loading({
+            title: "",
+            text: "",
+            progress: false,
+            progressedClose: false,
+            theme: "dark",
+        });
         jobCardInfoService.getJobCardById(argID).then(
             (response)=>{
                 //debugger;
@@ -158,6 +182,14 @@ const JobCardInfo = () => {
                     ...jobCard,
                     updateJobCard : true
                 });
+                // getDocumentDetailsById({
+                //     jcBack : response.data.data.jcBack,
+                //     jcFront : response.data.data.jcFront,
+                // });
+                getDocumentDetailFront(response.data.data.jcFront);
+                console.log("Selet---",selectedDocument);
+                getDocumentDetailBack(response.data.data.jcBack);
+                console.log("Selet---",selectedDocument);
                 setSaveJobCard({
                     ...saveJobCard,
                     jcid : argID,
@@ -175,18 +207,89 @@ const JobCardInfo = () => {
                     jcback : response.data.data.jcBack,
                     jcfront : response.data.data.jcFront,
                 });
-                setTagDesc(...getTagDesc, JSON.parse(response.data.data.customerVoice));
+                setTagDesc(JSON.parse(response.data.data.customerVoice));
                 setInitialObs(JSON.parse(response.data.data.initialObservation));
                 setFinalFindings(JSON.parse(response.data.data.initialObservation));
                 setActionTaken(JSON.parse(response.data.data.actionTaken))
                 console.log(response);
+                Loading();
             }
-        ).catch((err)=>console.log(err));
+        ).catch((err)=>{console.log(err); Loading();});
     }
+    const imageBuilder = (query) => APP_DOWNLOAD_URL +query;
+    const downloadDocs = (argItems) =>{
+        
+        jobCardInfoService.downloadDocuments(argItems).then(
+            (response)=>{
+                const type = response.headers['content-type'];
+                const _blob = new Blob([response.data], {type : type});
+
+                // const temp = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = window.URL.createObjectURL(_blob);
+                link.setAttribute('download', argItems.id +'_' +argItems.documentType+'.'+ type.split("/")[1]);
+                document.body.appendChild(link);
+                link.click();
+                //window.location.href = imageBuilder(new Blob([response.data]));
+                console.log(response)
+            }
+        ).catch((err)=>{console.log(err)})
+    }
+    
+    
+
+
+    const getDocumentDetailFront  = (argID ) =>{
+        jobCardInfoService.getDocumnetByID(argID).then(
+            (response)=>{
+                if(response.data.success){
+                    console.log('***789**',response);   
+                    setSelectedDocument({
+                        ...selectedDocument,
+                        frontFileName : response.data.data.fileName,
+                        frontType : response.data.data.documentType
+                    })                 
+                }else{
+                    setSelectedDocument({
+                        ...selectedDocument,
+                        frontFileName : "",
+                        frontType : ""
+                    }) 
+                }
+            }
+        ).catch((err)=>{
+            console.log(err)           
+        });       
+    }
+    const getDocumentDetailBack  = (argID) =>{
+        jobCardInfoService.getDocumnetByID(argID).then(
+            (response)=>{
+                if(response.data.success){
+                    console.log(response);     
+                    setSelectedDoc({
+                        ...selectedDoc,
+                        backFileName : response.data.data.fileName,
+                        backType : response.data.data.documentType
+                    })                 
+                }else{
+                    setSelectedDoc({
+                        ...selectedDoc,
+                        backFileName : "",
+                        backType : ""
+                    })  
+                }
+            }
+        ).catch((err)=>{
+            console.log(err)           
+        });       
+    }
+useEffect(()=>{
+
+},[fileUpload])
     const addTags = async (event, items) => {
         if (event.target.value !== "") {
             if (items === "CustomerVoice") {
-                debugger
+                //debugger
                 setTagDesc([...getTagDesc, event.target.value]);
                 //props.selectedTags([...tags, event.target.value]);
 
@@ -270,7 +373,7 @@ const JobCardInfo = () => {
     const uploadFront = () => {
         jobCardInfoService.uploadJobCard(formData_front).then(
             (res) => {
-                debugger;
+                //debugger;
                 console.log(res);
                 // setSaveJobCard({
                 //     ...saveJobCard,
@@ -319,14 +422,35 @@ const JobCardInfo = () => {
             jobcardNumber: "",
             finalFinding: ""
         });
+        setSelectedDocument({
+            frontFileName: "",
+            frontType : "",
+        });
+        setSelectedDoc({
+            backFileName : "",
+            backType : ""
+        });
+        setFileUpload({
+            ...fileUpload,
+            jcback : 0,
+            jcfront : 0
+        });
         setTagDesc([]);
         setInitialObs([]);
         setFinalFindings([]);
         setActionTaken([]);
     }
     const handleSubmit = () => {
+        debugger
+        Loading({
+            title: "",
+            text: "",
+            progress: false,
+            progressedClose: false,
+            theme: "dark",
+        });
        if(!updateJobCard) { 
-        if(jobcardNumber != "") {
+        if(jobcardNumber != "" && jcback != 0 && jcfront !=0) {
             jobCardInfoService.createJobCard({
                 jcid,
                 userID,
@@ -378,6 +502,7 @@ const JobCardInfo = () => {
                         });
                         getJobCardForDealer();
                         closeForm();
+                        Loading();
                     } else {
 
                         toast.current.show(
@@ -388,9 +513,20 @@ const JobCardInfo = () => {
                                 life: 3000
                             }
                         );
+                        Loading();
                     }
                 }
-            ).catch((err) => console.log(err));
+            ).catch((err) => {console.log(err); Loading();});
+        }else{
+            toast.current.show(
+                {
+                    severity: 'warn',
+                    summary: 'Warning Message',
+                    detail: "Please fill required fields.",
+                    life: 3000
+                }
+            );
+            Loading();
         }
     }
     else 
@@ -448,6 +584,7 @@ const JobCardInfo = () => {
                     });
                     getJobCardForDealer();
                     closeForm();
+                    Loading();
                 } else {
 
                     toast.current.show(
@@ -458,9 +595,13 @@ const JobCardInfo = () => {
                             life: 3000
                         }
                     );
+                    Loading();
                 }
             }
-        )
+        ).catch((err)=>{
+            console.log(err);
+            Loading();
+        })
     }
         
 
@@ -468,14 +609,22 @@ const JobCardInfo = () => {
     }
 
     const getJobCardForDealer = () => {
+        Loading({
+            title: "",
+            text: "",
+            progress: false,
+            progressedClose: false,
+            theme: "dark",
+        });
         jobCardInfoService.getJobCardDetailForDealer({
             pageNumber, pageSize, sortOrderBy, sortOrderColumn, filters
         }).then(
             (response) => {
                 console.log(response);
                 setShowJobCardDetails(response.data.data.data);
+                Loading();
             }
-        ).catch((err) => console.log(err));
+        ).catch((err) =>{ console.log(err); Loading();});
     }
     const handleFilter = (name) => (event) => {
         const value = event.target.value;
@@ -513,7 +662,7 @@ const JobCardInfo = () => {
                                 <div className="card shadow-sm">
                                     <div className="card-body p-1">
                                         <div className="d-flex justify-content-end mb-1">
-                                            <div class="input-group me-2 searchBox" >
+                                            <div className="input-group me-2 searchBox" >
                                                 <input
                                                     type="text"
                                                     className="form-control form-control-sm"
@@ -525,12 +674,12 @@ const JobCardInfo = () => {
                                                     onChange={handleFilter("getFilter")}
                                                 />
                                                 <button
-                                                    class="btn btn-sm btn-outline-secondary"
+                                                    className="btn btn-sm btn-outline-secondary"
                                                     type="button"
                                                     id="button-addon2"
                                                     onClick={filterJobcardNumber}
                                                 >
-                                                    <i class="bi bi-search"></i>
+                                                    <i className="bi bi-search"></i>
                                                 </button>
                                             </div>
 
@@ -604,10 +753,24 @@ const JobCardInfo = () => {
                                                                 }
                                                             </td>
                                                             <td className="text-center">
-                                                                <button className="btn">
+                                                                <button 
+                                                                    className="btn" 
+                                                                    onClick={()=>downloadDocs({
+                                                                        "documentId": items.jcFront,
+                                                                        "documentType": "JCFront",
+                                                                        "id" : items.jcNumber
+                                                                      })}
+                                                                >
                                                                     <i className="bi bi-file-earmark-arrow-down"></i> Front
                                                                 </button>
-                                                                <button className="btn">
+                                                                <button 
+                                                                    className="btn" 
+                                                                    onClick={()=>downloadDocs({
+                                                                        "documentId": items.jcBack,
+                                                                        "documentType": "JCBack",
+                                                                        "id" : items.jcNumber
+                                                                      })}
+                                                                >
                                                                     <i className="bi bi-file-earmark-arrow-down"></i> Back
                                                                 </button>
                                                             </td>
@@ -618,7 +781,7 @@ const JobCardInfo = () => {
                                                                         title="Save" 
                                                                         onClick={()=>getDataForUpdate(items.jcid)}
                                                                     >
-                                                                        <i class="bi bi-pencil-square"></i>
+                                                                        <i className="bi bi-pencil-square"></i>
                                                                     </button>
                                                                     {/* <button className="btn text-danger" title="Delete">
                                                                         <i className="bi bi-trash"></i>
@@ -664,7 +827,7 @@ const JobCardInfo = () => {
                                                         htmlFor="jobCardNumber"
                                                         className="form-label"
                                                     >
-                                                        Job Card Number
+                                                        Job Card Number<sup>*</sup>
                                                     </label>
                                                     <input
                                                         type="text"
@@ -789,23 +952,42 @@ const JobCardInfo = () => {
 
                                             <div className="col-4">
                                                 <div className="mb-3">
-                                                    <label htmlFor="formFileFront" className="form-label">Upload Job Card Front</label>
+                                                    <label htmlFor="formFileFront" className="form-label">
+                                                        Upload Job Card Front<sup>*</sup>
+                                                    </label>
                                                     <input
                                                         className="form-control"
                                                         type="file"
                                                         id="formFileFront"
                                                         onChange={handleFiles("JCFront")}
                                                     />
+                                                   
+                                                   <label className="mt-1">
+                                                        <span className="badge bg-success me-1">{frontType}</span>
+                                                        <span className="badge bg-success ms-1">{frontFileName}</span>
+                                                   </label>
                                                 </div>
                                                 <div className="mb-2">
-                                                    <label htmlFor="formFile" className="form-label">Upload Job Card Back</label>
+                                                    <label htmlFor="formFile" className="form-label">
+                                                        Upload Job Card Back<sup>*</sup>
+                                                    </label>
                                                     <input
                                                         className="form-control"
                                                         type="file"
                                                         id="formFileBack"
                                                         onChange={handleFiles("JCBack")}
                                                     />
+                                                    
+                                                    <label className="mt-1">  
+                                                        <span className="badge bg-success me-1">{backType}</span>
+                                                        <span className="badge bg-success ms-1">{backFileName}</span>
+                                                    </label>
                                                 </div>
+                                                {
+                                                    updateJobCard &&
+                                                    <p className="text-danger">Note : If select any image it will be overwrite existing image/file.</p>
+                                                }
+                                                
                                             </div>
                                         </div>
                                     </div>

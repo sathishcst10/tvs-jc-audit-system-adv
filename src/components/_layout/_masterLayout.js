@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import logo from "../../assets/tvs-logo.png";
 
 
@@ -15,6 +15,7 @@ const MasterLayout = ({ title = "", desc = "", pageMap = [], children }) => {
 
   const {user : currentUser} = useSelector((state)=>state.auth);
   const dispatch = useDispatch();
+  const pathName = useLocation().pathname;
   
   // useEffect(()=>{
   //   history.listen((location)=>{
@@ -31,9 +32,8 @@ const MasterLayout = ({ title = "", desc = "", pageMap = [], children }) => {
   }, [dispatch]);
 
 
-  useEffect(()=>{
-    console.log(pageMap);
-
+  useEffect(()=>{    
+    console.log(currentUser);
     eventBus.on("logout", ()=>{
       logOut();
     })
@@ -64,15 +64,41 @@ const MasterLayout = ({ title = "", desc = "", pageMap = [], children }) => {
               <div className="collapse navbar-collapse" id="navbarCollapse">
                 <ul className="navbar-nav me-auto mb-2 mb-md-0">
                   <li className="nav-item">
-                    <Link className="nav-link active" aria-current="page" to="/">
-                      Home
+                    <Link 
+                      className={`nav-link ${pathName === '/dashboard' ? 'active':''}`} 
+                      aria-current="page" 
+                      to="/dashboard"
+                    >
+                      Dashboard
                     </Link>
                   </li>
-                  <li className="nav-item">
-                    <Link className="nav-link" to="/jobCardInformation">
-                      Job Card
-                    </Link>
-                  </li>
+                  {
+                    currentUser.data.roles.roleName === 'Dealers' ?   
+                    (
+                      <li className="nav-item">
+                        <Link 
+                          className={`nav-link ${pathName === '/jobCardInformation' ? 'active':''}`} 
+                          to="/jobCardInformation">
+                          Job Card
+                        </Link>
+                      </li>
+                    ) :
+                    currentUser.data.roles.roleName === 'Data Operator' ?
+                    (
+                      <li className="nav-item">
+                        <Link 
+                          className={`nav-link ${pathName === '/jobCardOperator' ? 'active':''}`} 
+                          to="/jobCardOperator">
+                          Job Card
+                        </Link>
+                      </li>
+                    )
+                    :
+                    (
+                      <></>
+                    )
+                  }
+                  
                   <li className="nav-item dropdown">
                     <Link
                       className="nav-link dropdown-toggle"

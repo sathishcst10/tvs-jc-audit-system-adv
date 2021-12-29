@@ -1,11 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 import { Toast } from "primereact/toast";
+import { Loading } from "react-loading-ui";
 import Swal from "sweetalert2";
 import modelMasterService from "../../services/model-master.service";
 import MasterLayout from "../_layout/_masterLayout";
 
+
 export const ModelMaster = () => {
   const toast = useRef(null);
+  const settings = {
+    title: "",
+    text: "",
+    progress: false,
+    progressedClose: false,
+    theme: "dark",
+  }
   const [allModels, setAllModels] = useState([]);
   const [getModelReq, setModelReq] = useState({
     pageNumber: 1,
@@ -36,6 +45,7 @@ export const ModelMaster = () => {
    
   };
   const getAllModelsByPaging = () => {
+    Loading(settings);
     modelMasterService
       .getModelAllPaging({
         pageNumber,
@@ -47,8 +57,9 @@ export const ModelMaster = () => {
       .then((response) => {
         //console.log(response.data.data.data);
         setAllModels(response.data.data.data);
+        Loading()
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {console.log(error); Loading();});
   };
 
   const deleteModel = (argID) => {
@@ -76,14 +87,16 @@ export const ModelMaster = () => {
   };
 
   const getModelById = (argID) => {
+    Loading(settings);
     setValues({ ...values, update: true });
     modelMasterService
       .getModelById(argID)
       .then((response) => {
+        Loading();
         console.log("Get", response.data.data.modelName);
         setModel({ ...model, modelID : argID, modelName: response.data.data.modelName });
       })
-      .catch((err) => console.log(err));
+      .catch((err) =>{ console.log(err); Loading()});
   };
 
   const clearForm = () => {
@@ -93,11 +106,12 @@ export const ModelMaster = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    Loading(settings)
     if (!update) {
       modelMasterService
         .createModel({ isActive, modelID, modelName })
         .then((response) => {
-          console.log("Created ", response);
+          Loading();
           toast.current.show({
             severity: "success",
             summary: "Success Message",
@@ -106,13 +120,15 @@ export const ModelMaster = () => {
           });
           getAllModelsByPaging();
           clearForm();
+          
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {console.log(err); Loading()});
     } else {
       modelMasterService
         .updateModel({ isActive, modelID, modelName })
         .then((response) => {
           console.log("Updated ", response);
+          Loading();
           toast.current.show({
             severity: "success",
             summary: "Success Message",
@@ -122,7 +138,7 @@ export const ModelMaster = () => {
           getAllModelsByPaging();
           clearForm();
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {console.log(err); Loading();});
     }
   };
 

@@ -18,7 +18,8 @@ import {history} from './helpers/history';
 import eventBus from "./common/eventBus";
 import { AggregateMaster } from "./components/masters/aggregateMaster";
 import JobCardInfo from "./components/jobCardInfo";
-
+import Dashboard from "./components/dashboard";
+import JobCardOperator from "./components/jobCardInfo/jobCardOperator";
 
 
 function App() {
@@ -68,6 +69,8 @@ function App() {
 
         //User
         <Route path="/jobCardInformation"  element={<JobCardInfo/>}/>
+        <Route path="/jobCardOperator" element={<JobCardOperator/>}/> 
+        <Route path="/dashboard" element={<Dashboard/>}/>
       </Routes>      
     </Router>
     

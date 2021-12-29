@@ -60,6 +60,7 @@ ul.navbar-nav .nav-link.active{
   background-repeat: no-repeat;
   background-size: 32px;
   background-position: center left;
+  text-transform: capitalize;
 }
 .userInfo small{
   color: #9a9a9a;
@@ -241,4 +242,29 @@ ul.ultag{
   .tags-input {
     width: calc(100vw - 32px);
   }
+}
+
+div.loading-ui-overlay.dark div.loading-ui-wrapper div.loading-ui-body {
+  background-color: transparent !important;
+  color: #fff;
+  box-shadow: 0px 0px 0px 0px rgba(117, 117, 117, 0) !important;
+}
+div.loading-ui-overlay.dark {
+  background-color: rgba(44, 62, 80,0.65) !important;
+}
+div.loading-ui-overlay div.loading-ui-wrapper div.loading-ui-body div.loading-ui-spinner {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  vertical-align: text-bottom;
+  border: .25em solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spinner-border .75s linear infinite;
+  color: rgba(192, 57, 43,1.0) !important;
+  margin: 0 auto;
+}
+sup{
+  color: #f00;
+  font-size: 0.75rem;
 }
