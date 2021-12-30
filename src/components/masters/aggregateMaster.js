@@ -6,6 +6,9 @@ import aggregateMasterService from "../../services/aggregate-master.service";
 import MasterLayout from "../_layout/_masterLayout";
 import { Loading } from "react-loading-ui";
 
+import TablePagination from '@mui/material/TablePagination';
+
+
 export const AggregateMaster = () => {
   const toast = useRef(null);
   const settings = {
@@ -16,6 +19,7 @@ export const AggregateMaster = () => {
     theme: "dark",
   }
   const [allAggregates, setAllAggregates] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [aggregate, setAggregate] = useState({
     isActive: true,
     aggregateID: 0,
@@ -26,7 +30,8 @@ export const AggregateMaster = () => {
     pageSize: 10,
     sortOrderBy: "",
     sortOrderColumn: "",
-    filters: "",
+    filters: ""
+   
   });
   const [values, setValues] = useState({
     error: "",
@@ -34,7 +39,7 @@ export const AggregateMaster = () => {
     update: false,
   });
 
-  const { pageNumber, pageSize, sortOrderBy, sortOrderColumn, filters } =
+  const { pageNumber, pageSize, sortOrderBy, sortOrderColumn, filters, } =
     getAggregateReq;
   const { aggregateName, aggregateID, isActive } = aggregate;
   const { error, loading, update } = values;
@@ -51,35 +56,36 @@ export const AggregateMaster = () => {
       })
       .then((response) => {
         Loading();
-        console.log(response.data.data.data);
+        console.log(response.data.data.totalCount);
+        setTotalCount(response.data.data.totalCount);
         setAllAggregates(response.data.data.data);
       })
-      .catch((error) => {console.log(error); Loading();});
+      .catch((error) => { console.log(error); Loading(); });
   };
 
   const deleteAggregate = (argID) => {
     //e.preventDefault();
 
     Swal.fire({
-        title : 'Are you sure',
-        text : 'You won\'t be able to revert this!',
-        icon : 'warning',
-        showCancelButton : true,
-        confirmButtonColor : "#3085d6",
-        cancelButtonColor : "#d33",
-        confirmButtonText : "Yes, delete aggregate!"
-      }).then((result)=>{
-        if(result.isConfirmed){
-            aggregateMasterService.deleteAggregate(argID).then(
-            (response)=>{
-              console.log(response);            
-              Swal.fire('Deleted!','Aggregate has been deleted.', 'success');
-              getAllAggregatesByPaging();
-            }
-          )
-          
-        }
-      })
+      title: 'Are you sure',
+      text: 'You won\'t be able to revert this!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete aggregate!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        aggregateMasterService.deleteAggregate(argID).then(
+          (response) => {
+            console.log(response);
+            Swal.fire('Deleted!', 'Aggregate has been deleted.', 'success');
+            getAllAggregatesByPaging();
+          }
+        )
+
+      }
+    })
   };
 
   const getAggregateById = (argID) => {
@@ -92,11 +98,11 @@ export const AggregateMaster = () => {
         console.log("Get", response.data.data.aggregateName);
         setAggregate({
           ...aggregate,
-          aggregateID : argID,
+          aggregateID: argID,
           aggregateName: response.data.data.aggregateName,
         });
       })
-      .catch((err) => {console.log(err); Loading()});
+      .catch((err) => { console.log(err); Loading() });
   };
 
   const handleChange = (name) => (event) => {
@@ -128,7 +134,7 @@ export const AggregateMaster = () => {
           getAllAggregatesByPaging();
           clearForm();
         })
-        .catch((err) => {console.log(err); Loading()});
+        .catch((err) => { console.log(err); Loading() });
     } else {
       aggregateMasterService
         .updateAggregate({ isActive, aggregateID, aggregateName })
@@ -143,13 +149,105 @@ export const AggregateMaster = () => {
           });
           getAllAggregatesByPaging();
           clearForm();
-        }).catch((err)=>{console.log(err); Loading()});
+        }).catch((err) => { console.log(err); Loading() });
     }
   };
+
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const handleChangePage = (event, newPage) => {
+    Loading(settings);
+    setPage(newPage + 1);
+   
+    aggregateMasterService
+      .getAggregateAllPaging({
+        pageNumber : newPage + 1,
+        pageSize,
+        sortOrderBy,
+        sortOrderColumn,
+        filters,
+      })
+      .then((response) => {
+        Loading();
+        //console.log(response.data.data.totalCount);
+        setTotalCount(response.data.data.totalCount);
+        setAllAggregates(response.data.data.data);
+      })
+      .catch((error) => { console.log(error); Loading(); });
+    
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(1);
+    Loading(settings)
+    aggregateMasterService
+    .getAggregateAllPaging({
+      pageNumber ,
+      pageSize : parseInt(event.target.value, 10),
+      sortOrderBy,
+      sortOrderColumn,
+      filters,
+    })
+    .then((response) => {
+      Loading();
+      //console.log(response.data.data.totalCount);
+      setTotalCount(response.data.data.totalCount);
+      setAllAggregates(response.data.data.data);
+    })
+    .catch((error) => { console.log(error); Loading(); });
+  };
+
+  const ChangeStatus = (argID) =>{
+    Loading(settings);
+    aggregateMasterService.getAggregateById(argID).then(
+      (response)=>{                
+        
+        aggregateMasterService
+        .updateAggregate({ 
+          
+          aggregateID : response.data.data.aggregateID, 
+          aggregateName : response.data.data.aggregateName,          
+          isActive : response.data.data.isActive ? false : true,          
+        }).
+        then((response)=>{
+          Loading();
+          console.log("updated", response);
+          if(response.data.success){
+            toast.current.show(
+              {
+                severity:'success', 
+                summary: 'Success Message', 
+                detail:'Aggregate status changed', 
+                life: 3000
+              }
+            );
+            getAllAggregatesByPaging();
+            clearForm();          
+          }else{
+            toast.current.show(
+              {
+                severity:'warn', 
+                summary: 'Warning Message', 
+                detail:response.data.message, 
+                life: 3000
+              }
+            );
+          }
+        }).catch((err)=>{console.log(err); Loading()})       
+      }
+    ).catch((err)=>{console.log(err); Loading()})
+
+    //Loading(settings)
+    
+  }
+
 
   useEffect(() => {
     getAllAggregatesByPaging();
   }, []);
+
 
   const AggregateTable = () => {
     return (
@@ -208,8 +306,11 @@ export const AggregateMaster = () => {
                       </a>
                     </li>
                     <li>
-                      <a className="dropdown-item disabled" href="#">
-                        Change to Inactive
+                      <a className="dropdown-item" href="#" onClick={()=>{ ChangeStatus(items.aggregateID)}}>
+                        {
+                          items.isActive ? "Change to Inactive" : "Change to Active"
+                        }
+                        
                       </a>
                     </li>
                   </ul>
@@ -219,6 +320,8 @@ export const AggregateMaster = () => {
           ))}
         </tbody>
       </table>
+
+      
     );
   };
 
@@ -230,6 +333,15 @@ export const AggregateMaster = () => {
             <div className="card-body p-1">
               <div className="">
                 <AggregateTable />
+                {/* <AggregateTableWithPagination/> */}
+                  <TablePagination
+                    component="div"
+                    count={totalCount}
+                    page={page - 1}
+                    onPageChange={handleChangePage}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                  />
               </div>
             </div>
           </div>

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Toast } from "primereact/toast";
 import { Loading } from "react-loading-ui";
 import Swal from "sweetalert2";
+import TablePagination from '@mui/material/TablePagination';
 import modelMasterService from "../../services/model-master.service";
 import MasterLayout from "../_layout/_masterLayout";
 
@@ -16,6 +17,7 @@ export const ModelMaster = () => {
     theme: "dark",
   }
   const [allModels, setAllModels] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [getModelReq, setModelReq] = useState({
     pageNumber: 1,
     pageSize: 10,
@@ -55,7 +57,7 @@ export const ModelMaster = () => {
         filters,
       })
       .then((response) => {
-        //console.log(response.data.data.data);
+        setTotalCount(response.data.data.totalCount);
         setAllModels(response.data.data.data);
         Loading()
       })
@@ -98,7 +100,48 @@ export const ModelMaster = () => {
       })
       .catch((err) =>{ console.log(err); Loading()});
   };
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
+  const handleChangePage = (event, newPage) => {
+    Loading(settings);
+    setPage(newPage + 1);
+   
+    modelMasterService.getModelAllPaging({
+      pageNumber : newPage + 1,
+      pageSize,
+      sortOrderBy,
+      sortOrderColumn,
+      filters,
+    })
+    .then((response) => {
+      setTotalCount(response.data.data.totalCount);
+      setAllModels(response.data.data.data);
+      Loading();
+    })
+    .catch((error) =>{console.log(error); Loading();});
+    
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    Loading(settings);
+    modelMasterService.getModelAllPaging({
+      pageNumber,
+      pageSize : parseInt(event.target.value, 10),
+      sortOrderBy,
+      sortOrderColumn,
+      filters,
+    })
+    .then((response) => {
+      setTotalCount(response.data.data.totalCount);
+      setAllModels(response.data.data.data);
+      Loading();
+    })
+    .catch((error) =>{console.log(error); Loading();});
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(1);
+
+  };
   const clearForm = () => {
     setValues({ ...values, update: false });
     setModel({ ...model, modelName: "" });
@@ -226,6 +269,15 @@ export const ModelMaster = () => {
             <div className="card-body p-1">
               <div className="">
                 <ModelTable />
+
+                <TablePagination
+                    component="div"
+                    count={totalCount}
+                    page={page - 1}
+                    onPageChange={handleChangePage}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                  />
               </div>
             </div>
           </div>

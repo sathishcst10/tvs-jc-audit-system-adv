@@ -20,6 +20,7 @@ import { AggregateMaster } from "./components/masters/aggregateMaster";
 import JobCardInfo from "./components/jobCardInfo";
 import Dashboard from "./components/dashboard";
 import JobCardOperator from "./components/jobCardInfo/jobCardOperator";
+import JobCardCaller from "./components/jobCardInfo/jobCardTelecaller";
 
 
 function App() {
@@ -70,6 +71,7 @@ function App() {
         //User
         <Route path="/jobCardInformation"  element={<JobCardInfo/>}/>
         <Route path="/jobCardOperator" element={<JobCardOperator/>}/> 
+        <Route path="/jobCardCaller" element={<JobCardCaller/>}/>
         <Route path="/dashboard" element={<Dashboard/>}/>
       </Routes>      
     </Router>

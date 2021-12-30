@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Toast } from "primereact/toast";
 import { useSelector } from "react-redux";
-
+import TablePagination from '@mui/material/TablePagination';
 import { Loading } from "react-loading-ui";
 
 import jobCardInfoService from "../../services/job-card-info.service";
@@ -12,12 +12,20 @@ import { APP_DOWNLOAD_URL } from "../../BackendAccess";
 
 const JobCardInfo = () => {
     const toast = useRef(null);
+    const settings = {
+        title: "",
+        text: "",
+        progress: false,
+        progressedClose: false,
+        theme: "dark",
+    };
     const { user: currentUser } = useSelector((state) => state.auth);
     const [jobCard, setJobCard] = useState({
         newJobCard: false,
         updateJobCard: false,
         closeJobCard: false
     });
+    const [totalCount, setTotalCount] = useState(0);
     const [getTagDesc, setTagDesc] = useState([]);
     const [getInitialObs, setInitialObs] = useState([]);
     const [getFinalFindings, setFinalFindings] = useState([]);
@@ -609,18 +617,13 @@ useEffect(()=>{
     }
 
     const getJobCardForDealer = () => {
-        Loading({
-            title: "",
-            text: "",
-            progress: false,
-            progressedClose: false,
-            theme: "dark",
-        });
+        Loading(settings);
         jobCardInfoService.getJobCardDetailForDealer({
             pageNumber, pageSize, sortOrderBy, sortOrderColumn, filters
         }).then(
             (response) => {
                 console.log(response);
+                setTotalCount(response.data.data.totalCount);
                 setShowJobCardDetails(response.data.data.data);
                 Loading();
             }
@@ -647,7 +650,48 @@ useEffect(()=>{
         }, 5000);
         console.log(getJobCardDetails);
     }
-
+    const [page, setPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+  
+    const handleChangePage = (event, newPage) => {
+      Loading(settings);
+      setPage(newPage + 1);
+     
+      jobCardInfoService.getAllJobCardsList({
+        pageNumber : newPage + 1,
+        pageSize,
+        sortOrderBy,
+        sortOrderColumn,
+        filters,
+      })
+      .then((response) => {
+        setTotalCount(response.data.data.totalCount);
+        setShowJobCardDetails(response.data.data.data);
+        Loading();
+      })
+      .catch((error) =>{console.log(error); Loading();});
+      
+    };
+  
+    const handleChangeRowsPerPage = (event) => {
+      Loading(settings);
+      jobCardInfoService.getAllJobCardsList({
+        pageNumber,
+        pageSize : parseInt(event.target.value, 10),
+        sortOrderBy,
+        sortOrderColumn,
+        filters,
+      })
+      .then((response) => {
+        setTotalCount(response.data.data.totalCount);
+        setShowJobCardDetails(response.data.data.data);
+        Loading();
+      })
+      .catch((error) =>{console.log(error); Loading();});
+      setRowsPerPage(parseInt(event.target.value, 10));
+      setPage(1);
+  
+    };
     useEffect(() => {
         getJobCardForDealer();
     }, [])
@@ -795,6 +839,15 @@ useEffect(()=>{
 
                                             </tbody>
                                         </table>
+
+                                        <TablePagination
+                                            component="div"
+                                            count={totalCount}
+                                            page={page - 1}
+                                            onPageChange={handleChangePage}
+                                            rowsPerPage={rowsPerPage}
+                                            onRowsPerPageChange={handleChangeRowsPerPage}
+                                        />
                                     </div>
                                 </div>
                             </div>

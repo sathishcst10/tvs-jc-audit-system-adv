@@ -5,15 +5,17 @@ import TablePagination from '@mui/material/TablePagination';
 import { Calendar } from "primereact/calendar"
 import { Dropdown } from "primereact/dropdown";
 
+import MasterLayout from "../_layout/_masterLayout";
 
 import dealerMasterService from "../../services/dealer-master.service";
-
 import jobCardInfoService from "../../services/job-card-info.service";
 import modelMasterService from "../../services/model-master.service";
 import userService from "../../services/user.service";
-import MasterLayout from "../_layout/_masterLayout"
+import aggregateMasterService from "../../services/aggregate-master.service";
 
-const JobCardOperator = () => {
+
+
+const JobCardCaller = () => {
     const toast = useRef(null);
     const settings = {
         title: "",
@@ -26,35 +28,48 @@ const JobCardOperator = () => {
         openJobCard: false,
         updateJobCard: false
     });
+    const [showJobcards, setShowJobCards] = useState([]);
+    const [modelLists, setModelLists] = useState([]);
+    const [ServiceTypes, setServiceTypes] = useState([]);
+    const [teleCallers, setTeleCallers] = useState([]);
+    const [aggregates, setAggregates] = useState([]);
+    const [customerFeedbackStatus, setCustomerFeedbackStatus] = useState([]);
+    const [page, setPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [getJobCardItems, setJobCardItems] = useState({
+        "pageNumber": 1,
+        "pageSize": 10,
+        "sortOrderBy": "",
+        "sortOrderColumn": "",
+        "filters": ""
+    });
+
+    const { pageNumber, pageSize, sortOrderBy, sortOrderColumn, filters } = getJobCardItems;
+    const { openJobCard, updateJobCard } = jobcardActions;
     const [totalCount, setTotalCount] = useState(0);
     const [getTagDesc, setTagDesc] = useState([]);
     const [getInitialObs, setInitialObs] = useState([]);
     const [getFinalFindings, setFinalFindings] = useState([]);
     const [getActionTaken, setActionTaken] = useState([]);
     const [getDealerObs, setDealerObs] = useState([]);
-
-    const [modelLists, setModelLists] = useState([]);
-    const [ServiceTypes, setServiceTypes] = useState([]);
-    const [teleCallers, setTeleCallers] = useState([]);
-
-    const { openJobCard, updateJobCard } = jobcardActions;
-    const [showJobcards, setShowJobCards] = useState([]);
-    const [getAllJobCards, setAllJobCards] = useState(
+    const [getJobCardAudit, setJobCardAudit] = useState(
         {
-            "pageNumber": 1,
-            "pageSize": 10,
-            "sortOrderBy": "",
-            "sortOrderColumn": "",
-            "filters": ""
+            "isActive": true,
+            "jcaid": 0,
+            "jcid": 0,
+            "customerFeedback": "",
+            "actualWorkDone": "",
+            "gapAggregate": 0,
+            "gapIdendtified": "",
+            "status": 0
         }
     );
-
-    const { pageNumber, pageSize, sortOrderBy, sortOrderColumn, filters } = getAllJobCards;
+    const { jcaid, customerFeedback, actualWorkDone, gapAggregate, gapIdendtified, status } = getJobCardAudit
     const [dealerDetails, setDealerDetails] = useState({
-        dealerLocation : "",
-        dealerName : ""
+        dealerLocation: "",
+        dealerName: ""
     });
-    const {dealerName, dealerLocation} = dealerDetails;
+    const { dealerName, dealerLocation } = dealerDetails;
     const [saveJobCard, setSaveJobCard] = useState({
         "jcid": 0,
         "userID": 0,
@@ -126,7 +141,7 @@ const JobCardOperator = () => {
 
     const getAllJobCardsList = () => {
         Loading(settings);
-        jobCardInfoService.getJobCardDetailsForOperator({
+        jobCardInfoService.getJobCardListForTeleCaller({
             pageNumber,
             pageSize,
             sortOrderBy,
@@ -140,74 +155,14 @@ const JobCardOperator = () => {
                 setShowJobCards(response.data.data.data);
             }
         ).catch((err) => {
-            Loading();
-            console.log(err)
+            console.log(err);
+            Loading()
         })
     }
-    const modifyJobCardStatus = (argID) =>{
-        jobCardInfoService.updateJobCardStatus({
-            "jcid": argID
-          }).then(
-            (response)=>{
-                console.log("Job Card Taken" , response);
-            }
-        ).catch((err)=>console.log(err));
-    }
-    const getUpdateForm = (argID) => {        
-        setJobCardActions({
-            ...jobcardActions,
-            openJobCard: true
-        })
-        modifyJobCardStatus(argID);
-        getJobCardDetailsByID(argID);
-    }
 
-    const getDealerDetailsById = (argID)=>{
-        dealerMasterService.getDealerById(argID).then(
-            (response)=>{
-                console.log("sele" , response);
-                setDealerDetails({
-                    ...dealerDetails,
-                    dealerName : response.data.data.dealerName,
-                    dealerLocation : response.data.data.dealerLocation
-                });
-
-                
-
-            }
-        ).catch((err)=>console.log(err));
-    }
-
-    const getAllModels = () =>{
-        modelMasterService.getModelLists(true).then(
-            (response)=>{
-                console.log(response);
-                setModelLists(response.data.data.data);
-            }
-        )
-    }
-
-    const getAllServiceTypes = () =>{
-        jobCardInfoService.getServiceTypes(true).then(
-            (response)=>{
-                console.log("ServiceTypes", response);
-                setServiceTypes(response.data.data.data);
-            }
-        ).catch((err)=>console.log(err))
-    }
-
-    const getAllTeleCallersList = ()=>{
-        userService.getTeleCallersList(true).then(
-            (response)=>{
-                console.log("Telecaller", response);
-                setTeleCallers(response.data.data.data);
-            }
-        ).catch((err)=>console.log(err));
-    }
-
-    const getJobCardDetailsByID = (argID) =>{
+    const getJobCardDetailsByID = (argID) => {
         jobCardInfoService.getJobCardById(argID).then(
-            (response)=>{
+            (response) => {
                 console.log("getDetails", response);
                 getDealerDetailsById(response.data.data.dealerID);
                 setTagDesc(JSON.parse(response.data.data.customerVoice));
@@ -215,223 +170,158 @@ const JobCardOperator = () => {
                 setFinalFindings(JSON.parse(response.data.data.initialObservation));
                 setActionTaken(JSON.parse(response.data.data.actionTaken))
                 setDealerObs(
-                     response.data.data.dealerObservation !== "" ? JSON.parse(response.data.data.dealerObservation) : []);
+                    response.data.data.dealerObservation !== "" ? JSON.parse(response.data.data.dealerObservation) : []);
 
                 setSaveJobCard({
                     ...saveJobCard,
-                    jcid : argID,
-                    userID : response.data.data.userID, 
-                    dealerID : response.data.data.dealerID,
-                    jcNumber : response.data.data.jcNumber,
-                    jobcardNumber : response.data.data.jobcardNumber,
-                    jcBack : response.data.data.jcBack,
-                    jcFront : response.data.data.jcFront,
-                    isDataEntryTaken : response.data.data.isDataEntryTaken,
-                    dataEntryTakenBy : response.data.data.dataEntryTakenBy,
-                    isDataEntryCompleted : response.data.data.isDataEntryCompleted,
-                    isTelecallCompleted : response.data.data.isTelecallCompleted,
-                    dmsNumber : response.data.data.dmsNumber,
-                    engineFrameNumber : response.data.data.engineFrameNumber,
-                    modelID : response.data.data.modelID,
-                    vehicleNumber : response.data.data.vehicleNumber,
-                    kMs : response.data.data.kMs,
-                    serviceDate : new Date(response.data.data.serviceDate),
-                    customerName : response.data.data.customerName,
-                    customerMobile : response.data.data.customerMobile,
-                    customerAddress : response.data.data.customerAddress,
-                    saName : response.data.data.saName,
-                    technicianName : response.data.data.technicianName,
-                    customerVoice : JSON.parse(response.data.data.customerVoice),
-                    initialObservation : JSON.parse(response.data.data.initialObservation),
-                    finalFinding : JSON.parse(response.data.data.finalFinding),
-                    actionTaken : JSON.parse(response.data.data.actionTaken),
-                    dealerObservation : response.data.data.dealerObservation !== "" ? JSON.parse(response.data.data.dealerObservation) : [],
-                    serviceTypeID : response.data.data.serviceTypeID,
-                    isActive : response.data.data.isActive,
-                    assignTeleCallerID : response.data.data.assignTeleCallerID
+                    jcid: argID,
+                    userID: response.data.data.userID,
+                    dealerID: response.data.data.dealerID,
+                    jcNumber: response.data.data.jcNumber,
+                    jobcardNumber: response.data.data.jobcardNumber,
+                    jcBack: response.data.data.jcBack,
+                    jcFront: response.data.data.jcFront,
+                    isDataEntryTaken: response.data.data.isDataEntryTaken,
+                    dataEntryTakenBy: response.data.data.dataEntryTakenBy,
+                    isDataEntryCompleted: response.data.data.isDataEntryCompleted,
+                    isTelecallCompleted: response.data.data.isTelecallCompleted,
+                    dmsNumber: response.data.data.dmsNumber,
+                    engineFrameNumber: response.data.data.engineFrameNumber,
+                    modelID: response.data.data.modelID,
+                    vehicleNumber: response.data.data.vehicleNumber,
+                    kMs: response.data.data.kMs,
+                    serviceDate: new Date(response.data.data.serviceDate),
+                    customerName: response.data.data.customerName,
+                    customerMobile: response.data.data.customerMobile,
+                    customerAddress: response.data.data.customerAddress,
+                    saName: response.data.data.saName,
+                    technicianName: response.data.data.technicianName,
+                    customerVoice: JSON.parse(response.data.data.customerVoice),
+                    initialObservation: JSON.parse(response.data.data.initialObservation),
+                    finalFinding: JSON.parse(response.data.data.finalFinding),
+                    actionTaken: JSON.parse(response.data.data.actionTaken),
+                    dealerObservation: response.data.data.dealerObservation !== "" ? JSON.parse(response.data.data.dealerObservation) : [],
+                    serviceTypeID: response.data.data.serviceTypeID,
+                    isActive: response.data.data.isActive,
+                    assignTeleCallerID: response.data.data.assignTeleCallerID
                 })
 
-                // setSaveJobCard({
-                //     ...saveJobCard,
-                //     jcid : argID,
-                //     userID : response.data.data.userID,
-                //     dealerID : response.data.data.dealerID,
-                //     jcNumber : response.data.data.jcNumber,
-                //     jobcardNumber : response.data.data.jobcardNumber,
-                //     isDataEntryTaken : response.data.data.isDataEntryTaken,
-                //     dataEntryTakenBy: response.data.data.dataEntryTakenBy,
-                //     jcBack : response.data.data.jcBack,
-                //     jcFront : response.data.data.jcFront,
-                //     customerVoice : JSON.parse(response.data.data.customerVoice),
-                //     initialObservation : JSON.parse(response.data.data.initialObservation),
-                //     finalFinding : JSON.parse(response.data.data.finalFinding),
-                //     actionTaken : JSON.parse(response.data.data.actionTaken),
-                // })
+            }
+        ).catch((err) => {
+            console.log(err);
+        })
+    }
 
+    const getDealerDetailsById = (argID) => {
+        dealerMasterService.getDealerById(argID).then(
+            (response) => {
+                console.log("sele", response);
+                setDealerDetails({
+                    ...dealerDetails,
+                    dealerName: response.data.data.dealerName,
+                    dealerLocation: response.data.data.dealerLocation
+                });
+
+
+
+            }
+        ).catch((err) => console.log(err));
+    }
+
+    const getAllModels = () => {
+        modelMasterService.getModelLists(true).then(
+            (response) => {
+                console.log(response);
+                setModelLists(response.data.data.data);
+            }
+        )
+    }
+
+    const getAllServiceTypes = () => {
+        jobCardInfoService.getServiceTypes(true).then(
+            (response) => {
+                console.log("ServiceTypes", response);
+                setServiceTypes(response.data.data.data);
+            }
+        ).catch((err) => console.log(err))
+    }
+    const getAllAggregates = ()=>{
+        aggregateMasterService.getAggregateLists(true).then(
+            (response)=>{
+                console.log(response);
+                setAggregates(response.data.data.data);
+            }
+        ).catch((err)=>{
+            console.log(err);
+        });
+    }
+
+    const getCustomerFeedBackStatus = () =>{
+        jobCardInfoService.getCustomerFeedback(true).then(
+            (response)=>{
+                console.log(response);
+                setCustomerFeedbackStatus(response.data.data.data);
             }
         ).catch((err)=>{
             console.log(err);
         })
     }
 
-    const [page, setPage] = useState(1);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
-  
     const handleChangePage = (event, newPage) => {
-      Loading(settings);
-      setPage(newPage + 1);
-     
-      jobCardInfoService.getAllJobCardsList({
-        pageNumber : newPage + 1,
-        pageSize,
-        sortOrderBy,
-        sortOrderColumn,
-        filters,
-      })
-      .then((response) => {
-        setTotalCount(response.data.data.totalCount);
-        setShowJobCards(response.data.data.data);
-        Loading();
-      })
-      .catch((error) =>{console.log(error); Loading();});
-      
+        Loading(settings);
+        setPage(newPage + 1);
+
+        jobCardInfoService.getAllJobCardsList({
+            pageNumber: newPage + 1,
+            pageSize,
+            sortOrderBy,
+            sortOrderColumn,
+            filters,
+        })
+            .then((response) => {
+                setTotalCount(response.data.data.totalCount);
+                setShowJobCards(response.data.data.data);
+                Loading();
+            })
+            .catch((error) => { console.log(error); Loading(); });
+
     };
-  
+
     const handleChangeRowsPerPage = (event) => {
-      Loading(settings);
-      jobCardInfoService.getAllJobCardsList({
-        pageNumber,
-        pageSize : parseInt(event.target.value, 10),
-        sortOrderBy,
-        sortOrderColumn,
-        filters,
-      })
-      .then((response) => {
-        setTotalCount(response.data.data.totalCount);
-        setShowJobCards(response.data.data.data);
-        Loading();
-      })
-      .catch((error) =>{console.log(error); Loading();});
-      setRowsPerPage(parseInt(event.target.value, 10));
-      setPage(1);
-  
+        Loading(settings);
+        jobCardInfoService.getAllJobCardsList({
+            pageNumber,
+            pageSize: parseInt(event.target.value, 10),
+            sortOrderBy,
+            sortOrderColumn,
+            filters,
+        })
+            .then((response) => {
+                setTotalCount(response.data.data.totalCount);
+                setShowJobCards(response.data.data.data);
+                Loading();
+            })
+            .catch((error) => { console.log(error); Loading(); });
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(1);
+
     };
 
-    const handleChange = (name) => (event) => {
-        const value = event.target.value;
-        setSaveJobCard({
-            ...saveJobCard,
-            [name]: value
-        });
-    }
 
-    const handleSubmit = ()=>{
-       Loading(settings);
-        jobCardInfoService.updateJobCard({
-            jcid,
-            userID,
-            dealerID,
-            jcNumber,
-            jobcardNumber,
-            jcBack,
-            jcFront,
-            isDataEntryTaken,
-            dataEntryTakenBy,
-            isDataEntryCompleted : true,
-            isTelecallCompleted,
-            dmsNumber,
-            engineFrameNumber,
-            modelID,
-            vehicleNumber,
-            kMs,
-            serviceDate,
-            customerName,
-            customerMobile,
-            customerAddress,
-            saName,
-            technicianName,
-            customerVoice: customerVoice !== "" ? JSON.stringify(customerVoice) : "[]",
-            initialObservation: initialObservation !== "" ? JSON.stringify(initialObservation) : "[]",
-            finalFinding: finalFinding !== "" ? JSON.stringify(finalFinding) : "[]",
-            actionTaken: actionTaken !== "" ? JSON.stringify(actionTaken) : "[]",
-            dealerObservation : dealerObservation !== "" ? JSON.stringify(dealerObservation) : "[]",
-            serviceTypeID,
-            isActive,
-            assignTeleCallerID
-        }).then(
-            (response)=>{
-                console.log(response);
-                if(response.data.success){
-                    toast.current.show(
-                        {
-                            severity: 'success',
-                            summary: 'Success Message',
-                            detail: response.data.message,
-                            life: 3000
-                        }
-                    );
-                    Loading();
-                    closeForm();
-                }else{
-                    toast.current.show(
-                        {
-                            severity: 'warn',
-                            summary: 'Warning Message',
-                            detail: response.data.message,
-                            life: 3000
-                        }
-                    );
-                    Loading();
-                }
-            }
-        ).catch((err)=>{console.log(err); Loading()})
+    const updateJobcard = (argID) => {
+        setJobCardActions({
+            ...jobcardActions,
+            openJobCard: true
+        });
+        getJobCardDetailsByID(argID);
     }
 
     const closeForm = () => {
         setJobCardActions({
             ...jobcardActions,
-            openJobCard: false,
-            updateJobCard: false
+            openJobCard: false
         });
-
-        setSaveJobCard({
-            "jcid": 0,
-            "userID": 0,
-            "dealerID": 0,
-            "dealerName": "",
-            "dealerLocation": "",
-            "jcNumber": "",
-            "jobcardNumber": "",
-            "jcFront": 0,
-            "jcBack": 0,
-            "isDataEntryTaken": false,
-            "dataEntryTakenBy": 0,
-            "isDataEntryCompleted": false,
-            "isTelecallCompleted": false,
-            "dmsNumber": "",
-            "engineFrameNumber": "",
-            "modelID": 0,
-            "vehicleNumber": "",
-            "kMs": "",
-            "serviceDate": new Date(),
-            "customerName": "",
-            "customerMobile": "",
-            "customerAddress": "",
-            "saName": "",
-            "technicianName": "",
-            "customerVoice": "",
-            "initialObservation": "",
-            "finalFinding": "",
-            "actionTaken": "",
-            "dealerObservation": "",
-            "serviceTypeID": 0,
-            "isActive": true,
-            "assignTeleCallerID": 0
-        })
-
-        getAllJobCardsList();
     }
-
     const addTags = async (event, items) => {
         if (event.target.value !== "") {
             if (items === "CustomerVoice") {
@@ -509,14 +399,52 @@ const JobCardOperator = () => {
             setDealerObs([...getDealerObs.filter((_, index) => index !== indexToRemove)]);
         }
     };
-    
+
+    const handleChange = (name) => (event) => {
+        const value = event.target.value;
+        // setSaveJobCard({
+        //     ...saveJobCard,
+        //     [name]: value
+        // });
+        setJobCardAudit({
+            ...getJobCardAudit,
+            [name] : value
+        })
+    }
+
+    const handleSubmit = () => {
+        Loading(settings);
+        debugger
+        jobCardInfoService.updateJobCardAudit({
+            jcid,
+            jcaid,
+            isActive,
+            actualWorkDone,
+            customerFeedback,
+            gapAggregate,
+            gapIdendtified,
+            status : parseInt(status, 10)
+        }).then(
+            (response)=>{
+                Loading()
+                console.log(response);
+            }
+        ).catch(
+            (err)=>{
+                Loading()
+                console.log(err);
+            }
+        )
+    }
+
     useEffect(() => {
         getAllJobCardsList();
         getAllModels();
         getAllServiceTypes();
-        getAllTeleCallersList();
-        
+        getAllAggregates();
+        getCustomerFeedBackStatus();
     }, [])
+
     return (
         <MasterLayout pageMap={['Home', 'Job Card Information']}>
             <div className="row g-1">
@@ -530,18 +458,27 @@ const JobCardOperator = () => {
                                             <table className="table table-striped table-hover table-custom">
                                                 <thead className="table-dark">
                                                     <tr>
-                                                        <th>ID No.</th>
-                                                        <th>Job Card Number</th>
-                                                        <th>Dealer Name</th>
-                                                        <th>Customer Feedback</th>
-                                                        {/* <th>Attachments</th> */}
-                                                        <th>Action</th>
+                                                        <th>
+                                                            ID Number
+                                                        </th>
+                                                        <th>
+                                                            Job Card Number
+                                                        </th>
+                                                        <th>
+                                                            Dealer Name
+                                                        </th>
+                                                        <th>
+                                                            Customer Feedback
+                                                        </th>
+                                                        <th>
+                                                            Action
+                                                        </th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     {
-                                                        showJobcards.map((items, index) => (
-                                                            <tr key={index} onClick={() => getUpdateForm(items.jcid)}>
+                                                        showJobcards.map((items, idx) => (
+                                                            <tr key={idx} onClick={() => updateJobcard(items.jcid)}>
                                                                 <td>{items.jcNumber}</td>
                                                                 <td>{items.jobcardNumber}</td>
                                                                 <td>
@@ -555,62 +492,56 @@ const JobCardOperator = () => {
                                                                         ))
                                                                     }
                                                                 </td>
-                                                                {/* <td>
-                                                                    <a className="lnkAction" href="#">View</a>
-                                                                </td> */}
                                                                 <td>
-
                                                                     {
-                                                                        (!items.isDataEntryTaken && !items.isDataEntryCompleted)  ? (
-                                                                            <span className="badge bg-primary">Open</span>
-                                                                        )
-                                                                        : (items.isDataEntryTaken &&  !items.isDataEntryCompleted)?
-                                                                        (
-                                                                            <span className="badge bg-warning">Processing</span>
-                                                                        )
-                                                                        : (items.isDataEntryCompleted && items.isDataEntryTaken)?(<span className="badge bg-success">Completed</span>)
-                                                                        :
-                                                                        (
-                                                                            <span className="badge bg-primary">Open</span>
-                                                                        )
+                                                                        !items.isTelecallCompleted ?
+                                                                            (
+                                                                                <span className="badge bg-primary">Open</span>
+                                                                            )
+                                                                            :
+                                                                            (
+                                                                                <span className="badge bg-success">Completed</span>
+                                                                            )
                                                                     }
-                                                                    
+
                                                                 </td>
                                                             </tr>
                                                         ))
                                                     }
                                                 </tbody>
                                             </table>
+                                            <TablePagination
+                                                component="div"
+                                                count={totalCount}
+                                                page={page - 1}
+                                                onPageChange={handleChangePage}
+                                                rowsPerPage={rowsPerPage}
+                                                onRowsPerPageChange={handleChangeRowsPerPage}
+                                            />
                                         </div>
-                                        <TablePagination
-                                            component="div"
-                                            count={totalCount}
-                                            page={page - 1}
-                                            onPageChange={handleChangePage}
-                                            rowsPerPage={rowsPerPage}
-                                            onRowsPerPageChange={handleChangeRowsPerPage}
-                                        />
                                     </div>
                                 </div>
                             </div>
-                        ) :
+                        )
+                        :
                         (
                             <div className="col-12">
                                 <div className="card shadow-sm">
-                                    <div className="card-body">
-                                        <div className="d-flex justify-content-end">
+                                    <div className="card-body p-1">
+                                        <div className="d-flex justify-content-end pb-1 shadow-sm">
                                             <button
                                                 className="btn btn-sm btn-outline-danger me-1"
                                                 onClick={closeForm}
                                             >
                                                 Cancel
                                             </button>
-                                            <button className="btn btn-sm btn-success ms-1" onClick={handleSubmit}> 
+                                            <button className="btn btn-sm btn-success ms-1" onClick={handleSubmit}>
                                                 Update Job card
                                             </button>
                                         </div>
-                                        <div className="">
-                                            <div className="row">
+
+                                        <div className="wrapper container-fluid g-1">
+                                            <div className="row g-1">
                                                 <div className="col">
                                                     <label className="form-label">ID Number</label>
                                                     <input className="form-control" value={jcNumber} disabled />
@@ -624,85 +555,98 @@ const JobCardOperator = () => {
                                                     <input className="form-control" value={`${dealerName} - ${dealerLocation}`} disabled />
                                                 </div>
                                             </div>
-                                            <div className="row">
+                                            <div className="row g-1">
                                                 <div className="col">
                                                     <label className="form-label">Customer Name</label>
-                                                    <input 
-                                                        className="form-control" 
+                                                    <input
+                                                        className="form-control"
                                                         name="customerName"
                                                         value={customerName}
+                                                        disabled='disabled'
                                                         onChange={handleChange("customerName")}
                                                     />
                                                 </div>
                                                 <div className="col">
                                                     <label className="form-label">Customer Mobile</label>
-                                                    <input 
-                                                        className="form-control" 
+                                                    <input
+                                                        className="form-control"
                                                         name="customerMobile"
                                                         value={customerMobile}
+                                                        disabled='disabled'
                                                         onChange={handleChange("customerMobile")}
                                                     />
                                                 </div>
                                                 <div className="col">
                                                     <label className="form-label">Customer Address</label>
-                                                    <input 
-                                                        className="form-control" 
+                                                    <input
+                                                        className="form-control"
                                                         name="customerAddress"
                                                         value={customerAddress}
+                                                        disabled='disabled'
                                                         onChange={handleChange("customerAddress")}
                                                     />
                                                 </div>
                                             </div>
-                                            <div className="row">
+                                            <div className="row g-1">
                                                 <div className="col">
                                                     <label className="form-label">Model Name</label>
-                                                    <select className="form-select" name="modelID" value={modelID} onChange={handleChange("modelID")}>
+                                                    <select
+                                                        className="form-select"
+                                                        name="modelID"
+                                                        value={modelID}
+                                                        onChange={handleChange("modelID")}
+                                                        disabled='disabled'
+                                                    >
                                                         <option value={-1}>--Select model--</option>
                                                         {
-                                                            modelLists.map((items, idx)=>(
+                                                            modelLists.map((items, idx) => (
                                                                 <option key={idx} value={items.id}>{items.text}</option>
                                                             ))
-                                                            
+
                                                         }
                                                     </select>
                                                 </div>
                                                 <div className="col">
                                                     <label className="form-label">Engine/Frame Number</label>
-                                                    <input 
-                                                        className="form-control" 
+                                                    <input
+                                                        className="form-control"
                                                         name="engineFrameNumber"
                                                         value={engineFrameNumber}
+                                                        disabled='disabled'
                                                         onChange={handleChange("engineFrameNumber")}
                                                     />
                                                 </div>
                                                 <div className="col">
                                                     <label className="form-label">KM's</label>
-                                                    <input 
-                                                        className="form-control" 
+                                                    <input
+                                                        className="form-control"
                                                         name="kMs"
                                                         value={kMs}
+                                                        disabled='disabled'
                                                         onChange={handleChange("kMs")}
                                                     />
-                                                </div>                                               
-                                                
+                                                </div>
+
                                             </div>
-                                            <div className="row">
+                                            <div className="row g-1">
                                                 <div className="col">
                                                     <label className="form-label">DMS Number</label>
-                                                    <input 
-                                                        className="form-control" 
+                                                    <input
+                                                        className="form-control"
                                                         name="dmsNumber"
-                                                        value={dmsNumber}        
-                                                        onChange={handleChange("dmsNumber")}                                                
+                                                        value={dmsNumber}
+                                                        disabled='disabled'
+                                                        onChange={handleChange("dmsNumber")}
                                                     />
                                                 </div>
                                                 <div className="col">
                                                     <label className="form-label">Vehicle Number</label>
-                                                    <input 
-                                                        className="form-control" 
+                                                    <input
+                                                        className="form-control"
                                                         name="vehicleNumber"
-                                                        value={vehicleNumber}    
-                                                        onChange={handleChange("vehicleNumber")}                                                    
+                                                        value={vehicleNumber}
+                                                        disabled='disabled'
+                                                        onChange={handleChange("vehicleNumber")}
                                                     />
                                                 </div>
                                                 <div className="col">
@@ -714,49 +658,58 @@ const JobCardOperator = () => {
                                                         onChange={handleChange("serviceDate")}                                                   
                                                     /> */}
 
-                                                    <Calendar 
-                                                        id="basic" 
-                                                        value={serviceDate} 
-                                                        name = "serviceDate"
-                                                        onChange={handleChange("serviceDate")} 
+                                                    <Calendar
+                                                        id="basic"
+                                                        value={serviceDate}
+                                                        name="serviceDate"
+                                                        disabled='disabled'
+                                                        onChange={handleChange("serviceDate")}
                                                     />
                                                 </div>
                                             </div>
-                                            <div className="row">
+                                            <div className="row g-1">
                                                 <div className="col">
                                                     <label className="form-label">Service type</label>
-                                                    <select className="form-select" name="serviceTypeID" value={serviceTypeID}  onChange={handleChange("serviceTypeID")}>
+                                                    <select
+                                                        className="form-select"
+                                                        name="serviceTypeID"
+                                                        value={serviceTypeID}
+                                                        onChange={handleChange("serviceTypeID")}
+                                                        disabled='disabled'
+                                                    >
                                                         <option value={-1}>--Select Service type--</option>
                                                         {
-                                                            ServiceTypes.map((items, idx)=>(
+                                                            ServiceTypes.map((items, idx) => (
                                                                 <option key={idx} value={items.id}>{items.text}</option>
                                                             ))
-                                                            
+
                                                         }
                                                     </select>
                                                 </div>
 
                                                 <div className="col">
                                                     <label className="form-label">Service Advisor Name</label>
-                                                    <input 
-                                                        className="form-control" 
+                                                    <input
+                                                        className="form-control"
                                                         name="saName"
-                                                        value={saName}       
-                                                        onChange={handleChange("saName")}                                                 
+                                                        value={saName}
+                                                        disabled='disabled'
+                                                        onChange={handleChange("saName")}
                                                     />
                                                 </div>
                                                 <div className="col">
                                                     <label className="form-label">Technician Name</label>
-                                                    <input 
-                                                        className="form-control" 
+                                                    <input
+                                                        className="form-control"
                                                         name="technicianName"
-                                                        value={technicianName}    
-                                                        onChange={handleChange("technicianName")}                                                    
+                                                        value={technicianName}
+                                                        disabled='disabled'
+                                                        onChange={handleChange("technicianName")}
                                                     />
                                                 </div>
                                             </div>
 
-                                            <div className="row">
+                                            <div className="row g-1">
                                                 <div className="col">
                                                     <div className="mb-3">
                                                         <label htmlFor="frmDesc" className="form-label">Customer Voice</label>
@@ -781,6 +734,7 @@ const JobCardOperator = () => {
                                                                 type="text"
                                                                 placeholder="Press enter"
                                                                 name="customerVoice"
+                                                                disabled='disabled'
                                                                 onKeyUp={event => event.key === "Enter" ? addTags(event, "CustomerVoice") : null}
 
                                                             />
@@ -810,6 +764,7 @@ const JobCardOperator = () => {
                                                             <input
                                                                 type="text"
                                                                 placeholder="Press enter"
+                                                                disabled='disabled'
                                                                 onKeyUp={event => event.key === "Enter" ? addTags(event, "InitialObs") : null}
                                                             />
                                                         </div>
@@ -838,6 +793,7 @@ const JobCardOperator = () => {
                                                             <input
                                                                 type="text"
                                                                 placeholder="Press enter"
+                                                                disabled='disabled'
                                                                 onKeyUp={event => event.key === "Enter" ? addTags(event, "FinalFindings") : null}
                                                             />
                                                         </div>
@@ -845,7 +801,7 @@ const JobCardOperator = () => {
                                                 </div>
                                             </div>
 
-                                            <div className="row">
+                                            <div className="row g-1">
                                                 <div className="col">
                                                     <div className="mb-3">
                                                         <label htmlFor="frmDesc" className="form-label">Action Taken</label>
@@ -869,6 +825,7 @@ const JobCardOperator = () => {
                                                             <input
                                                                 type="text"
                                                                 placeholder="Press enter"
+                                                                disabled='disabled'
                                                                 onKeyUp={event => event.key === "Enter" ? addTags(event, "ActionTaken") : null}
                                                             />
                                                         </div>
@@ -897,6 +854,7 @@ const JobCardOperator = () => {
                                                             <input
                                                                 type="text"
                                                                 placeholder="Press enter"
+                                                                disabled='disabled'
                                                                 onKeyUp={event => event.key === "Enter" ? addTags(event, "DealerObs") : null}
                                                             />
                                                         </div>
@@ -911,21 +869,118 @@ const JobCardOperator = () => {
                                                 </div>
                                             </div>
 
-                                            <div className="row">
+                                            <div className="row d-none">
                                                 <div className="col-4">
                                                     <label className="form-lable">Choose Telecaller</label>
                                                     <select className="form-select" name="assignTeleCallerID" value={assignTeleCallerID} onChange={handleChange("assignTeleCallerID")}>
                                                         <option>--Select Telecaller--</option>
                                                         {
-                                                            teleCallers.map((items, idx)=>(
+                                                            teleCallers.map((items, idx) => (
                                                                 <option key={idx} value={items.id}>{items.text}</option>
                                                             ))
-                                                            
+
                                                         }
                                                     </select>
                                                 </div>
 
                                             </div>
+
+                                            <div className="row g-1">
+                                                <div className="mb-3">
+                                                    <label
+                                                        htmlFor="customerFeedback"
+                                                        className="form-label"
+                                                    >
+                                                        Customer Feedback
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        id="customerFeedback"
+                                                        name="customerFeedback"
+                                                        value={customerFeedback}
+                                                        onChange={handleChange("customerFeedback")}
+                                                        placeholder="Customer Feedback"
+                                                    />
+                                                </div>
+                                                <div className="mb-3">
+                                                    <label
+                                                        htmlFor="actualWork"
+                                                        className="form-label"
+                                                    >
+                                                        Actual work done
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        id="actualWork"
+                                                        name="actualWorkDone"
+                                                        value={actualWorkDone}
+                                                        onChange={handleChange("actualWorkDone")}
+                                                        placeholder="Actual Work done"
+                                                    />
+                                                </div>
+                                                <div className="mb-3">
+                                                    <label
+                                                        htmlFor="gapIdentifiedTextarea1"
+                                                        className="form-label"
+                                                    >
+                                                        Gap Aggregate
+                                                    </label>
+                                                    <select 
+                                                        className="form-select custom-select"
+                                                        name="gapAggregate"
+                                                        value={gapAggregate}
+                                                        onChange={handleChange("gapAggregate")}
+                                                    >
+                                                        <option value={-1}>--Select--</option>
+                                                        {
+                                                            aggregates.map((items, idx)=>(
+                                                                <option value={items.id}>{items.text}</option>
+                                                            ))
+                                                        }
+                                                    </select>
+                                                </div>
+                                                <div className="mb-3">
+                                                    <label
+                                                        htmlFor="gapIdentifiedTextarea1"
+                                                        className="form-label"
+                                                    >
+                                                        Gap Identified
+                                                    </label>
+                                                    <textarea
+                                                        className="form-control"
+                                                        id="gapIdentifiedTextarea1"
+                                                        rows="3"
+                                                        name="gapIdendtified"
+                                                        value={gapIdendtified}
+                                                        onChange={handleChange("gapIdendtified")}
+                                                    >
+                                                    </textarea>
+                                                </div>
+                                                <div className="mb-3">
+                                                    <label
+                                                        htmlFor="gapIdentifiedTextarea1"
+                                                        className="form-label"
+                                                    >
+                                                        Status
+                                                    </label>
+                                                    <select 
+                                                        className="form-select custom-select"
+                                                        name="status"
+                                                        value={status}
+                                                        onChange={handleChange("status")}
+                                                    >
+                                                        <option value={-1}>--Select--</option>
+                                                        {
+                                                            customerFeedbackStatus.map((items, idx)=>(
+                                                                <option value={items.id}>{items.text}</option>
+                                                            ))
+                                                        }
+                                                    </select>
+                                                </div>
+                                            </div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -933,11 +988,10 @@ const JobCardOperator = () => {
                         )
                 }
 
+
             </div>
-            <Toast ref={toast} />
         </MasterLayout>
     )
 }
 
-
-export default JobCardOperator;
+export default JobCardCaller;

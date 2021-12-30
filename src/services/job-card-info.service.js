@@ -53,8 +53,22 @@ const getServiceTypes = (argID)=>{
     return axios.get(APP_API_URL + "/ServiceType/Dropdown/" + argID, {headers : authHeader()});
 }
 
-const updateJobCardStatus = (argID)=>{
-    return axios.post(APP_API_URL + "/JobCard/UpdateJobCardTakenByDataOperator/" + argID, { headers : authHeader() });
+const updateJobCardStatus = (argItems)=>{   
+    return axios.post(APP_API_URL + "/JobCard/UpdateJobCardTakenByDataOperator", argItems, { headers : authHeader() });
+}
+
+
+//Job Card for Telecaller
+const getJobCardListForTeleCaller = (argItems) =>{
+    return axios.post(APP_API_URL + "/JobCard/AllByPagingByTeleCallers", argItems,  {headers : authHeader()})
+}
+const getCustomerFeedback = (argID)=>{
+    return axios.get(APP_API_URL + "/CustomerFeedbackStatus/Dropdown/" + argID, { headers : authHeader()});
+}
+
+const updateJobCardAudit = (argItems) =>{
+    debugger
+    return axios.post(APP_API_URL + "/JobCardAudit", argItems, { headers : authHeader() });
 }
 
 export default {
@@ -68,5 +82,9 @@ export default {
     downloadDocuments,
     getJobCardDetailsForOperator,
     getServiceTypes,
-    updateJobCardStatus
+    updateJobCardStatus,
+
+    getJobCardListForTeleCaller,
+    getCustomerFeedback,
+    updateJobCardAudit
 }

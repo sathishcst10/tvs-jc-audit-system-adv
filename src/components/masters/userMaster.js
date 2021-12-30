@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import userService from "../../services/user.service";
 import MasterLayout from "../_layout/_masterLayout";
 import dealerMasterService from "../../services/dealer-master.service";
+import TablePagination from '@mui/material/TablePagination';
 
 export const UserMaster = () => {
   const toast =  useRef(null);
@@ -18,6 +19,7 @@ export const UserMaster = () => {
   const [userRoles, setUserRoles] = useState([]);
   const [dealers, setDealers] = useState([]);
   const [userDetails, setUserDetails] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [userValues, setUserValues] = useState({
     pageNumber: 1,
     pageSize: 10,
@@ -89,12 +91,56 @@ const {error, loading, update} = values;
         filters,
       })
       .then((response) => {
-        setUserDetails(response.data.data.data);
+        setTotalCount(response.data.data.totalCount);
+        setUserDetails(response.data.data.data);        
         Loading();
       })
       .catch((error) =>{console.log(error); Loading();});
   };
- 
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const handleChangePage = (event, newPage) => {
+    Loading(settings);
+    setPage(newPage + 1);
+   
+    userService
+    .getAllUsersByPaging({
+      pageNumber : newPage + 1,
+      pageSize,
+      sortOrderBy,
+      sortOrderColumn,
+      filters,
+    })
+    .then((response) => {
+      setTotalCount(response.data.data.totalCount);
+      setUserDetails(response.data.data.data);
+      Loading();
+    })
+    .catch((error) =>{console.log(error); Loading();});
+    
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    Loading(settings);
+    userService
+    .getAllUsersByPaging({
+      pageNumber,
+      pageSize : parseInt(event.target.value, 10),
+      sortOrderBy,
+      sortOrderColumn,
+      filters,
+    })
+    .then((response) => {
+      setTotalCount(response.data.data.totalCount);
+      setUserDetails(response.data.data.data);
+      Loading();
+    })
+    .catch((error) =>{console.log(error); Loading();});
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(1);
+
+  };
   const getUserById = (argID) =>{
     Loading(settings);
     userService.getUserById(argID).then(
@@ -229,9 +275,59 @@ const {error, loading, update} = values;
         getAllUsers();
         clearForm();
         Loading();
-      })
+      }).catch((err)=>{console.log(err); Loading()})
     }
   }
+
+  const ChangeStatus = (argID) =>{
+    Loading(settings);
+    userService.getUserById(argID).then(
+      (response)=>{                
+        
+        userService.updateUser({
+          userId : argID,
+          userName : response.data.data.userName,
+          firstName : response.data.data.firstName,
+          lastName : response.data.data.lastName,          
+          email : response.data.data.email,
+          roleId : response.data.data.roleId,
+          dealerID : response.data.data.dealerID,
+          phoneNo : response.data.data.phoneNo, 
+          isActive : response.data.data.isActive ? false : true,
+          isResetPassword : response.data.data.isResetPassword
+        }).
+        then((response)=>{
+          Loading();
+          console.log("updated", response);
+          if(response.data.success){
+            toast.current.show(
+              {
+                severity:'success', 
+                summary: 'Success Message', 
+                detail:'User status changed', 
+                life: 3000
+              }
+            );
+            getAllUsers();
+            clearForm();          
+          }else{
+            toast.current.show(
+              {
+                severity:'warn', 
+                summary: 'Warning Message', 
+                detail:response.data.message, 
+                life: 3000
+              }
+            );
+          }
+        }).catch((err)=>{console.log(err); Loading()})       
+      }
+    ).catch((err)=>{console.log(err); Loading()})
+
+    //Loading(settings)
+    
+  }
+
   const handleChange = (name) => (event) => {
     const value = event.target.value;
     //formData = new FormData()
@@ -240,6 +336,20 @@ const {error, loading, update} = values;
     setUsers({ ...users, [name]: value });
     //console.log(dealer);
   };
+
+  const closeForm = ()=>{
+    setUsers({
+      ...users,
+      userName : "",
+      firstName : "",
+      lastName : "",
+      email : "",
+      phoneNo : "",
+      dealerID : 0,
+      roleId : 0
+
+    })
+  }
   useEffect(() => {
     getUserRoles();
     getDealerInfo();
@@ -311,8 +421,10 @@ const {error, loading, update} = values;
                       </a>
                     </li>
                     <li>
-                      <a className="dropdown-item disabled" href="#">
-                        Change to Inactive
+                      <a className="dropdown-item" href="#" onClick={()=>{ChangeStatus(items.userId)}}>
+                        {
+                          items.isActive ? 'Change to Inactive' : 'Change to Active'
+                        }                        
                       </a>
                     </li>
                     <li>
@@ -342,6 +454,15 @@ const {error, loading, update} = values;
             <div className="card-body p-1">
               <div className="">
                 <UserTable />
+
+                <TablePagination
+                    component="div"
+                    count={totalCount}
+                    page={page - 1}
+                    onPageChange={handleChangePage}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                  />
               </div>
             </div>
           </div>
@@ -362,6 +483,7 @@ const {error, loading, update} = values;
                     name="userName"
                     value={userName}            
                     onChange={handleChange("userName")}
+                    required
                   />
                 </div>
                 <div className="mb-2">
@@ -376,6 +498,7 @@ const {error, loading, update} = values;
                     name="firstName"
                     value={firstName}
                     onChange={handleChange("firstName")}
+                    required
                   />
                 </div>
                 <div className="mb-2">
@@ -390,6 +513,7 @@ const {error, loading, update} = values;
                     name="lastName"
                     value={lastName}
                     onChange={handleChange("lastName")}
+                    required
                   />
                 </div>
                 <div className="mb-2">
@@ -404,6 +528,7 @@ const {error, loading, update} = values;
                     name="email"
                     value={email}
                     onChange={handleChange("email")}
+                    required
                   />
                 </div>
                 <div className="mb-2">
@@ -418,6 +543,7 @@ const {error, loading, update} = values;
                     name="phoneNo"
                     value={phoneNo}
                     onChange={handleChange("phoneNo")}
+                    required
                   />
                 </div>
                
@@ -430,6 +556,7 @@ const {error, loading, update} = values;
                     id="userRole" 
                     name="roleId"
                     value={roleId}
+                    required
                     onChange={handleChange("roleId")}>
                     <option value={-1}>--Select User Role--</option>
                     {userRoles.map((items, idx) => (
@@ -451,6 +578,7 @@ const {error, loading, update} = values;
                       id="dealerName" 
                       name="dealerID"
                       value={dealerID}
+                      required
                       onChange={handleChange("dealerID")}
                     >
                       <option value={-1}>--Select Dealer--</option>
@@ -465,7 +593,11 @@ const {error, loading, update} = values;
                 }
                 
                 <div className="mb-2 text-center">
-                  <button className="btn btn-sm btn-outline-danger me-1" type="button">
+                  <button 
+                    className="btn btn-sm btn-outline-danger me-1" 
+                    type="button"
+                    onClick={closeForm}
+                  >
                     Cancel
                   </button>
                   {

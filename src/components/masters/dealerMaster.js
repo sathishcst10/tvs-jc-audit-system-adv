@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-
+import TablePagination from '@mui/material/TablePagination';
 import { useSelector } from "react-redux";
 import { Loading } from "react-loading-ui";
 // import 'primeflex/primeflex.css';
@@ -27,16 +27,14 @@ export const DealerMaster = () => {
   }
   const dealerItems = [{}];
   const [stateDetails, setStates] = useState([]);
-  const [dealerDetails, setDetails] = useState([]);
-  const [basicFirst, setBasicFirst] = useState(1);
-  const [basicRows, setBasicRows] = useState(3);
+  const [dealerDetails, setDetails] = useState([]);  
+  const [totalCount, setTotalCount] = useState(0);
   const [initialItems, setInitial] = useState({
     pageNumber: 1,
     pageSize: 10,
     sortOrderBy: "",
     sortOrderColumn: "",
-    filters: "",
-    totalCount : ""
+    filters: ""
   });
   const [dealer, setDealer] = useState({
     isActive: true,
@@ -61,8 +59,7 @@ export const DealerMaster = () => {
     pageSize, 
     sortOrderBy, 
     sortOrderColumn, 
-    filters,
-    totalCount 
+    filters
   } = initialItems;
   const {
     isActive,
@@ -167,7 +164,7 @@ export const DealerMaster = () => {
       })
       .then((response) => {
         Loading();
-        console.log(response.data.data.totalCount);
+        setTotalCount(response.data.data.totalCount);
         setDetails(response.data.data.data);
         setInitial({
           ...initialItems,
@@ -238,18 +235,49 @@ export const DealerMaster = () => {
    
   }
   
-  const onBasicPageChange = (event) => {
-    // debugger;
-    setBasicFirst(event.first);
-    setBasicRows(event.rows);
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
-    setInitial({
-      ...initialItems,
-      pageNumber : pageNumber + event.page
-    });
+  const handleChangePage = (event, newPage) => {
+    Loading(settings);
+    setPage(newPage + 1);
+   
+    dealerMasterService.getAllDealersByPaging({
+      pageNumber : newPage + 1,
+      pageSize,
+      sortOrderBy,
+      sortOrderColumn,
+      filters,
+    })
+    .then((response) => {
+      setTotalCount(response.data.data.totalCount);
+      setDetails(response.data.data.data);
+      Loading();
+    })
+    .catch((error) =>{console.log(error); Loading();});
+    
+  };
 
-    getAllDealersList();
-}
+  const handleChangeRowsPerPage = (event) => {
+    Loading(settings);
+    dealerMasterService.getAllDealersByPaging({
+      pageNumber,
+      pageSize : parseInt(event.target.value, 10),
+      sortOrderBy,
+      sortOrderColumn,
+      filters,
+    })
+    .then((response) => {
+      setTotalCount(response.data.data.totalCount);
+      setDetails(response.data.data.data);
+      Loading();
+    })
+    .catch((error) =>{console.log(error); Loading();});
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(1);
+
+  };
+
   useEffect(() => {
     getStatesList();
     getAllDealersList();
@@ -314,17 +342,14 @@ export const DealerMaster = () => {
                   </tbody>
                 </table>
               </div>
-
-
-              <Paginator 
-                first={basicFirst} 
-                rows={basicRows} 
-                totalRecords={totalCount}
-                onPageChange={onBasicPageChange}
-                className="justify-content-end"
-              >
-              </Paginator>
- 
+              <TablePagination
+                  component="div"
+                  count={totalCount}
+                  page={page - 1}
+                  onPageChange={handleChangePage}
+                  rowsPerPage={rowsPerPage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                />
             </div>
           </div>
         </div>
