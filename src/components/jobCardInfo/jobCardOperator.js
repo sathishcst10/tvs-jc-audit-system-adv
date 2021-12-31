@@ -510,6 +510,25 @@ const JobCardOperator = () => {
         }
     };
     
+    const downloadDocs = (argItems) =>{
+        
+        jobCardInfoService.downloadDocuments(argItems).then(
+            (response)=>{
+                const type = response.headers['content-type'];
+                const _blob = new Blob([response.data], {type : type});
+
+                // const temp = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = window.URL.createObjectURL(_blob);
+                link.setAttribute('download', argItems.id +'_' +argItems.documentType+'.'+ type.split("/")[1]);
+                document.body.appendChild(link);
+                link.click();
+                //window.location.href = imageBuilder(new Blob([response.data]));
+                console.log(response)
+            }
+        ).catch((err)=>{console.log(err)})
+    }
+
     useEffect(() => {
         getAllJobCardsList();
         getAllModels();
@@ -518,7 +537,7 @@ const JobCardOperator = () => {
         
     }, [])
     return (
-        <MasterLayout pageMap={['Home', 'Job Card Information']}>
+        <>
             <div className="row g-1">
                 {
                     !openJobCard ?
@@ -905,8 +924,26 @@ const JobCardOperator = () => {
                                                 <div className="col">
                                                     <label className="form-label">Job Card Attachments</label>
                                                     <div>
-                                                        <button className="btn btn-sm btn-outline-primary me-1 mt-2">Front View</button>
-                                                        <button className="btn btn-sm btn-outline-primary ms-1 mt-2">Back View</button>
+                                                        <button 
+                                                            className="btn btn-sm btn-outline-primary me-1 mt-2"
+                                                            onClick={()=>downloadDocs({
+                                                                "documentId": jcFront,
+                                                                "documentType": "JCFront",
+                                                                "id" : jcNumber
+                                                            })}
+                                                        >
+                                                            Front View
+                                                        </button>
+                                                        <button 
+                                                            className="btn btn-sm btn-outline-primary ms-1 mt-2"
+                                                            onClick={()=>downloadDocs({
+                                                                "documentId": jcBack,
+                                                                "documentType": "JCBack",
+                                                                "id" : jcNumber
+                                                            })}
+                                                        >
+                                                            Back View
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -935,7 +972,7 @@ const JobCardOperator = () => {
 
             </div>
             <Toast ref={toast} />
-        </MasterLayout>
+        </>
     )
 }
 

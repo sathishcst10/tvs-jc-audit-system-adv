@@ -164,6 +164,19 @@ const JobCardCaller = () => {
         jobCardInfoService.getJobCardById(argID).then(
             (response) => {
                 console.log("getDetails", response);
+                if(response.data.data.isTelecallCompleted){
+                    setJobCardActions({
+                        ...jobcardActions,
+                        openJobCard : false,
+                        updateJobCard : true
+                    })
+                }else{
+                    setJobCardActions({
+                        ...jobcardActions,
+                        openJobCard : true,
+                        updateJobCard : false
+                    })
+                }
                 getDealerDetailsById(response.data.data.dealerID);
                 setTagDesc(JSON.parse(response.data.data.customerVoice));
                 setInitialObs(JSON.parse(response.data.data.initialObservation));
@@ -209,7 +222,24 @@ const JobCardCaller = () => {
             }
         ).catch((err) => {
             console.log(err);
-        })
+        });
+
+        jobCardInfoService.getJobCardAuditByID(argID).then(
+            (response)=>{
+                console.log("Audit", response);
+                setJobCardAudit({
+                    ...getJobCardAudit,
+                    isActive : response.data.data.isActive,
+                    jcaid : response.data.data.jcaid,
+                    jcid : argID,
+                    customerFeedback : response.data.data.customerFeedback,
+                    actualWorkDone : response.data.data.actualWorkDone,
+                    gapAggregate : response.data.data.gapAggregate,
+                    gapIdendtified : response.data.data.gapIdendtified,
+                    status : response.data.data.status
+                })
+            }
+        ).catch((err)=>{console.log(err)});
     }
 
     const getDealerDetailsById = (argID) => {
@@ -319,7 +349,8 @@ const JobCardCaller = () => {
     const closeForm = () => {
         setJobCardActions({
             ...jobcardActions,
-            openJobCard: false
+            openJobCard: false,
+            updateJobCard : false
         });
     }
     const addTags = async (event, items) => {
@@ -415,26 +446,114 @@ const JobCardCaller = () => {
     const handleSubmit = () => {
         Loading(settings);
         debugger
-        jobCardInfoService.updateJobCardAudit({
-            jcid,
-            jcaid,
-            isActive,
-            actualWorkDone,
-            customerFeedback,
-            gapAggregate,
-            gapIdendtified,
-            status : parseInt(status, 10)
-        }).then(
+        if(!updateJobCard){
+            jobCardInfoService.saveJobCardAudit({
+                jcid,
+                jcaid,
+                isActive,
+                actualWorkDone,
+                customerFeedback,
+                gapAggregate,
+                gapIdendtified,
+                status : parseInt(status, 10)
+            }).then(
+                (response)=>{                
+                    console.log(response);
+                    if(response.data.success){
+                        
+                        toast.current.show(
+                            {
+                                severity: 'success',
+                                summary: 'Success Message',
+                                detail: response.data.message,
+                                life: 3000
+                            }
+                        );
+                        getAllJobCardsList();
+                        closeForm();
+                    }else{
+                        
+                        toast.current.show(
+                            {
+                                severity: 'warn',
+                                summary: 'Warning Message',
+                                detail: response.data.message,
+                                life: 3000
+                            }
+                        );
+                    }
+                    Loading();
+                }
+            ).catch(
+                (err)=>{
+                    Loading()
+                    console.log(err);
+                }
+            )
+        }else{
+            jobCardInfoService.updateJobCardAudit({
+                jcid,
+                jcaid,
+                isActive,
+                actualWorkDone,
+                customerFeedback,
+                gapAggregate,
+                gapIdendtified,
+                status : parseInt(status, 10)
+            }).then(
+                (response)=>{                
+                    console.log(response);
+                    if(response.data.success){
+                        
+                        toast.current.show(
+                            {
+                                severity: 'success',
+                                summary: 'Success Message',
+                                detail: response.data.message,
+                                life: 3000
+                            }
+                        );
+                        getAllJobCardsList();
+                        closeForm();
+                    }else{
+                        
+                        toast.current.show(
+                            {
+                                severity: 'warn',
+                                summary: 'Warning Message',
+                                detail: response.data.message,
+                                life: 3000
+                            }
+                        );
+                    }
+                    Loading();
+                }
+            ).catch(
+                (err)=>{
+                    Loading()
+                    console.log(err);
+                }
+            )
+        }
+    }
+
+    const downloadDocs = (argItems) =>{
+        
+        jobCardInfoService.downloadDocuments(argItems).then(
             (response)=>{
-                Loading()
-                console.log(response);
+                const type = response.headers['content-type'];
+                const _blob = new Blob([response.data], {type : type});
+
+                // const temp = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = window.URL.createObjectURL(_blob);
+                link.setAttribute('download', argItems.id +'_' +argItems.documentType+'.'+ type.split("/")[1]);
+                document.body.appendChild(link);
+                link.click();
+                //window.location.href = imageBuilder(new Blob([response.data]));
+                console.log(response)
             }
-        ).catch(
-            (err)=>{
-                Loading()
-                console.log(err);
-            }
-        )
+        ).catch((err)=>{console.log(err)})
     }
 
     useEffect(() => {
@@ -446,10 +565,10 @@ const JobCardCaller = () => {
     }, [])
 
     return (
-        <MasterLayout pageMap={['Home', 'Job Card Information']}>
+        <>
             <div className="row g-1">
                 {
-                    !openJobCard ?
+                    !openJobCard && !updateJobCard ?
                         (
                             <div className="col-12">
                                 <div className="card shadow-sm">
@@ -863,8 +982,26 @@ const JobCardCaller = () => {
                                                 <div className="col">
                                                     <label className="form-label">Job Card Attachments</label>
                                                     <div>
-                                                        <button className="btn btn-sm btn-outline-primary me-1 mt-2">Front View</button>
-                                                        <button className="btn btn-sm btn-outline-primary ms-1 mt-2">Back View</button>
+                                                        <button 
+                                                            className="btn btn-sm btn-outline-primary me-1 mt-2"
+                                                            onClick={()=>downloadDocs({
+                                                                "documentId": jcFront,
+                                                                "documentType": "JCFront",
+                                                                "id" : jcNumber
+                                                            })}
+                                                        >
+                                                            Front View
+                                                        </button>
+                                                        <button 
+                                                            className="btn btn-sm btn-outline-primary ms-1 mt-2"
+                                                            onClick={()=>downloadDocs({
+                                                                "documentId": jcBack,
+                                                                "documentType": "JCBack",
+                                                                "id" : jcNumber
+                                                            })}
+                                                        >
+                                                            Back View
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -990,7 +1127,8 @@ const JobCardCaller = () => {
 
 
             </div>
-        </MasterLayout>
+            <Toast ref={toast} />
+        </>
     )
 }
 

@@ -72,42 +72,13 @@ const MasterLayout = ({ title = "", desc = "", pageMap = [], children }) => {
                       Dashboard
                     </Link>
                   </li>
-                  {
-                    currentUser.data.roles.roleName === 'Dealers' ?   
-                    (
-                      <li className="nav-item">
-                        <Link 
-                          className={`nav-link ${pathName === '/jobCardInformation' ? 'active':''}`} 
-                          to="/jobCardInformation">
-                          Job Card
-                        </Link>
-                      </li>
-                    ) :
-                    currentUser.data.roles.roleName === 'Data Operator' ?
-                    (
-                      <li className="nav-item">
-                        <Link 
-                          className={`nav-link ${pathName === '/jobCardOperator' ? 'active':''}`} 
-                          to="/jobCardOperator">
-                          Job Card
-                        </Link>
-                      </li>
-                    )
-                    :
-                    currentUser.data.roles.roleName === 'Telecallers' ?
-                    (
-                      <li className="nav-item">
-                        <Link 
-                          className={`nav-link ${pathName === '/jobCardCaller' ? 'active':''}`} 
-                          to="/jobCardCaller">
-                          Job Card
-                        </Link>
-                      </li>
-                    ):
-                    (
-                      <></>
-                    )
-                  }
+                  <li className="nav-item">
+                    <Link 
+                      className={`nav-link ${pathName === '/jobCardInformation' ? 'active':''}`} 
+                      to="/jobCardInformation">
+                      Job Card
+                    </Link>
+                  </li>                  
                   
                   <li className="nav-item dropdown">
                     <Link

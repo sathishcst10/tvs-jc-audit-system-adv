@@ -66,9 +66,22 @@ const getCustomerFeedback = (argID)=>{
     return axios.get(APP_API_URL + "/CustomerFeedbackStatus/Dropdown/" + argID, { headers : authHeader()});
 }
 
-const updateJobCardAudit = (argItems) =>{
-    debugger
+const saveJobCardAudit = (argItems) =>{
     return axios.post(APP_API_URL + "/JobCardAudit", argItems, { headers : authHeader() });
+}
+const updateJobCardAudit = (argItems)=>{
+    return axios.put(APP_API_URL + "/JobCardAudit", argItems, { headers : authHeader() });
+}
+const getJobCardAuditByID = (argID)=>{
+    return axios.get(APP_API_URL + "/JobCardAudit/" + argID, { headers : authHeader() });
+}
+
+const getJobCardListForAudit = (argItems)=>{
+    return axios.post(APP_API_URL + "/JobCard/AllByPagingByAuditTeam", argItems, {headers : authHeader()});
+}
+
+const getJobCardDataById = (argID) =>{
+    return axios.get(APP_API_URL + "/JobCard/GetAllJobCardDataById/" + argID, { headers : authHeader() })
 }
 
 export default {
@@ -86,5 +99,10 @@ export default {
 
     getJobCardListForTeleCaller,
     getCustomerFeedback,
-    updateJobCardAudit
+    saveJobCardAudit,
+    updateJobCardAudit,
+    getJobCardAuditByID,
+
+    getJobCardListForAudit,
+    getJobCardDataById
 }
