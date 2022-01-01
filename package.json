@@ -18,6 +18,7 @@
     "primeicons": "^5.0.0",
     "primereact": "^7.1.0",
     "react": "^17.0.2",
+    "react-data-export": "^0.6.0",
     "react-dom": "^17.0.2",
     "react-loading-ui": "^1.2.3",
     "react-redux": "^7.2.6",

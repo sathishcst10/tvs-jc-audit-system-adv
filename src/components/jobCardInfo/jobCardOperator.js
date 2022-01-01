@@ -325,7 +325,8 @@ const JobCardOperator = () => {
         });
     }
 
-    const handleSubmit = ()=>{
+    const handleSubmit = (event)=>{
+        event.preventDefault();
        Loading(settings);
         jobCardInfoService.updateJobCard({
             jcid,
@@ -516,7 +517,7 @@ const JobCardOperator = () => {
             (response)=>{
                 const type = response.headers['content-type'];
                 const _blob = new Blob([response.data], {type : type});
-
+                console.log("FileTYpe",type);
                 // const temp = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement('a');
                 link.href = window.URL.createObjectURL(_blob);
@@ -617,353 +618,390 @@ const JobCardOperator = () => {
                             <div className="col-12">
                                 <div className="card shadow-sm">
                                     <div className="card-body">
-                                        <div className="d-flex justify-content-end">
-                                            <button
-                                                className="btn btn-sm btn-outline-danger me-1"
-                                                onClick={closeForm}
-                                            >
-                                                Cancel
-                                            </button>
-                                            <button className="btn btn-sm btn-success ms-1" onClick={handleSubmit}> 
-                                                Update Job card
-                                            </button>
-                                        </div>
-                                        <div className="">
-                                            <div className="row">
-                                                <div className="col">
-                                                    <label className="form-label">ID Number</label>
-                                                    <input className="form-control" value={jcNumber} disabled />
-                                                </div>
-                                                <div className="col">
-                                                    <label className="form-label">Jobcard Number</label>
-                                                    <input className="form-control" value={jobcardNumber} disabled />
-                                                </div>
-                                                <div className="col">
-                                                    <label className="form-label">Dealer Details</label>
-                                                    <input className="form-control" value={`${dealerName} - ${dealerLocation}`} disabled />
-                                                </div>
+                                        <form onSubmit={handleSubmit}>
+                                            <div className="d-flex justify-content-end">
+                                                <button
+                                                    className="btn btn-sm btn-outline-danger me-1"
+                                                    onClick={closeForm}
+                                                >
+                                                    Cancel
+                                                </button>
+                                                <button 
+                                                    className="btn btn-sm btn-success ms-1" 
+                                                    type="submit"
+                                                >
+                                                    Update Job card
+                                                </button>
                                             </div>
-                                            <div className="row">
-                                                <div className="col">
-                                                    <label className="form-label">Customer Name</label>
-                                                    <input 
-                                                        className="form-control" 
-                                                        name="customerName"
-                                                        value={customerName}
-                                                        onChange={handleChange("customerName")}
-                                                    />
-                                                </div>
-                                                <div className="col">
-                                                    <label className="form-label">Customer Mobile</label>
-                                                    <input 
-                                                        className="form-control" 
-                                                        name="customerMobile"
-                                                        value={customerMobile}
-                                                        onChange={handleChange("customerMobile")}
-                                                    />
-                                                </div>
-                                                <div className="col">
-                                                    <label className="form-label">Customer Address</label>
-                                                    <input 
-                                                        className="form-control" 
-                                                        name="customerAddress"
-                                                        value={customerAddress}
-                                                        onChange={handleChange("customerAddress")}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="row">
-                                                <div className="col">
-                                                    <label className="form-label">Model Name</label>
-                                                    <select className="form-select" name="modelID" value={modelID} onChange={handleChange("modelID")}>
-                                                        <option value={-1}>--Select model--</option>
-                                                        {
-                                                            modelLists.map((items, idx)=>(
-                                                                <option key={idx} value={items.id}>{items.text}</option>
-                                                            ))
-                                                            
-                                                        }
-                                                    </select>
-                                                </div>
-                                                <div className="col">
-                                                    <label className="form-label">Engine/Frame Number</label>
-                                                    <input 
-                                                        className="form-control" 
-                                                        name="engineFrameNumber"
-                                                        value={engineFrameNumber}
-                                                        onChange={handleChange("engineFrameNumber")}
-                                                    />
-                                                </div>
-                                                <div className="col">
-                                                    <label className="form-label">KM's</label>
-                                                    <input 
-                                                        className="form-control" 
-                                                        name="kMs"
-                                                        value={kMs}
-                                                        onChange={handleChange("kMs")}
-                                                    />
-                                                </div>                                               
-                                                
-                                            </div>
-                                            <div className="row">
-                                                <div className="col">
-                                                    <label className="form-label">DMS Number</label>
-                                                    <input 
-                                                        className="form-control" 
-                                                        name="dmsNumber"
-                                                        value={dmsNumber}        
-                                                        onChange={handleChange("dmsNumber")}                                                
-                                                    />
-                                                </div>
-                                                <div className="col">
-                                                    <label className="form-label">Vehicle Number</label>
-                                                    <input 
-                                                        className="form-control" 
-                                                        name="vehicleNumber"
-                                                        value={vehicleNumber}    
-                                                        onChange={handleChange("vehicleNumber")}                                                    
-                                                    />
-                                                </div>
-                                                <div className="col">
-                                                    <label className="form-label">Service Date</label>
-                                                    {/* <input 
-                                                        className="form-control" 
-                                                        name="serviceDate"
-                                                        value={serviceDate}     
-                                                        onChange={handleChange("serviceDate")}                                                   
-                                                    /> */}
-
-                                                    <Calendar 
-                                                        id="basic" 
-                                                        value={serviceDate} 
-                                                        name = "serviceDate"
-                                                        onChange={handleChange("serviceDate")} 
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="row">
-                                                <div className="col">
-                                                    <label className="form-label">Service type</label>
-                                                    <select className="form-select" name="serviceTypeID" value={serviceTypeID}  onChange={handleChange("serviceTypeID")}>
-                                                        <option value={-1}>--Select Service type--</option>
-                                                        {
-                                                            ServiceTypes.map((items, idx)=>(
-                                                                <option key={idx} value={items.id}>{items.text}</option>
-                                                            ))
-                                                            
-                                                        }
-                                                    </select>
-                                                </div>
-
-                                                <div className="col">
-                                                    <label className="form-label">Service Advisor Name</label>
-                                                    <input 
-                                                        className="form-control" 
-                                                        name="saName"
-                                                        value={saName}       
-                                                        onChange={handleChange("saName")}                                                 
-                                                    />
-                                                </div>
-                                                <div className="col">
-                                                    <label className="form-label">Technician Name</label>
-                                                    <input 
-                                                        className="form-control" 
-                                                        name="technicianName"
-                                                        value={technicianName}    
-                                                        onChange={handleChange("technicianName")}                                                    
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            <div className="row">
-                                                <div className="col">
-                                                    <div className="mb-3">
-                                                        <label htmlFor="frmDesc" className="form-label">Customer Voice</label>
-                                                        <div className="tags-input">
-                                                            <div className="tags-content">
-                                                                <ul className="ultag">
-                                                                    {
-                                                                        getTagDesc.map((tag, index) => (
-                                                                            <li key={index} className="tag">
-                                                                                <span className="tag-title">{tag}</span>
-                                                                                <i
-                                                                                    className="bi bi-x-circle-fill tag-close-icon"
-                                                                                    onClick={() => removeTags(index, "CustomerVoice")}
-                                                                                >
-                                                                                </i>
-                                                                            </li>
-                                                                        ))
-                                                                    }
-                                                                </ul>
-                                                            </div>
-                                                            <input
-                                                                type="text"
-                                                                placeholder="Press enter"
-                                                                name="customerVoice"
-                                                                onKeyUp={event => event.key === "Enter" ? addTags(event, "CustomerVoice") : null}
-
-                                                            />
-                                                        </div>
+                                            <div className="">
+                                                <div className="row">
+                                                    <div className="col">
+                                                        <label className="form-label">ID Number</label>
+                                                        <input className="form-control" value={jcNumber} disabled />
+                                                    </div>
+                                                    <div className="col">
+                                                        <label className="form-label">Jobcard Number</label>
+                                                        <input className="form-control" value={jobcardNumber} disabled />
+                                                    </div>
+                                                    <div className="col">
+                                                        <label className="form-label">Dealer Details</label>
+                                                        <input className="form-control" value={`${dealerName} - ${dealerLocation}`} disabled />
                                                     </div>
                                                 </div>
-                                                <div className="col">
-                                                    <div className="mb-3">
-                                                        <label htmlFor="frmDesc" className="form-label">Initial Observation</label>
-                                                        <div className="tags-input">
-                                                            <div className="tags-content">
-                                                                <ul className="ultag">
-                                                                    {
-                                                                        getInitialObs.map((tag, index) => (
-                                                                            <li key={index} className="tag">
-                                                                                <span className="tag-title">{tag}</span>
-                                                                                <i
-                                                                                    className="bi bi-x-circle-fill tag-close-icon"
-                                                                                    onClick={() => removeTags(index, "InitialObs")}
-                                                                                >
-                                                                                </i>
-                                                                            </li>
-                                                                        ))
-                                                                    }
-                                                                </ul>
-                                                            </div>
-                                                            <input
-                                                                type="text"
-                                                                placeholder="Press enter"
-                                                                onKeyUp={event => event.key === "Enter" ? addTags(event, "InitialObs") : null}
-                                                            />
-                                                        </div>
+                                                <div className="row">
+                                                    <div className="col">
+                                                        <label className="form-label">Customer Name</label>
+                                                        <input 
+                                                            className="form-control" 
+                                                            name="customerName"
+                                                            value={customerName}
+                                                            onChange={handleChange("customerName")}
+                                                            required
+                                                        />
+                                                    </div>
+                                                    <div className="col">
+                                                        <label className="form-label">Customer Mobile</label>
+                                                        <input 
+                                                            className="form-control" 
+                                                            name="customerMobile"
+                                                            value={customerMobile}
+                                                            onChange={handleChange("customerMobile")}
+                                                            required
+                                                        />
+                                                    </div>
+                                                    <div className="col">
+                                                        <label className="form-label">Customer Address</label>
+                                                        <input 
+                                                            className="form-control" 
+                                                            name="customerAddress"
+                                                            value={customerAddress}
+                                                            onChange={handleChange("customerAddress")}
+                                                            required
+                                                        />
                                                     </div>
                                                 </div>
-                                                <div className="col">
-                                                    <div className="mb-3">
-                                                        <label htmlFor="frmDesc" className="form-label">Final Findings</label>
-                                                        <div className="tags-input">
-                                                            <div className="tags-content">
-                                                                <ul className="ultag">
-                                                                    {
-                                                                        getFinalFindings.map((tag, index) => (
-                                                                            <li key={index} className="tag">
-                                                                                <span className="tag-title">{tag}</span>
-                                                                                <i
-                                                                                    className="bi bi-x-circle-fill tag-close-icon"
-                                                                                    onClick={() => removeTags(index, "FinalFindings")}
-                                                                                >
-                                                                                </i>
-                                                                            </li>
-                                                                        ))
-                                                                    }
-                                                                </ul>
-                                                            </div>
-                                                            <input
-                                                                type="text"
-                                                                placeholder="Press enter"
-                                                                onKeyUp={event => event.key === "Enter" ? addTags(event, "FinalFindings") : null}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="row">
-                                                <div className="col">
-                                                    <div className="mb-3">
-                                                        <label htmlFor="frmDesc" className="form-label">Action Taken</label>
-                                                        <div className="tags-input">
-                                                            <div className="tags-content">
-                                                                <ul className="ultag">
-                                                                    {
-                                                                        getActionTaken.map((tag, index) => (
-                                                                            <li key={index} className="tag">
-                                                                                <span className="tag-title">{tag}</span>
-                                                                                <i
-                                                                                    className="bi bi-x-circle-fill tag-close-icon"
-                                                                                    onClick={() => removeTags(index, "ActionTaken")}
-                                                                                >
-                                                                                </i>
-                                                                            </li>
-                                                                        ))
-                                                                    }
-                                                                </ul>
-                                                            </div>
-                                                            <input
-                                                                type="text"
-                                                                placeholder="Press enter"
-                                                                onKeyUp={event => event.key === "Enter" ? addTags(event, "ActionTaken") : null}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="col">
-                                                    <div className="mb-3">
-                                                        <label htmlFor="frmDesc" className="form-label">Dealer Observation from Job card</label>
-                                                        <div className="tags-input">
-                                                            <div className="tags-content">
-                                                                <ul className="ultag">
-                                                                    {
-                                                                        getDealerObs.map((tag, index) => (
-                                                                            <li key={index} className="tag">
-                                                                                <span className="tag-title">{tag}</span>
-                                                                                <i
-                                                                                    className="bi bi-x-circle-fill tag-close-icon"
-                                                                                    onClick={() => removeTags(index, "DealerObs")}
-                                                                                >
-                                                                                </i>
-                                                                            </li>
-                                                                        ))
-                                                                    }
-                                                                </ul>
-                                                            </div>
-                                                            <input
-                                                                type="text"
-                                                                placeholder="Press enter"
-                                                                onKeyUp={event => event.key === "Enter" ? addTags(event, "DealerObs") : null}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="col">
-                                                    <label className="form-label">Job Card Attachments</label>
-                                                    <div>
-                                                        <button 
-                                                            className="btn btn-sm btn-outline-primary me-1 mt-2"
-                                                            onClick={()=>downloadDocs({
-                                                                "documentId": jcFront,
-                                                                "documentType": "JCFront",
-                                                                "id" : jcNumber
-                                                            })}
+                                                <div className="row">
+                                                    <div className="col">
+                                                        <label className="form-label">Model Name</label>
+                                                        <select 
+                                                            className="form-select" 
+                                                            name="modelID" 
+                                                            value={modelID} 
+                                                            onChange={handleChange("modelID")}
+                                                            required
                                                         >
-                                                            Front View
-                                                        </button>
-                                                        <button 
-                                                            className="btn btn-sm btn-outline-primary ms-1 mt-2"
-                                                            onClick={()=>downloadDocs({
-                                                                "documentId": jcBack,
-                                                                "documentType": "JCBack",
-                                                                "id" : jcNumber
-                                                            })}
-                                                        >
-                                                            Back View
-                                                        </button>
+                                                            <option value="" selected>--Select model--</option>
+                                                            {
+                                                                modelLists.map((items, idx)=>(
+                                                                    <option key={idx} value={items.id}>{items.text}</option>
+                                                                ))
+                                                                
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                    <div className="col">
+                                                        <label className="form-label">Engine/Frame Number</label>
+                                                        <input 
+                                                            className="form-control" 
+                                                            name="engineFrameNumber"
+                                                            value={engineFrameNumber}
+                                                            onChange={handleChange("engineFrameNumber")}
+                                                            required
+                                                        />
+                                                    </div>
+                                                    <div className="col">
+                                                        <label className="form-label">KM's</label>
+                                                        <input 
+                                                            className="form-control" 
+                                                            name="kMs"
+                                                            value={kMs}
+                                                            onChange={handleChange("kMs")}
+                                                            required
+                                                        />
+                                                    </div>                                               
+                                                    
+                                                </div>
+                                                <div className="row">
+                                                    <div className="col">
+                                                        <label className="form-label">DMS Number</label>
+                                                        <input 
+                                                            className="form-control" 
+                                                            name="dmsNumber"
+                                                            value={dmsNumber}        
+                                                            onChange={handleChange("dmsNumber")}     
+                                                            required                                           
+                                                        />
+                                                    </div>
+                                                    <div className="col">
+                                                        <label className="form-label">Vehicle Number</label>
+                                                        <input 
+                                                            className="form-control" 
+                                                            name="vehicleNumber"
+                                                            value={vehicleNumber}    
+                                                            onChange={handleChange("vehicleNumber")}  
+                                                            required                                                  
+                                                        />
+                                                    </div>
+                                                    <div className="col">
+                                                        <label className="form-label">Service Date</label>
+                                                        {/* <input 
+                                                            className="form-control" 
+                                                            name="serviceDate"
+                                                            value={serviceDate}     
+                                                            onChange={handleChange("serviceDate")}                                                   
+                                                        /> */}
+
+                                                        <Calendar 
+                                                            id="basic" 
+                                                            value={serviceDate} 
+                                                            name = "serviceDate"
+                                                            onChange={handleChange("serviceDate")} 
+                                                            required
+                                                        />
                                                     </div>
                                                 </div>
-                                            </div>
+                                                <div className="row">
+                                                    <div className="col">
+                                                        <label className="form-label">Service type</label>
+                                                        <select 
+                                                            className="form-select" 
+                                                            name="serviceTypeID" 
+                                                            value={serviceTypeID} 
+                                                            onChange={handleChange("serviceTypeID")}
+                                                            required
+                                                        >
+                                                            <option value="">--Select Service type--</option>
+                                                            {
+                                                                ServiceTypes.map((items, idx)=>(
+                                                                    <option key={idx} value={items.id}>{items.text}</option>
+                                                                ))
+                                                                
+                                                            }
+                                                        </select>
+                                                    </div>
 
-                                            <div className="row">
-                                                <div className="col-4">
-                                                    <label className="form-lable">Choose Telecaller</label>
-                                                    <select className="form-select" name="assignTeleCallerID" value={assignTeleCallerID} onChange={handleChange("assignTeleCallerID")}>
-                                                        <option>--Select Telecaller--</option>
-                                                        {
-                                                            teleCallers.map((items, idx)=>(
-                                                                <option key={idx} value={items.id}>{items.text}</option>
-                                                            ))
-                                                            
-                                                        }
-                                                    </select>
+                                                    <div className="col">
+                                                        <label className="form-label">Service Advisor Name</label>
+                                                        <input 
+                                                            className="form-control" 
+                                                            name="saName"
+                                                            value={saName}       
+                                                            onChange={handleChange("saName")}     
+                                                            required                                            
+                                                        />
+                                                    </div>
+                                                    <div className="col">
+                                                        <label className="form-label">Technician Name</label>
+                                                        <input 
+                                                            className="form-control" 
+                                                            name="technicianName"
+                                                            value={technicianName}    
+                                                            onChange={handleChange("technicianName")}     
+                                                            required                                               
+                                                        />
+                                                    </div>
                                                 </div>
 
+                                                <div className="row">
+                                                    <div className="col">
+                                                        <div className="mb-3">
+                                                            <label htmlFor="frmDesc" className="form-label">Customer Voice</label>
+                                                            <div className="tags-input">
+                                                                <div className="tags-content">
+                                                                    <ul className="ultag">
+                                                                        {
+                                                                            getTagDesc.map((tag, index) => (
+                                                                                <li key={index} className="tag">
+                                                                                    <span className="tag-title">{tag}</span>
+                                                                                    <i
+                                                                                        className="bi bi-x-circle-fill tag-close-icon"
+                                                                                        onClick={() => removeTags(index, "CustomerVoice")}
+                                                                                    >
+                                                                                    </i>
+                                                                                </li>
+                                                                            ))
+                                                                        }
+                                                                    </ul>
+                                                                </div>
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="Press enter"
+                                                                    name="customerVoice"
+                                                                    onKeyUp={event => event.key === "Enter" ?  addTags(event, "CustomerVoice") : null}
+                                                                    onKeyPress={(e) => { e.key === 'Enter' && e.preventDefault(); }}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col">
+                                                        <div className="mb-3">
+                                                            <label htmlFor="frmDesc" className="form-label">Initial Observation</label>
+                                                            <div className="tags-input">
+                                                                <div className="tags-content">
+                                                                    <ul className="ultag">
+                                                                        {
+                                                                            getInitialObs.map((tag, index) => (
+                                                                                <li key={index} className="tag">
+                                                                                    <span className="tag-title">{tag}</span>
+                                                                                    <i
+                                                                                        className="bi bi-x-circle-fill tag-close-icon"
+                                                                                        onClick={() => removeTags(index, "InitialObs")}
+                                                                                    >
+                                                                                    </i>
+                                                                                </li>
+                                                                            ))
+                                                                        }
+                                                                    </ul>
+                                                                </div>
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="Press enter"
+                                                                    onKeyUp={event => event.key === "Enter" ? addTags(event, "InitialObs") : null}
+                                                                    onKeyPress={(e) => { e.key === 'Enter' && e.preventDefault(); }}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col">
+                                                        <div className="mb-3">
+                                                            <label htmlFor="frmDesc" className="form-label">Final Findings</label>
+                                                            <div className="tags-input">
+                                                                <div className="tags-content">
+                                                                    <ul className="ultag">
+                                                                        {
+                                                                            getFinalFindings.map((tag, index) => (
+                                                                                <li key={index} className="tag">
+                                                                                    <span className="tag-title">{tag}</span>
+                                                                                    <i
+                                                                                        className="bi bi-x-circle-fill tag-close-icon"
+                                                                                        onClick={() => removeTags(index, "FinalFindings")}
+                                                                                    >
+                                                                                    </i>
+                                                                                </li>
+                                                                            ))
+                                                                        }
+                                                                    </ul>
+                                                                </div>
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="Press enter"
+                                                                    onKeyUp={event => event.key === "Enter" ? addTags(event, "FinalFindings") : null}
+                                                                    onKeyPress={(e) => { e.key === 'Enter' && e.preventDefault(); }}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="row">
+                                                    <div className="col">
+                                                        <div className="mb-3">
+                                                            <label htmlFor="frmDesc" className="form-label">Action Taken</label>
+                                                            <div className="tags-input">
+                                                                <div className="tags-content">
+                                                                    <ul className="ultag">
+                                                                        {
+                                                                            getActionTaken.map((tag, index) => (
+                                                                                <li key={index} className="tag">
+                                                                                    <span className="tag-title">{tag}</span>
+                                                                                    <i
+                                                                                        className="bi bi-x-circle-fill tag-close-icon"
+                                                                                        onClick={() => removeTags(index, "ActionTaken")}
+                                                                                    >
+                                                                                    </i>
+                                                                                </li>
+                                                                            ))
+                                                                        }
+                                                                    </ul>
+                                                                </div>
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="Press enter"
+                                                                    onKeyUp={event => event.key === "Enter" ? addTags(event, "ActionTaken") : null}
+                                                                    onKeyPress={(e) => { e.key === 'Enter' && e.preventDefault(); }}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col">
+                                                        <div className="mb-3">
+                                                            <label htmlFor="frmDesc" className="form-label">Dealer Observation from Job card</label>
+                                                            <div className="tags-input">
+                                                                <div className="tags-content">
+                                                                    <ul className="ultag">
+                                                                        {
+                                                                            getDealerObs.map((tag, index) => (
+                                                                                <li key={index} className="tag">
+                                                                                    <span className="tag-title">{tag}</span>
+                                                                                    <i
+                                                                                        className="bi bi-x-circle-fill tag-close-icon"
+                                                                                        onClick={() => removeTags(index, "DealerObs")}
+                                                                                    >
+                                                                                    </i>
+                                                                                </li>
+                                                                            ))
+                                                                        }
+                                                                    </ul>
+                                                                </div>
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="Press enter"
+                                                                    onKeyUp={event => event.key === "Enter" ? addTags(event, "DealerObs") : null}
+                                                                    onKeyPress={(e) => { e.key === 'Enter' && e.preventDefault(); }}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col">
+                                                        <label className="form-label">Job Card Attachments</label>
+                                                        <div>
+                                                            <button 
+                                                                className="btn btn-sm btn-outline-primary me-1 mt-2"
+                                                                onClick={()=>downloadDocs({
+                                                                    "documentId": jcFront,
+                                                                    "documentType": "JCFront",
+                                                                    "id" : jcNumber
+                                                                })}
+                                                            >
+                                                                Front View
+                                                            </button>
+                                                            <button 
+                                                                className="btn btn-sm btn-outline-primary ms-1 mt-2"
+                                                                onClick={()=>downloadDocs({
+                                                                    "documentId": jcBack,
+                                                                    "documentType": "JCBack",
+                                                                    "id" : jcNumber
+                                                                })}
+                                                            >
+                                                                Back View
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="row">
+                                                    <div className="col-4">
+                                                        <label className="form-lable">Choose Telecaller</label>
+                                                        <select 
+                                                            className="form-select" 
+                                                            name="assignTeleCallerID" 
+                                                            value={assignTeleCallerID} 
+                                                            onChange={handleChange("assignTeleCallerID")}
+                                                            required
+                                                        >
+                                                            <option value="">--Select Telecaller--</option>
+                                                            {
+                                                                teleCallers.map((items, idx)=>(
+                                                                    <option key={idx} value={items.id}>{items.text}</option>
+                                                                ))
+                                                                
+                                                            }
+                                                        </select>
+                                                    </div>
+
+                                                </div>
                                             </div>
-                                        </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
