@@ -35,6 +35,7 @@ export const ModelMaster = () => {
     loading: false,
     update: false,
   });
+  const [getFilter, setFilter] = useState('');
   const { pageNumber, pageSize, sortOrderBy, sortOrderColumn, filters } =
     getModelReq;
   const { modelName, modelID, isActive } = model;
@@ -185,6 +186,27 @@ export const ModelMaster = () => {
     }
   };
 
+  const handleFilter = (name) => (event) => {
+      const value = event.target.value;
+      setFilter(value);
+      setModelReq({
+          ...getModelReq,
+          "filters": {
+              "modelName": value
+          }
+      });
+  }
+  const filterData = () => {
+    getAllModelsByPaging();
+      setTimeout(() => {
+          setModelReq({
+              ...getModelReq,
+              "filters": ""
+          });
+          setFilter("");
+      }, 5000);
+      //console.log(getaggre);
+  }
   useEffect(() => {
     getAllModelsByPaging();
   }, []);
@@ -267,6 +289,28 @@ export const ModelMaster = () => {
         <div className="col-9">
           <div className="card h-100">
             <div className="card-body p-1">
+              <div className="d-flex justify-content-end mb-1">
+                  <div className="input-group me-0 searchBox" >
+                    <input
+                        type="text"
+                        className="form-control form-control-sm"
+                        placeholder="Search..."
+                        aria-label="Search..."
+                        aria-describedby="button-addon2"
+                        name="getFilter"
+                        value={getFilter}
+                        onChange={handleFilter("getFilter")}
+                    />
+                    <button
+                        className="btn btn-sm btn-outline-secondary"
+                        type="button"
+                        id="button-addon2"
+                        onClick={filterData}
+                    >
+                        <i className="bi bi-search"></i>
+                    </button>
+                  </div>
+                </div>
               <div className="">
                 <ModelTable />
 

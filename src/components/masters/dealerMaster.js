@@ -29,6 +29,7 @@ export const DealerMaster = () => {
   const [stateDetails, setStates] = useState([]);
   const [dealerDetails, setDetails] = useState([]);  
   const [totalCount, setTotalCount] = useState(0);
+  const [getFilter, setFilter] = useState('');
   const [initialItems, setInitial] = useState({
     pageNumber: 1,
     pageSize: 10,
@@ -278,6 +279,28 @@ export const DealerMaster = () => {
 
   };
 
+  const handleFilter = (name) => (event) => {
+      const value = event.target.value;
+      setFilter(value);
+      setInitial({
+          ...initialItems,
+          "filters": {
+              "DealerName": value
+          }
+      });
+  }
+  const filterData = () => {
+    getAllDealersList();
+      setTimeout(() => {
+          setInitial({
+              ...initialItems,
+              "filters": ""
+          });
+          setFilter("");
+      }, 5000);
+      //console.log(getaggre);
+  }
+
   useEffect(() => {
     getStatesList();
     getAllDealersList();
@@ -289,6 +312,28 @@ export const DealerMaster = () => {
         <div className="col-9">
           <div className="card h-100">
             <div className="card-body p-1">
+              <div className="d-flex justify-content-end mb-1">
+                <div className="input-group me-0 searchBox" >
+                  <input
+                      type="text"
+                      className="form-control form-control-sm"
+                      placeholder="Search..."
+                      aria-label="Search..."
+                      aria-describedby="button-addon2"
+                      name="getFilter"
+                      value={getFilter}
+                      onChange={handleFilter("getFilter")}
+                  />
+                  <button
+                      className="btn btn-sm btn-outline-secondary"
+                      type="button"
+                      id="button-addon2"
+                      onClick={filterData}
+                  >
+                      <i className="bi bi-search"></i>
+                  </button>
+                </div>
+              </div>
               <div className="table-responsive">
                 <table className="table table-hover table-custom">
                   <thead className="table-dark">

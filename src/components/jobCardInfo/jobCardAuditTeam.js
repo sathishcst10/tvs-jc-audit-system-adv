@@ -1,7 +1,9 @@
 import { getCardActionsUtilityClass } from "@mui/material";
+import exportFromJSON from "export-from-json";
 import { useEffect, useRef, useState } from "react";
 import { Loading } from "react-loading-ui"
 import jobCardInfoService from "../../services/job-card-info.service";
+import { ExportData } from "../exportData";
 
 const JobCardAuditTeam = ()=>{
     const toast = useRef(null);
@@ -294,19 +296,15 @@ const JobCardAuditTeam = ()=>{
     }
 
     const excelformat=()=> {
-        
-        var lineArray = [];
-        jobCardList.forEach(function(infoArray, index) {
-            var line = infoArray.join(" \t");
-            lineArray.push(index == 0 ? line : line);
-        });
-        var csvContent = lineArray.join("\r\n");
-        var excel_file = document.createElement('a');
-        excel_file.setAttribute('href', 'data:application/vnd.ms-excel;charset=utf-8,' + encodeURIComponent(csvContent));
-        excel_file.setAttribute('download', 'Visitor_History.xls');
-        document.body.appendChild(excel_file);
-        excel_file.click();
-        document.body.removeChild(excel_file);
+        console.log("files", [jobCardList[0],jobCardList[1]])
+    const data = jobCardList
+       const fileName =  'Report';
+       const exportType = exportFromJSON.types.csv;
+       exportFromJSON({
+        data,
+        fileName,
+        exportType
+       });
     }
 
     useEffect(()=>{
@@ -322,7 +320,15 @@ const JobCardAuditTeam = ()=>{
                         <div className="col-12">
                             <div className="card shadow-sm">
                                 <div className="card-body p-1">
-                                    <button onClick={excelformat}>Download</button>
+                                    <div className="d-flex justify-content-end mb-1">
+                                        <button 
+                                            className="btn btn-sm btn-primary" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#staticBackdrop"
+                                        >
+                                            Export Data
+                                        </button>
+                                    </div>
                                     <div className="table-responsive">
                                         <table className="table table-striped table-hover table-custom">
                                             <thead className="table-dark">                                        
@@ -790,6 +796,22 @@ const JobCardAuditTeam = ()=>{
                 }
             </div>
         
+            <div className="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div className="modal-dialog">
+                <div className="modal-content">
+                    <div className="modal-header">
+                    <h5 className="modal-title" id="staticBackdropLabel">Export Data</h5>
+                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div className="modal-body">
+                        <ExportData/>
+                    </div>
+                    <div className="modal-footer">
+                   
+                    </div>
+                </div>
+                </div>
+            </div>
         </>
     )
 }
