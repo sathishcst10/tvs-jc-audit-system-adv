@@ -33,6 +33,7 @@ const JobCardCaller = () => {
     const [ServiceTypes, setServiceTypes] = useState([]);
     const [teleCallers, setTeleCallers] = useState([]);
     const [aggregates, setAggregates] = useState([]);
+    const [getFilter, setFilter] = useState('');
     const [customerFeedbackStatus, setCustomerFeedbackStatus] = useState([]);
     const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -345,7 +346,27 @@ const JobCardCaller = () => {
         });
         getJobCardDetailsByID(argID);
     }
-
+    const handleFilter = (name) => (event) => {
+        const value = event.target.value;
+        setFilter(value);
+        setJobCardItems({
+            ...getJobCardItems,
+            "filters": {
+                "jobcardNumber": value
+            }
+        });
+    }
+    const filterJobcardNumber = () => {
+        getAllJobCardsList();
+        setTimeout(() => {
+            setJobCardItems({
+                ...getJobCardItems,
+                "filters": ""
+            });
+            setFilter("");
+        }, 5000);
+        
+    }
     const closeForm = () => {
         setJobCardActions({
             ...jobcardActions,
@@ -574,6 +595,28 @@ const JobCardCaller = () => {
                             <div className="col-12">
                                 <div className="card shadow-sm">
                                     <div className="card-body p-1">
+                                        <div className="d-flex justify-content-end mb-1">
+                                            <div className="input-group me-2 searchBox" >
+                                                <input
+                                                    type="text"
+                                                    className="form-control form-control-sm"
+                                                    placeholder="Search..."
+                                                    aria-label="Search..."
+                                                    aria-describedby="button-addon2"
+                                                    name="getFilter"
+                                                    value={getFilter}
+                                                    onChange={handleFilter("getFilter")}
+                                                />
+                                                <button
+                                                    className="btn btn-sm btn-outline-secondary"
+                                                    type="button"
+                                                    id="button-addon2"
+                                                    onClick={filterJobcardNumber}
+                                                >
+                                                    <i className="bi bi-search"></i>
+                                                </button>
+                                            </div>
+                                        </div>
                                         <div className="table-responsive">
                                             <table className="table table-striped table-hover table-custom">
                                                 <thead className="table-dark">

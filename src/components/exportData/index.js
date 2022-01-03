@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Calendar } from "primereact/calendar"
 import { Dropdown } from "primereact/dropdown";
+import { Toast } from "primereact/toast";
 import exportFromJSON from "export-from-json";
 import aggregateMasterService from "../../services/aggregate-master.service";
 import dealerMasterService from "../../services/dealer-master.service";
@@ -8,6 +9,7 @@ import jobCardInfoService from "../../services/job-card-info.service";
 import modelMasterService from "../../services/model-master.service";
 
 const ExportData = () =>{
+    const toast = useRef(null);
     const [initialItems, setInitial] = useState({
         pageNumber: 1,
         pageSize: 10,
@@ -113,34 +115,36 @@ const ExportData = () =>{
         
     }
     const filterData = () => {
-        setInitial({
-            ...initialItems,
-            "filters": {
-                "jobcardNumber" : jobcardNumber,
-                "dealerId" : dealerId,
-                "modelId" : modelId,
-                "GapAggregateId" : GapAggregateId,
-                "serviceTypeId" : serviceTypeId,
-                "StatusId" : StatusId,
-                "startDate" : startDate,
-                "endDate" : endDate
-            }
+        // setInitial({
+        //     ...initialItems,
+        //     "filters": ""
+        //     // {
+        //     //     "jobcardNumber" : jobcardNumber,
+        //     //     "dealerId" : dealerId,
+        //     //     "modelId" : modelId,
+        //     //     "GapAggregateId" : GapAggregateId,
+        //     //     "serviceTypeId" : serviceTypeId,
+        //     //     "StatusId" : StatusId,
+        //     //     "startDate" : startDate,
+        //     //     "endDate" : endDate
+        //     // }
             
-        });
+        // });
 
         jobCardInfoService.getAllDataForExport({
             pageNumber, 
             pageSize, 
             sortOrderBy, 
             sortOrderColumn, 
-            filters : {
+            filters :
+            {
                 "jobcardNumber" : jobcardNumber,
-                "dealerId" : dealerId,
-                "modelId" : modelId,
-                "GapAggregateId" : GapAggregateId,
-                "serviceTypeId" : serviceTypeId,
-                "StatusId" : StatusId,
-                "startDate" : startDate,
+                "dealerId" : dealerId != "" ? dealerId : 0,
+                "modelId" : modelId !=="" ? modelId : 0,
+                // "GapAggregateId" : GapAggregateId,
+                // "serviceTypeId" : serviceTypeId,
+                // "StatusId" : StatusId,
+                 "startDate" : startDate,
                 "endDate" : endDate
             }
         }).then(
@@ -149,26 +153,32 @@ const ExportData = () =>{
                 console.log("res=>",response.data.data.data);
                 const data = response.data.data.data
                 const fileName =  'Report';
-                const exportType = exportFromJSON.types.csv;
-                console.log(data);
-                exportFromJSON({
-                    data,
-                    fileName,
-                    exportType
-                });
+                const exportType = exportFromJSON.types.xls;
+
+                if(data.length == 0){
+                    toast.current.show(
+                        {
+                            severity: 'warn',
+                            summary: 'Warning Message',
+                            detail: "No data found!",
+                            life: 3000
+                        }
+                    );
+                    console.log("No data found!");
+
+                }else{
+                    exportFromJSON({
+                        data,
+                        fileName,
+                        exportType
+                    });
+                }
+
+                
             }
         ).catch((err)=>{console.log(err)})
-        console.log("1",getFilter);
-        console.log("2", initialItems)
-    //getAllDealersList();
-        // setTimeout(() => {
-        //     setInitial({
-        //         ...initialItems,
-        //         "filters": ""
-        //     });
-        //     setFilter("");
-        // }, 5000);
-        //console.log(getaggre);
+        // console.log("1",getFilter);
+        // console.log("2", initialItems)  
     }
     useEffect(()=>{
         getAllAggregates();
@@ -181,9 +191,9 @@ const ExportData = () =>{
         <div className="container-fluid">
             <div className="row">
                 <div className="mb-2 col-6">
-                    <label for="pickJobcardNumber" class="form-label">Jobcard Number</label>
+                    <label htmlFor="pickJobcardNumber" className="form-label">Jobcard Number</label>
                     <input 
-                        class="form-control" 
+                        className="form-control" 
                         id="pickJobcardNumber" 
                         name="jobcardNumber" 
                         value={jobcardNumber} 
@@ -192,9 +202,9 @@ const ExportData = () =>{
                     
                 </div>
                 <div className="mb-2 col-6">
-                    <label for="selectDealer" class="form-label">Dealer Details</label>
+                    <label htmlFor="selectDealer" className="form-label">Dealer Details</label>
                     <select 
-                        class="form-select" 
+                        className="form-select" 
                         id="selectDealer" 
                         name="dealerId" 
                         value={dealerId} 
@@ -209,9 +219,9 @@ const ExportData = () =>{
                     </select>
                 </div>
                 <div className="mb-2 col-6">
-                    <label for="selectModel" class="form-label">Models</label>
+                    <label htmlFor="selectModel" className="form-label">Models</label>
                     <select 
-                        class="form-select" 
+                        className="form-select" 
                         id="selectModel" 
                         name="modelId" 
                         value={modelId} 
@@ -226,9 +236,9 @@ const ExportData = () =>{
                     </select>
                 </div>
                 <div className="mb-2 col-6">
-                    <label for="selectAggregate" class="form-label">Gap Aggregate</label>
+                    <label htmlFor="selectAggregate" className="form-label">Gap Aggregate</label>
                     <select 
-                        class="form-select" 
+                        className="form-select" 
                         id="selectAggregate" 
                         name="GapAggregateId" 
                         value={GapAggregateId} 
@@ -243,9 +253,9 @@ const ExportData = () =>{
                     </select>
                 </div>
                 <div className="mb-2 col-6">
-                    <label for="selectServiceType" class="form-label">Service Type</label>
+                    <label htmlFor="selectServiceType" className="form-label">Service Type</label>
                     <select 
-                        class="form-select" 
+                        className="form-select" 
                         id="selectServiceType" 
                         name="serviceTypeId" 
                         value={serviceTypeId} 
@@ -260,9 +270,9 @@ const ExportData = () =>{
                     </select>
                 </div>
                 <div className="mb-2 col-6">
-                    <label for="selectStatus" class="form-label">Status</label>
+                    <label htmlFor="selectStatus" className="form-label">Status</label>
                     <select 
-                        class="form-select" 
+                        className="form-select" 
                         id="selectStatus" 
                         name="StatusId" 
                         value={StatusId} 
@@ -277,9 +287,9 @@ const ExportData = () =>{
                     </select>
                 </div>
                 <div className="mb-2 col-6">
-                    <label for="pickStartDate" class="form-label">Start Date</label>               
+                    <label htmlFor="pickStartDate" className="form-label">Start Date</label>               
                     <input
-                        class="form-control" 
+                        className="form-control" 
                     id="basic" 
                     name="startDate" 
                     value={startDate} 
@@ -289,9 +299,9 @@ const ExportData = () =>{
                     
                 </div>
                 <div className="mb-2 col-6">
-                    <label for="pickEndDate" class="form-label">Start Date</label>
+                    <label htmlFor="pickEndDate" className="form-label">Start Date</label>
                     <input 
-                        class="form-control" 
+                        className="form-control" 
                         id="pickEndDate" 
                         name="endDate" 
                         value={endDate} 
@@ -306,7 +316,7 @@ const ExportData = () =>{
             </div>
            
 
-            
+            <Toast ref={toast} />
         </div>
     )
 }

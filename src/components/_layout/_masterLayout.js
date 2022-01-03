@@ -80,7 +80,7 @@ const MasterLayout = ({ title = "", desc = "", pageMap = [], children }) => {
                     </Link>
                   </li>                  
                   
-                  <li className="nav-item dropdown">
+                  <li className="nav-item dropdown d-none">
                     <Link
                       className="nav-link dropdown-toggle"
                       to="#"
@@ -110,44 +110,75 @@ const MasterLayout = ({ title = "", desc = "", pageMap = [], children }) => {
                     </ul>
                   </li>
                   
-                  
-                  <li className="nav-item dropdown">
-                    <Link
-                      className="nav-link dropdown-toggle"
-                      to="#"
-                      id="navbarDropdown"
-                      role="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                    >
-                      Masters
-                    </Link>
-                    <ul className="dropdown-menu border-0 shadow-sm" aria-labelledby="navbarDropdown">
-                                          
-                          <li>
-                            <Link className="dropdown-item" to="/masters/userMaster">
-                              User Master
-                            </Link>
-                          </li>
-                          <li>
-                            <Link className="dropdown-item" to="/masters/dealerMaster">
-                              Dealer Master
-                            </Link>
-                          </li>
-                          <li>
-                            <Link className="dropdown-item" to="/masters/modelMaster">
-                              Model Master
-                            </Link>
-                          </li>  
-                        
-                          <li>
-                            <Link className="dropdown-item" to="/masters/aggregateMaster">
-                              Aggregate Master
-                            </Link>
-                          </li>                        
-                    </ul>                    
-                  </li>
+                  {
+                    currentUser.data.roles.roleName !== 'Audit Team' && currentUser.data.roles.roleName !== 'Dealers' &&
+                    (
+                      <li className="nav-item dropdown">
+                        <Link
+                          className="nav-link dropdown-toggle"
+                          to="#"
+                          id="navbarDropdown"
+                          role="button"
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                        >
+                          Masters
+                        </Link>
+                        <ul className="dropdown-menu border-0 shadow-sm" aria-labelledby="navbarDropdown">
+                             {currentUser.data.roles.roleName === 'Admin' || currentUser.data.roles.roleName === 'Super Admin' &&
+                              (    
+                                <>            
+                                  <li>
+                                    <Link className="dropdown-item" to="/masters/userMaster">
+                                      User Master
+                                    </Link>
+                                  </li>
+                                  <li>
+                                    <Link className="dropdown-item" to="/masters/dealerMaster">
+                                      Dealer Master
+                                    </Link>
+                                  </li>
+                                  <li>
+                                    <Link className="dropdown-item" to="/masters/modelMaster">
+                                      Model Master
+                                    </Link>
+                                  </li>  
+                                
+                                  <li>
+                                    <Link className="dropdown-item" to="/masters/aggregateMaster">
+                                      Aggregate Master
+                                    </Link>
+                                  </li>       
+                                </>
+                              )
+                            }  
 
+                            {
+                              currentUser.data.roles.roleName === 'Telecallers'  &&
+                              (  
+                                <li>
+                                    <Link className="dropdown-item" to="/masters/aggregateMaster">
+                                      Aggregate Master
+                                    </Link>
+                                  </li>    
+                              )
+
+                              
+                            } 
+                            {
+                              currentUser.data.roles.roleName === 'Data Operator'  &&
+                              (  
+                                <li>
+                                  <Link className="dropdown-item" to="/masters/modelMaster">
+                                    Model Master
+                                  </Link>
+                                </li>    
+                              )
+                            }               
+                        </ul>                    
+                      </li>
+                    )
+                  }
                 </ul>
   
                 <ul className="navbar-nav ms-auto">
