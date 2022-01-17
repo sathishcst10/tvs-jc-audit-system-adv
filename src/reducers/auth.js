@@ -10,7 +10,7 @@ const initalState = user
     ? {isLoggedIn: true, user}
     : {isLoggedIn: false, user : null};
 
-export default function(state = initalState, action){
+export default function auth(state = initalState, action){
     const {type, payload} = action;
 
     switch (type) {

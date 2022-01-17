@@ -217,7 +217,7 @@ const JobCardDealers = () => {
                 });
                 setTagDesc(JSON.parse(response.data.data.customerVoice));
                 setInitialObs(JSON.parse(response.data.data.initialObservation));
-                setFinalFindings(JSON.parse(response.data.data.initialObservation));
+                setFinalFindings(JSON.parse(response.data.data.finalFinding));
                 setActionTaken(JSON.parse(response.data.data.actionTaken))
                 console.log(response);
                 Loading();

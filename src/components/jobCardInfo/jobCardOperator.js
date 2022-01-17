@@ -23,6 +23,7 @@ const JobCardOperator = () => {
         theme: "dark",
     };
     const [jobcardActions, setJobCardActions] = useState({
+        newJobCard : false,
         openJobCard: false,
         updateJobCard: false
     });
@@ -32,13 +33,32 @@ const JobCardOperator = () => {
     const [getFinalFindings, setFinalFindings] = useState([]);
     const [getActionTaken, setActionTaken] = useState([]);
     const [getDealerObs, setDealerObs] = useState([]);
-
+    const [dealers, setDealers] = useState([]);
     const [modelLists, setModelLists] = useState([]);
     const [ServiceTypes, setServiceTypes] = useState([]);
     const [teleCallers, setTeleCallers] = useState([]);
     const [getFilter, setFilter] = useState('');
-    const { openJobCard, updateJobCard } = jobcardActions;
+    const { openJobCard, updateJobCard, newJobCard } = jobcardActions;
     const [showJobcards, setShowJobCards] = useState([]);
+    const [fileUpload, setFileUpload] = useState({
+        jcfront: 0,
+        jcback: 0
+    });
+    const [selectedDocument, setSelectedDocument] = useState({
+        frontType : "",
+        frontFileName : ""
+       
+    });
+
+    const [selectedDoc, setSelectedDoc] = useState({
+        backType : "",
+        backFileName : ""
+    })
+    const {frontType, frontFileName} = selectedDocument;
+    const { backType, backFileName } = selectedDoc;
+    const formData_front = new FormData();
+    const formData_back = new FormData();
+    const { jcfront, jcback } = fileUpload;
     const [getAllJobCards, setAllJobCards] = useState(
         {
             "pageNumber": 1,
@@ -186,7 +206,17 @@ const JobCardOperator = () => {
             }
         )
     }
-
+    const getDealerInfo = () => {
+        dealerMasterService
+          .getDealerForDropdown(
+           true
+          )
+          .then((response) => {
+            console.log(response);
+            setDealers(response.data.data.data);
+          })
+          .catch((error) => console.log(error));
+      };
     const getAllServiceTypes = () =>{
         jobCardInfoService.getServiceTypes(true).then(
             (response)=>{
@@ -296,7 +326,18 @@ const JobCardOperator = () => {
     }
     const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
-  
+    const handleFiles = dType => event => {
+        if (dType === "JCFront") {
+            formData_front.append("DocumentFile", event.target.files[0]);
+            formData_front.append("DocumentType", dType);
+            uploadFront();
+        }
+        else {
+            formData_back.append("DocumentFile", event.target.files[0]);
+            formData_back.append("DocumentType", dType);
+            uploadBack();
+        }
+    }
     const handleChangePage = (event, newPage) => {
       Loading(settings);
       setPage(newPage + 1);
@@ -316,7 +357,15 @@ const JobCardOperator = () => {
       .catch((error) =>{console.log(error); Loading();});
       
     };
-  
+    const createNewJobcard = ()=>{
+        
+        setJobCardActions({
+            ...jobcardActions,
+            openJobCard : false,
+            updateJobCard : false,
+            newJobCard : true
+        })
+    }
     const handleChangeRowsPerPage = (event) => {
       Loading(settings);
       jobCardInfoService.getAllJobCardsList({
@@ -336,6 +385,42 @@ const JobCardOperator = () => {
       setPage(1);
   
     };
+
+    const uploadFront = () => {
+        jobCardInfoService.uploadJobCard(formData_front).then(
+            (res) => {
+                //debugger;
+                console.log(res);
+                // setSaveJobCard({
+                //     ...saveJobCard,
+                //     jcFront : res.data.data.documentId
+                // })
+
+                setFileUpload({
+                    ...fileUpload,
+                    jcfront: res.data.data.documentId
+                })
+            }
+        ).catch((err) => console.log(err))
+    }
+    const uploadBack = () => {
+
+        jobCardInfoService.uploadJobCard(formData_back).then(
+            (response) => {
+                console.log(response);
+
+                setFileUpload({
+                    ...fileUpload,
+                    jcback: response.data.data.documentId
+                })
+                // setSaveJobCard({
+                //     ...saveJobCard,
+                //     jcBack : res.data.data.documentId
+                // })
+            }
+        ).catch((err) => console.log(err))
+
+    }
 
     const handleChange = (name) => (event) => {
         const value = event.target.value;
@@ -408,11 +493,96 @@ const JobCardOperator = () => {
         ).catch((err)=>{console.log(err); Loading()})
     }
 
+    const handleSaveJobcard = (event)=>{
+        Loading(settings);
+        console.log(saveJobCard);
+        debugger;
+        if(jobcardNumber != "" && jcback != 0 && jcfront !=0) {
+            jobCardInfoService.createJobCard({
+                jcid,
+                userID,
+                dealerID,
+                jcNumber,
+                jobcardNumber,
+                jcBack: jcback,
+                jcFront: jcfront,
+                isDataEntryTaken,
+                dataEntryTakenBy,
+                isDataEntryCompleted,
+                isTelecallCompleted,
+                dmsNumber,
+                engineFrameNumber,
+                modelID,
+                vehicleNumber,
+                kMs,
+                serviceDate,
+                customerName,
+                customerMobile,
+                customerAddress,
+                saName,
+                technicianName,
+                customerVoice: customerVoice != "" ? JSON.stringify(customerVoice) : "[]",
+                initialObservation: initialObservation != "" ? JSON.stringify(initialObservation) : "[]",
+                finalFinding: finalFinding != "" ? JSON.stringify(finalFinding) : "[]",
+                actionTaken: actionTaken != "" ? JSON.stringify(actionTaken) : "[]",
+                dealerObservation,
+                serviceTypeID,
+                isActive,
+                assignTeleCallerID
+            }).then(
+                (response) => {
+                    console.log("OneRes",response);
+                    if (response.data.success) {
+
+                        toast.current.show(
+                            {
+                                severity: 'success',
+                                summary: 'Success Message',
+                                detail: response.data.message,
+                                life: 3000
+                            }
+                        );
+
+                        // setJobCard({
+                        //     ...jobCard,
+                        //     newJobCard: false
+                        // });
+                        // getJobCardForDealer();
+                        closeForm();
+                        Loading();
+                    } else {
+
+                        toast.current.show(
+                            {
+                                severity: 'warn',
+                                summary: 'Warning Message',
+                                detail: response.data.message,
+                                life: 3000
+                            }
+                        );
+                        Loading();
+                    }
+                }
+            ).catch((err) => {console.log(err); Loading();});
+        }else{
+            toast.current.show(
+                {
+                    severity: 'warn',
+                    summary: 'Warning Message',
+                    detail: "Please fill required fields.",
+                    life: 3000
+                }
+            );
+            Loading();
+        }
+    }
+
     const closeForm = () => {
         setJobCardActions({
             ...jobcardActions,
             openJobCard: false,
-            updateJobCard: false
+            updateJobCard: false,
+            newJobCard : false
         });
 
         setSaveJobCard({
@@ -449,7 +619,10 @@ const JobCardOperator = () => {
             "isActive": true,
             "assignTeleCallerID": 0
         })
-
+        setTagDesc([]);
+        setActionTaken([]);
+        setInitialObs([]);
+        setFinalFindings([]);
         getAllJobCardsList();
     }
 
@@ -531,8 +704,7 @@ const JobCardOperator = () => {
         }
     };
     
-    const downloadDocs = (argItems) =>{
-        
+    const downloadDocs = (argItems) =>{        
         jobCardInfoService.downloadDocuments(argItems).then(
             (response)=>{
                 const type = response.headers['content-type'];
@@ -555,13 +727,13 @@ const JobCardOperator = () => {
         getAllModels();
         getAllServiceTypes();
         getAllTeleCallersList();
-        
+        getDealerInfo()
     }, [])
     return (
         <>
             <div className="row g-1">
                 {
-                    !openJobCard ?
+                    !openJobCard && !newJobCard ?
                         (
                             <div className="col-12">
                                 <div className="card shadow-sm">
@@ -587,6 +759,12 @@ const JobCardOperator = () => {
                                                     <i className="bi bi-search"></i>
                                                 </button>
                                             </div>
+                                            <button 
+                                                className="btn btn-sm btn-primary"
+                                                onClick={createNewJobcard}
+                                            >
+                                                New Jobcard
+                                            </button>
                                         </div>
                                         <div className="table-responsive">
                                             <table className="table table-striped table-hover table-custom">
@@ -655,7 +833,7 @@ const JobCardOperator = () => {
                                     </div>
                                 </div>
                             </div>
-                        ) :
+                        )  : openJobCard ?
                         (
                             <div className="col-12">
                                 <div className="card shadow-sm">
@@ -1048,6 +1226,217 @@ const JobCardOperator = () => {
                                 </div>
                             </div>
                         )
+                        : newJobCard ? 
+                        (
+                            <div className="col-12">
+                                <div className="card shadow-sm">
+                                    <div className="card-body">
+                                        <div className="d-flex justify-content-end">
+                                            <button
+                                                className="btn btn-sm btn-danger me-1"
+                                                onClick={closeForm}
+                                            >
+                                                Cancel    
+                                            </button> 
+                                            <button 
+                                                className="btn btn-sm btn-success ms-1"
+                                                onClick={handleSaveJobcard}
+                                            >
+                                                Save Jobcard
+                                            </button>
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-4">
+                                                <div className="mb-3">
+                                                    <label
+                                                        htmlFor="jobCardNumber"
+                                                        className="form-label"
+                                                    >
+                                                        Job Card Number<sup>*</sup>
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        id="jobCardNumber"
+                                                        placeholder="Job Card Number"
+                                                        name="jobcardNumber"
+                                                        value={jobcardNumber}
+                                                        onChange={handleChange("jobcardNumber")}
+                                                    />
+                                                </div>
+                                                <div className="mb-3">
+                                                    <label htmlFor="frmDesc" className="form-label">Customer Voice</label>
+                                                    <div className="tags-input">
+                                                        <ul className="ultag">
+                                                            {
+                                                                getTagDesc.map((tag, index) => (
+                                                                    <li key={index} className="tag">
+                                                                        <span className="tag-title">{tag}</span>
+                                                                        <i
+                                                                            className="bi bi-x-circle-fill tag-close-icon"
+                                                                            onClick={() => removeTags(index, "CustomerVoice")}
+                                                                        >
+                                                                        </i>
+                                                                    </li>
+                                                                ))
+                                                            }
+                                                        </ul>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Press enter"
+                                                            name="customerVoice"
+                                                            onKeyUp={event => event.key === "Enter" ? addTags(event, "CustomerVoice") : null}
+
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="mb-3">
+                                                    <label htmlFor="frmDesc" className="form-label">Initial Observation</label>
+                                                    <div className="tags-input">
+                                                        <ul className="ultag">
+                                                            {
+                                                                getInitialObs.map((tag, index) => (
+                                                                    <li key={index} className="tag">
+                                                                        <span className="tag-title">{tag}</span>
+                                                                        <i
+                                                                            className="bi bi-x-circle-fill tag-close-icon"
+                                                                            onClick={() => removeTags(index, "InitialObs")}
+                                                                        >
+                                                                        </i>
+                                                                    </li>
+                                                                ))
+                                                            }
+                                                        </ul>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Press enter"
+                                                            onKeyUp={event => event.key === "Enter" ? addTags(event, "InitialObs") : null}
+                                                        />
+                                                    </div>
+                                                </div>
+
+
+
+
+                                            </div>
+
+                                            <div className="col-4">
+                                                <div className="mb-3">
+                                                    <label htmlFor="frmDesc" className="form-label">Final Findings</label>
+                                                    <div className="tags-input">
+                                                        <ul className="ultag">
+                                                            {
+                                                                getFinalFindings.map((tag, index) => (
+                                                                    <li key={index} className="tag">
+                                                                        <span className="tag-title">{tag}</span>
+                                                                        <i
+                                                                            className="bi bi-x-circle-fill tag-close-icon"
+                                                                            onClick={() => removeTags(index, "FinalFindings")}
+                                                                        >
+                                                                        </i>
+                                                                    </li>
+                                                                ))
+                                                            }
+                                                        </ul>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Press enter"
+                                                            onKeyUp={event => event.key === "Enter" ? addTags(event, "FinalFindings") : null}
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="mb-3">
+                                                    <label htmlFor="frmDesc" className="form-label">Action Taken</label>
+                                                    <div className="tags-input">
+                                                        <ul className="ultag">
+                                                            {
+                                                                getActionTaken.map((tag, index) => (
+                                                                    <li key={index} className="tag">
+                                                                        <span className="tag-title">{tag}</span>
+                                                                        <i
+                                                                            className="bi bi-x-circle-fill tag-close-icon"
+                                                                            onClick={() => removeTags(index, "ActionTaken")}
+                                                                        >
+                                                                        </i>
+                                                                    </li>
+                                                                ))
+                                                            }
+                                                        </ul>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Press enter"
+                                                            onKeyUp={event => event.key === "Enter" ? addTags(event, "ActionTaken") : null}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="mb-3">
+                                                <label htmlFor="frmDealer" className="form-label">Dealer Details</label>
+                                                    <select 
+                                                        className="form-select"
+                                                        name="dealerID"
+                                                        value={dealerID}
+                                                        onChange={handleChange("dealerID")}
+                                                    >
+                                                        <option value="">--Select Dealer--</option>
+                                                        { dealers.map((items, idx) => (
+                                                            <option key={idx} value={items.id}>
+                                                                {items.text}
+                                                            </option>
+                                                            ))
+                                                        }
+                                                    </select>
+                                                </div>
+
+                                            </div>
+
+                                            <div className="col-4">
+                                                <div className="mb-3">
+                                                    <label htmlFor="formFileFront" className="form-label">
+                                                        Upload Job Card Front<sup>*</sup>
+                                                    </label>
+                                                    <input
+                                                        className="form-control"
+                                                        type="file"
+                                                        id="formFileFront"
+                                                        onChange={handleFiles("JCFront")}
+                                                    />
+                                                   
+                                                   <label className="mt-1">
+                                                        <span className="badge bg-success me-1">{frontType}</span>
+                                                        <span className="badge bg-success ms-1">{frontFileName}</span>
+                                                   </label>
+                                                </div>
+                                                <div className="mb-2">
+                                                    <label htmlFor="formFile" className="form-label">
+                                                        Upload Job Card Back<sup>*</sup>
+                                                    </label>
+                                                    <input
+                                                        className="form-control"
+                                                        type="file"
+                                                        id="formFileBack"
+                                                        onChange={handleFiles("JCBack")}
+                                                    />
+                                                    
+                                                    <label className="mt-1">  
+                                                        <span className="badge bg-success me-1">{backType}</span>
+                                                        <span className="badge bg-success ms-1">{backFileName}</span>
+                                                    </label>
+                                                </div>
+                                                {
+                                                    updateJobCard &&
+                                                    <p className="text-danger">Note : If select any image it will be overwrite existing image/file.</p>
+                                                }
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>                            
+                            </div>
+                        ):(<></>)
+
                 }
 
             </div>

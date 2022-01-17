@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BrowserRouter as Router, Routes, Route, Link, Redirect, Navigate, useNavigate } from "react-router-dom";
 
-import logo from './logo.svg';
 import './App.css';
 
 import { SignIn } from "./components/signin/signin";
@@ -19,8 +18,6 @@ import eventBus from "./common/eventBus";
 import { AggregateMaster } from "./components/masters/aggregateMaster";
 
 import Dashboard from "./components/dashboard";
-import JobCardOperator from "./components/jobCardInfo/jobCardOperator";
-import JobCardCaller from "./components/jobCardInfo/jobCardTelecaller";
 import JobCardInformation from "./components/jobCardInfo";
 
 
@@ -63,16 +60,14 @@ function App() {
         <Route exact path="/signin" element={<SignIn/>}/>  
         {/* <Route exact path="/signup" element={}/> */}
 
-        //For Super Admins
+        {/* //For Super Admins */}
         <Route path = "/masters/dealerMaster" element={<DealerMaster/>} />
         <Route path = "/masters/userMaster" element = {<UserMaster/>} />
         <Route path = "/masters/modelMaster" element = {<ModelMaster/>} />
         <Route path = "/masters/aggregateMaster" element = {<AggregateMaster/>} />
 
-        //User
-        <Route path="/jobCardInformation"  element={<JobCardInformation/>}/>
-        {/* <Route path="/jobCardOperator" element={<JobCardOperator/>}/> 
-        <Route path="/jobCardCaller" element={<JobCardCaller/>}/> */}
+        {/* //User */}
+        <Route path="/jobCardInformation"  element={<JobCardInformation/>}/>      
         <Route path="/dashboard" element={<Dashboard/>}/>
       </Routes>      
     </Router>

@@ -6,6 +6,7 @@ import authHeader from "./auth-header";
 const user = JSON.parse(localStorage.getItem('user'));
 
 const uploadJobCard = (argItems) =>{
+    //debugger;232131
     return axios.post(APP_API_URL + "/Document", argItems, 
         {headers : {
             Authorization: "bearer " + user.data.token,
