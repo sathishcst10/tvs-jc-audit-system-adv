@@ -1,17 +1,29 @@
 import Chart from 'react-apexcharts'
 
-const CallerDashboard = () =>{
-    
-    const lineState = {          
-        series: [{
-            name: "Allocated",
-            data: [4, 12, 8, 6, 3, 5, 9]
+const DataOperatorDashboard = () =>{
+
+    const state = {
+        options: {
+          chart: {
+            id: "basic-bar"
+          },
+          xaxis: {
+            categories: ["Telecaller-1","Telecaller-2","Telecaller-3","Telecaller-4","Telecaller-5"]
+          }
         },
-        {
-            name: "Closed",
-            data: [2, 5, 3, 1, 0, 0, 2]
-        }
-        ],
+        series: [
+          {
+            name: "series-1",
+            data: [3, 4, 4, 1, 3]
+          }
+        ]
+      };
+
+      const lineState = {          
+        series: [{
+            name: "Desktops",
+            data: [4, 12, 8, 6, 3, 5, 9]
+        }],
         options: {
           chart: {
             height: 350,
@@ -20,7 +32,6 @@ const CallerDashboard = () =>{
               enabled: false
             }
           },
-          colors: ['#2980b9','#e74c3c'],
           dataLabels: {
             enabled: false
           },
@@ -40,38 +51,13 @@ const CallerDashboard = () =>{
           xaxis: {
             categories: ['18-Jan', '19-Jan', '20-Jan', '21-Jan', '22-Jan', '23-Jan', '24-Jan'],
           }
-        }
-    };
-
-    const feedbackState = {
-          
-        series: [70, 15],
-        options: {
-          chart: {
-            type: 'pie',
-          },
-          legend: {
-              position : "bottom"
-          },
-          colors: ['#f39c12','#05c46b'],
-          labels: ['Live', 'Closed'],
-          responsive: [{
-            breakpoint: 480,
-            options: {
-              chart: {
-                width: 200
-              },
-              legend: {
-                position: 'bottom'
-              }
-            }
-          }]
         },
       
       
       };
-    return (
-        <>
+
+    return(
+         <>
             <div className='row g-1'>
                 <div className='col-3 px-3'>
                     <div className='card card-shadow border-0 custom-radius'>
@@ -142,12 +128,25 @@ const CallerDashboard = () =>{
                         </div>
                     </div>
                 </div>
-            </div>
-            <div className="row g-1">
-                <div className='col-8 mt-4 px-3'>
+                <div className='col-6 mt-4 px-3'>
                     <div className='card card-shadow border-0 custom-radius'>
                         <h6 className='card-header'>
-                            Last 7 Days Jobcard Upload
+                            Today's Telecallers Allocation
+                        </h6>
+                        <div className='card-body'>
+                            <Chart
+                            options={state.options}
+                            series={state.series}
+                            type="bar"
+                            height="320px"
+                            />      
+                        </div>
+                    </div>  
+                </div>
+                <div className='col-6 mt-4 px-3'>
+                    <div className='card card-shadow border-0 custom-radius'>
+                        <h6 className='card-header'>
+                            Last 7 Days Entry's
                         </h6>
                         <div className='card-body'>
                             <Chart
@@ -159,24 +158,10 @@ const CallerDashboard = () =>{
                         </div>
                     </div>  
                 </div>
-                <div className='col-4 mt-4 px-3'>
-                    <div className='card card-shadow border-0 custom-radius h-100'>
-                        <h6 className='card-header'>
-                            Jobcard Status
-                        </h6>
-                        <div className='card-body'>
-                            <Chart
-                                options={feedbackState.options} 
-                                series={feedbackState.series} 
-                                type="pie" 
-                                height={350} 
-                            />      
-                        </div>
-                    </div>  
-                </div>
             </div>
-        </>
-    )   
+           
+         </>
+    );
 }
 
-export default CallerDashboard;
+export default DataOperatorDashboard;

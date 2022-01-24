@@ -12,7 +12,7 @@ import jobCardInfoService from "../../services/job-card-info.service";
 import modelMasterService from "../../services/model-master.service";
 import userService from "../../services/user.service";
 import aggregateMasterService from "../../services/aggregate-master.service";
-
+import commonService from "../../services/common.service";
 
 
 const JobCardCaller = () => {
@@ -30,6 +30,13 @@ const JobCardCaller = () => {
     });
     const [showJobcards, setShowJobCards] = useState([]);
     const [modelLists, setModelLists] = useState([]);
+    
+    const [auditStatusList, setAuditStatus] = useState([]);
+    const [confirmStatus, setConfirmStatus] = useState([]);
+    const [yesNoStatus, setYesNoStatus] = useState([]);
+    const [jCCategoryList, setJcCategory] = useState([]);
+    const [callResponseList, setCallResponse] = useState([]);
+
     const [ServiceTypes, setServiceTypes] = useState([]);
     const [teleCallers, setTeleCallers] = useState([]);
     const [aggregates, setAggregates] = useState([]);
@@ -53,19 +60,62 @@ const JobCardCaller = () => {
     const [getFinalFindings, setFinalFindings] = useState([]);
     const [getActionTaken, setActionTaken] = useState([]);
     const [getDealerObs, setDealerObs] = useState([]);
+    const [getCustomerVoiceByWMHO, setCustomerVoiceByWMHO] = useState([]);
+    const [getJcGapRemarks, setJcGapRemarks] = useState([]);
+    const [getGapIdentifiedWMSA, setGapIdentifiedWMSA] = useState([]);
+
     const [getJobCardAudit, setJobCardAudit] = useState(
         {
             "isActive": true,
             "jcaid": 0,
             "jcid": 0,
-            "customerFeedback": "",
-            "actualWorkDone": "",
-            "gapAggregate": 0,
-            "gapIdendtified": "",
-            "status": 0
+            "jcCategory": 0,
+            "customerVoiceByWMHO": "",
+            "gapIdentifiedWMSA": "",
+            "jcStatus": 0,
+            "vps": 0,
+            "vpsReason1": 0,
+            "vpsReason2": 0,
+            "vpsReason3": 0,
+            "customerFeedbackDate": "",
+            "newProblem": 0,
+            "problemNotCaptured": 0,
+            "sameProblemInJC": 0,
+            "jcGapRemarks": "string",
+            "auditStatus": 0,
+            "callResponse": 0,
+            "createdDate": "",
+            "createdBy": 0,
+            "modifiedDate": "",
+            "modifiedBy": 0,
+            "isActive": true,
+            "isDeleted": true
         }
     );
-    const { jcaid, customerFeedback, actualWorkDone, gapAggregate, gapIdendtified, status } = getJobCardAudit
+    const {
+        jcaid,       
+        jcCategory,
+        customerVoiceByWMHO,
+        gapIdentifiedWMSA,
+        jcStatus,
+        vps,
+        vpsReason1,
+        vpsReason2,
+        vpsReason3,
+        customerFeedbackDate,
+        newProblem,
+        problemNotCaptured,
+        sameProblemInJC,
+        jcGapRemarks,
+        auditStatus,
+        callResponse,
+        createdDate,
+        createdBy,
+        modifiedDate,
+        modifiedBy,
+        isDeleted
+    
+    } = getJobCardAudit
     const [dealerDetails, setDealerDetails] = useState({
         dealerLocation: "",
         dealerName: ""
@@ -228,16 +278,29 @@ const JobCardCaller = () => {
         jobCardInfoService.getJobCardAuditByID(argID).then(
             (response)=>{
                 console.log("Audit", response);
+                setCustomerVoiceByWMHO(JSON.parse(response.data.data.customerVoiceByWMHO));
+                setGapIdentifiedWMSA(JSON.parse(response.data.data.gapIdentifiedWMSA));
+                setJcGapRemarks(JSON.parse(response.data.data.jcGapRemarks));
                 setJobCardAudit({
                     ...getJobCardAudit,
                     isActive : response.data.data.isActive,
                     jcaid : response.data.data.jcaid,
                     jcid : argID,
-                    customerFeedback : response.data.data.customerFeedback,
-                    actualWorkDone : response.data.data.actualWorkDone,
-                    gapAggregate : response.data.data.gapAggregate,
-                    gapIdendtified : response.data.data.gapIdendtified,
-                    status : response.data.data.status
+                    jcCategory : response.data.data.jcCategory,
+                    customerVoiceByWMHO : response.data.data.customerVoiceByWMHO !== "" ? JSON.parse(response.data.data.customerVoiceByWMHO) : [],
+                    gapIdentifiedWMSA : response.data.data.gapIdentifiedWMSA !== "" ? JSON.parse(response.data.data.gapIdentifiedWMSA) : [],
+                    jcStatus : response.data.data.jcStatus,
+                    vps : response.data.data.vps,
+                    vpsReason1 : response.data.data.vpsReason1,
+                    vpsReason2 : response.data.data.vpsReason2,
+                    vpsReason3 : response.data.data.vpsReason3,
+                    customerFeedbackDate : new Date(response.data.data.customerFeedbackDate),
+                    newProblem : response.data.data.newProblem,
+                    problemNotCaptured : response.data.data.problemNotCaptured,
+                    sameProblemInJC : response.data.data.sameProblemInJC,
+                    jcGapRemarks : response.data.data.jcGapRemarks !== "" ? JSON.parse(response.data.data.jcGapRemarks) : [],
+                    auditStatus : response.data.data.auditStatus,
+                    callResponse : response.data.data.callResponse    
                 })
             }
         ).catch((err)=>{console.log(err)});
@@ -296,6 +359,70 @@ const JobCardCaller = () => {
         ).catch((err)=>{
             console.log(err);
         })
+    }
+
+    const getAuditStatusList = ()=>{
+        commonService.getAuditStatus(true).then(
+            (response)=>{
+                console.log("AuditStatus",response.data.data.data);
+                setAuditStatus(response.data.data.data);
+            }
+        ).catch(
+            (err)=>{
+                console.log(err);
+            }
+        )
+    }
+    const getConfirmStatusList = ()=>{
+        commonService.getConfirmStatus(true).then(
+            (response)=>{
+                console.log("ConfirmStatus",response.data.data.data);
+                setConfirmStatus(response.data.data.data);
+            }
+        ).catch(
+            (err)=>{
+                console.log(err)
+            }
+        )
+    }
+
+    const getYesNoStatusList = ()=>{
+        commonService.getYesNoStatus(true).then(
+            (response)=>{
+                console.log("YesNoStatus",response.data.data.data);
+                setYesNoStatus(response.data.data.data);
+            }
+        ).catch(
+            (err)=>{
+                console.log(err)
+            }
+        )
+    }
+
+    const getJCCategoryList = ()=>{
+        commonService.getJCCategoryStatus(true).then(
+            (response)=>{
+                console.log("JCCategory",response.data.data.data);
+                setJcCategory(response.data.data.data);
+
+            }
+        ).catch(
+            (err)=>{
+                console.log(err)
+            }
+        )
+    }
+    const getCallResponseStatusList = ()=>{
+        commonService.getCallResponseStatus(true).then(
+            (response)=>{
+                console.log("CallResponse",response.data.data.data);
+                setCallResponse(response.data.data.data);
+            }
+        ).catch(
+            (err)=>{
+                console.log(err)
+            }
+        )
     }
 
     const handleChangePage = (event, newPage) => {
@@ -375,6 +502,7 @@ const JobCardCaller = () => {
         });
     }
     const addTags = async (event, items) => {
+        //debugger
         if (event.target.value !== "") {
             if (items === "CustomerVoice") {
                 //debugger
@@ -431,6 +559,18 @@ const JobCardCaller = () => {
                 });
 
                 event.target.value = "";
+            } 
+            else if(items === "CustomerVoiceByWM"){
+                setCustomerVoiceByWMHO([...getCustomerVoiceByWMHO, event.target.value]);
+                event.target.value = "";
+            }
+            else if(items === "GapIdentifiedByWMSA"){
+                setGapIdentifiedWMSA([...getGapIdentifiedWMSA, event.target.value]);
+                event.target.value = "";
+            }
+            else if(items === "JCGapRemarks"){
+                setJcGapRemarks([...getJcGapRemarks, event.target.value]);
+                event.target.value = "";
             }
         }
     };
@@ -465,19 +605,29 @@ const JobCardCaller = () => {
     }
 
     const handleSubmit = (event) => {
-        event.preventDefault()
+        event.preventDefault();
         Loading(settings);
-        
+        debugger;
         if(!updateJobCard){
             jobCardInfoService.saveJobCardAudit({
                 jcid,
                 jcaid,
                 isActive,
-                actualWorkDone,
-                customerFeedback,
-                gapAggregate,
-                gapIdendtified,
-                status : parseInt(status, 10)
+                jcCategory,
+                customerVoiceByWMHO : getCustomerVoiceByWMHO !== "" ? JSON.stringify(getCustomerVoiceByWMHO) : "[]",
+                gapIdentifiedWMSA : getGapIdentifiedWMSA !== "" ? JSON.stringify(getGapIdentifiedWMSA) : "[]",
+                jcStatus,
+                vps,
+                vpsReason1,
+                vpsReason2,
+                vpsReason3,
+                customerFeedbackDate,
+                newProblem,
+                problemNotCaptured,
+                sameProblemInJC,
+                jcGapRemarks : getJcGapRemarks !== "" ? JSON.stringify(getJcGapRemarks) : "[]",
+                auditStatus,
+                callResponse              
             }).then(
                 (response)=>{                
                     console.log(response);
@@ -517,11 +667,21 @@ const JobCardCaller = () => {
                 jcid,
                 jcaid,
                 isActive,
-                actualWorkDone,
-                customerFeedback,
-                gapAggregate,
-                gapIdendtified,
-                status : parseInt(status, 10)
+                jcCategory,
+                customerVoiceByWMHO : getCustomerVoiceByWMHO !== "" ? JSON.stringify(getCustomerVoiceByWMHO) : "[]",
+                gapIdentifiedWMSA : getGapIdentifiedWMSA !== "" ? JSON.stringify(getGapIdentifiedWMSA) : "[]",
+                jcStatus,
+                vps,
+                vpsReason1,
+                vpsReason2,
+                vpsReason3,
+                customerFeedbackDate,
+                newProblem,
+                problemNotCaptured,
+                sameProblemInJC,
+                jcGapRemarks : getJcGapRemarks !== "" ? JSON.stringify(getJcGapRemarks) : "[]",
+                auditStatus,
+                callResponse                
             }).then(
                 (response)=>{                
                     console.log(response);
@@ -584,6 +744,13 @@ const JobCardCaller = () => {
         getAllServiceTypes();
         getAllAggregates();
         getCustomerFeedBackStatus();
+
+        getAuditStatusList();
+        getConfirmStatusList();
+        getYesNoStatusList();
+        getJCCategoryList();
+        getCallResponseStatusList();
+
     }, [])
 
     return (
@@ -691,7 +858,7 @@ const JobCardCaller = () => {
                             <div className="col-12">
                                 <div className="card shadow-sm">
                                     <div className="card-body p-1">
-                                        <form onSubmit={handleSubmit}>
+                                        {/* <form onSubmit={handleSubmit}> */}
                                             <div className="d-flex justify-content-end pb-1 shadow-sm">
                                                 <button
                                                     className="btn btn-sm btn-outline-danger me-1"
@@ -699,7 +866,7 @@ const JobCardCaller = () => {
                                                 >
                                                     Cancel
                                                 </button>
-                                                <button className="btn btn-sm btn-success ms-1" type="submit">
+                                                <button className="btn btn-sm btn-success ms-1" type="submit" onClick={handleSubmit}>
                                                     Update Job card
                                                 </button>
                                             </div>
@@ -1050,6 +1217,7 @@ const JobCardCaller = () => {
                                                                 </button>
                                                             </div>
                                                         </div>
+                                                        <hr/>
                                                     </div>
 
                                                     <div className="row d-none">
@@ -1069,109 +1237,329 @@ const JobCardCaller = () => {
                                                     </div>
 
                                                     <div className="row g-1">
-                                                        <div className="mb-3">
-                                                            <label
-                                                                htmlFor="customerFeedback"
-                                                                className="form-label"
-                                                            >
-                                                                Customer Feedback
-                                                            </label>
-                                                            <input
-                                                                type="text"
-                                                                className="form-control"
-                                                                id="customerFeedback"
-                                                                name="customerFeedback"
-                                                                value={customerFeedback}
-                                                                onChange={handleChange("customerFeedback")}
-                                                                placeholder="Customer Feedback"
-                                                                required                                                            
-                                                            />
-                                                        </div>
-                                                        <div className="mb-3">
-                                                            <label
-                                                                htmlFor="actualWork"
-                                                                className="form-label"
-                                                            >
-                                                                Actual work done
-                                                            </label>
-                                                            <input
-                                                                type="text"
-                                                                className="form-control"
-                                                                id="actualWork"
-                                                                name="actualWorkDone"
-                                                                value={actualWorkDone}
-                                                                onChange={handleChange("actualWorkDone")}
-                                                                placeholder="Actual Work done"
-                                                                required
-                                                            />
-                                                        </div>
-                                                        <div className="mb-3">
-                                                            <label
-                                                                htmlFor="gapIdentifiedTextarea1"
-                                                                className="form-label"
-                                                            >
-                                                                Gap Aggregate
-                                                            </label>
+                                                       <div className="col">
+                                                            <label className="form-label">Understanding of customer voice by WM/HO</label>
+                                                                <div className="tags-input">
+                                                                    <div className="tags-content">
+                                                                        <ul className="ultag">
+                                                                            {
+                                                                                getCustomerVoiceByWMHO.map((tag, index) => (
+                                                                                    <li key={index} className="tag">
+                                                                                        <span className="tag-title">{tag}</span>
+                                                                                        <i
+                                                                                            className="bi bi-x-circle-fill tag-close-icon"
+                                                                                            onClick={() => removeTags(index, "CustomerVoiceByWM")}
+                                                                                        >
+                                                                                        </i>
+                                                                                    </li>
+                                                                                ))
+                                                                            }
+                                                                        </ul>
+                                                                    </div>
+                                                                    <input
+                                                                        type="text"
+                                                                        placeholder="Press enter"
+                                                                        name="CustomerVoiceByWM"
+                                                                        onKeyUp={event => event.key === "Enter" ? addTags(event, "CustomerVoiceByWM") : null}
+
+                                                                    />
+                                                                </div>
+                                                       </div>
+                                                       <div className="col">
+                                                            <label className="form-label">Gap identified by WM/SA or Tech</label>
+                                                                <div className="tags-input">
+                                                                    <div className="tags-content">
+                                                                        <ul className="ultag">
+                                                                            {
+                                                                                getGapIdentifiedWMSA.map((tag, index) => (
+                                                                                    <li key={index} className="tag">
+                                                                                        <span className="tag-title">{tag}</span>
+                                                                                        <i
+                                                                                            className="bi bi-x-circle-fill tag-close-icon"
+                                                                                            onClick={() => removeTags(index, "GapIdentifiedByWMSA")}
+                                                                                        >
+                                                                                        </i>
+                                                                                    </li>
+                                                                                ))
+                                                                            }
+                                                                        </ul>
+                                                                    </div>
+                                                                    <input
+                                                                        type="text"
+                                                                        placeholder="Press enter"
+                                                                        name="GapIdentifiedByWMSA"
+                                                                        onKeyUp={event => event.key === "Enter" ? addTags(event, "GapIdentifiedByWMSA") : null}
+
+                                                                    />
+                                                                </div>
+                                                       </div>
+                                                       <div className="col">
+                                                            <label className="form-label">Jobcard (OK/Not OK)</label>
                                                             <select 
-                                                                className="form-select custom-select"
-                                                                name="gapAggregate"
-                                                                value={gapAggregate}
-                                                                required
-                                                                onChange={handleChange("gapAggregate")}
+                                                                className="form-select"
+                                                                name="jcStatus"
+                                                                value={jcStatus}
+                                                                onChange={handleChange("jcStatus")}
                                                             >
                                                                 <option value="">--Select--</option>
                                                                 {
-                                                                    aggregates.map((items, idx)=>(
-                                                                        <option value={items.id}>{items.text}</option>
+                                                                    confirmStatus.map((items, idx)=>(
+                                                                        <option key={idx} value={items.id}>{items.text}</option>
                                                                     ))
                                                                 }
                                                             </select>
-                                                        </div>
-                                                        <div className="mb-3">
-                                                            <label
-                                                                htmlFor="gapIdentifiedTextarea1"
-                                                                className="form-label"
-                                                            >
-                                                                Gap Identified
-                                                            </label>
-                                                            <textarea
-                                                                className="form-control"
-                                                                id="gapIdentifiedTextarea1"
-                                                                rows="3"
-                                                                name="gapIdendtified"
-                                                                value={gapIdendtified}
-                                                                required
-                                                                onChange={handleChange("gapIdendtified")}
-                                                            >
-                                                            </textarea>
-                                                        </div>
-                                                        <div className="mb-3">
-                                                            <label
-                                                                htmlFor="gapIdentifiedTextarea1"
-                                                                className="form-label"
-                                                            >
-                                                                Status
-                                                            </label>
+                                                       </div>
+                                                    </div>
+                                                    <div className="row g-1">                                                     
+                                                       <div className="col">
+                                                            <label className="form-label">Vehicle performance after Service(VPS)</label>
                                                             <select 
-                                                                className="form-select custom-select"
-                                                                name="status"
-                                                                value={status}
-                                                                required
-                                                                onChange={handleChange("status")}
+                                                                className="form-select"
+                                                                name="vps"
+                                                                value={vps}
+                                                                onChange={handleChange("vps")}
                                                             >
                                                                 <option value="">--Select--</option>
                                                                 {
-                                                                    customerFeedbackStatus.map((items, idx)=>(
-                                                                        <option value={items.id}>{items.text}</option>
+                                                                    confirmStatus.map((items, idx)=>(
+                                                                        <option key={idx} value={items.id}>{items.text}</option>
+                                                                    ))
+                                                                }
+                                                            </select>
+                                                       </div>
+                                                       <div className="col">
+                                                            <label className="form-label">Reason 1</label>
+                                                            <select 
+                                                                className="form-select"
+                                                                name="vpsReason1"
+                                                                value={vpsReason1}
+                                                                onChange={handleChange("vpsReason1")}
+                                                            >
+                                                                <option value="">--Select--</option>    
+                                                                {
+                                                                    aggregates.map((items, idx)=>(
+                                                                        <option key={idx} value={items.id}>
+                                                                            {items.text}
+                                                                        </option>
+                                                                    ))
+                                                                }
+                                                            </select>                                                         
+                                                       </div>
+                                                       <div className="col">
+                                                            <label className="form-label">
+                                                                Reason 2
+                                                            </label>                                                             
+                                                            <select 
+                                                                className="form-select"
+                                                                name="vpsReason2"
+                                                                value={vpsReason2}
+                                                                onChange={handleChange("vpsReason2")}
+                                                            >
+                                                                <option value="">--Select--</option>   
+                                                                {
+                                                                    aggregates.map((items, idx)=>(
+                                                                        <option key={idx} value={items.id}>
+                                                                            {items.text}
+                                                                        </option>
+                                                                    ))
+                                                                } 
+                                                            </select>                                                         
+                                                       </div>
+                                                    </div>
+                                                    <div className="row g-1">
+                                                        <div className="col">
+                                                            <label className="form-label">
+                                                                Reason 3
+                                                            </label>    
+                                                            <select 
+                                                                className="form-select"
+                                                                name="vpsReason3"
+                                                                value={vpsReason3}
+                                                                onChange={handleChange("vpsReason3")}
+                                                            >
+                                                                <option value="">--Select--</option>    
+                                                                {
+                                                                    aggregates.map((items, idx)=>(
+                                                                        <option key={idx} value={items.id}>
+                                                                            {items.text}
+                                                                        </option>
+                                                                    ))
+                                                                }
+                                                            </select>                                                         
+                                                        </div>
+                                                        <div className="col">
+                                                            <label className="form-label">
+                                                                Customer Feedback Date
+                                                            </label>    
+                                                            <Calendar 
+                                                                id="basic" 
+                                                                value={customerFeedbackDate} 
+                                                                name = "customerFeedbackDate"
+                                                                onChange={handleChange("customerFeedbackDate")} 
+                                                                required
+                                                            />
+                                                        </div>
+                                                        <div className="col">
+                                                            <label className="form-label">
+                                                                New problem reported after service
+                                                            </label>    
+                                                            <select 
+                                                                className="form-select"
+                                                                name="newProblem"
+                                                                value={newProblem}
+                                                                onChange={handleChange("newProblem")}
+                                                            >
+                                                                <option value="">--Select--</option>
+                                                                {
+                                                                    yesNoStatus.map((items, idx)=>(
+                                                                        <option key={idx} value={items.id}>
+                                                                            {items.text}
+                                                                        </option>
                                                                     ))
                                                                 }
                                                             </select>
                                                         </div>
                                                     </div>
-                                                
+                                                    <div className="row g-1">
+                                                        
+                                                        
+                                                        <div className="col">
+                                                            <label className="form-label">
+                                                                Customer told problem not captured
+                                                            </label>    
+                                                            <select 
+                                                                    className="form-select"
+                                                                    name="problemNotCaptured"
+                                                                    value={problemNotCaptured}
+                                                                    onChange={handleChange("problemNotCaptured")}
+                                                                >
+                                                                <option value="">--Select--</option>
+                                                                {
+                                                                    yesNoStatus.map((items, idx)=>(
+                                                                        <option key={idx} value={items.id}>
+                                                                            {items.text}
+                                                                        </option>
+                                                                    ))
+                                                                }
+                                                            </select>
+                                                        </div>
+                                                        <div className="col">
+                                                            <label className="form-label">
+                                                                Same problem in JC
+                                                            </label>    
+                                                                <select 
+                                                                    className="form-select"
+                                                                    name="sameProblemInJC"
+                                                                    value={sameProblemInJC}
+                                                                    onChange={handleChange("sameProblemInJC")}
+                                                                >
+                                                                <option value="">--Select--</option>
+                                                                {
+                                                                    yesNoStatus.map((items, idx)=>(
+                                                                        <option key={idx} value={items.id}>
+                                                                            {items.text}
+                                                                        </option>
+                                                                    ))
+                                                                }
+                                                            </select>
+                                                        </div>
+                                                        <div className="col">
+                                                            <label className="form-label">
+                                                                JC Gap remarks
+                                                            </label>    
+                                                            <div className="tags-input">
+                                                                <div className="tags-content">
+                                                                    <ul className="ultag">
+                                                                        {
+                                                                            getJcGapRemarks.map((tag, index) => (
+                                                                                <li key={index} className="tag">
+                                                                                    <span className="tag-title">{tag}</span>
+                                                                                    <i
+                                                                                        className="bi bi-x-circle-fill tag-close-icon"
+                                                                                        onClick={() => removeTags(index, "JCGapRemarks")}
+                                                                                    >
+                                                                                    </i>
+                                                                                </li>
+                                                                            ))
+                                                                        }
+                                                                    </ul>
+                                                                </div>
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="Press enter"
+                                                                    name="JCGapRemarks"
+                                                                    onKeyUp={event => event.key === "Enter" ? addTags(event, "JCGapRemarks") : null}
+
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                       
+                                                    </div>
+                                                    <div className="row g-1 mb-3">
+                                                    <div className="col">
+                                                            <label className="form-label">
+                                                                Audit status
+                                                            </label>    
+                                                            <select 
+                                                                    className="form-select"
+                                                                    name="auditStatus"
+                                                                    value={auditStatus}
+                                                                    onChange={handleChange("auditStatus")}
+                                                                >
+                                                                <option value="">--Select--</option>
+                                                                {
+                                                                    auditStatusList.map((items, idx)=>(
+                                                                        <option key={idx} value={items.id}>
+                                                                            {items.text}
+                                                                        </option>
+                                                                    ))
+                                                                }
+                                                            </select>
+                                                        </div>
+                                                        <div className="col">
+                                                            <label className="form-label">
+                                                                Call response by customer
+                                                            </label>    
+                                                            <select 
+                                                                className="form-select"
+                                                                name="callResponse"
+                                                                value={callResponse}
+                                                                onChange={handleChange("callResponse")}
+                                                            >
+                                                                <option value="">--Select--</option>
+                                                                {
+                                                                    callResponseList.map((items, idx)=>(
+                                                                        <option key={idx} value={items.id}>
+                                                                            {items.text}
+                                                                        </option>
+                                                                    ))
+                                                                }
+                                                            </select>
+                                                        </div>
+                                                        <div className="col">
+                                                            <label className="form-label">
+                                                                Jobcard Category
+                                                            </label>    
+                                                            <select 
+                                                                className="form-select"
+                                                                name="jcCategory"
+                                                                value={jcCategory}
+                                                                onChange={handleChange("jcCategory")}
+                                                            >
+                                                                <option value="">--Select--</option>
+                                                                {
+                                                                    jCCategoryList.map((items, idx)=>(
+                                                                        <option key={idx} value={items.id}>
+                                                                            {items.text}
+                                                                        </option>
+                                                                    ))
+                                                                }
+                                                            </select>
+                                                        </div>
+                                                    </div>
                                             </div>
 
-                                        </form>
+                                        {/* </form> */}
                                     </div>
                                 </div>
                             </div>

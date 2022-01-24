@@ -2,6 +2,7 @@ import { useSelector } from "react-redux";
 import MasterLayout from "../_layout/_masterLayout"
 import AdminDashboard from "./adminDashboard";
 import CallerDashboard from "./callerDashboard";
+import DataOperatorDashboard from "./dataOperatorDashboard";
 import DealerDashboard from "./dealerDashboard";
 
 const Dashboard = ()=>{
@@ -18,7 +19,10 @@ const Dashboard = ()=>{
                 currentUser.data.roles.roleName === 'Dealers' ?
                 <DealerDashboard/>
                 :
-                <></>                
+                currentUser.data.roles.roleName === 'Data Operator' ?
+                <DataOperatorDashboard/>
+                :
+                <AdminDashboard/>
             }
             
             

@@ -30,6 +30,7 @@ const JobCardDealers = () => {
     const [getInitialObs, setInitialObs] = useState([]);
     const [getFinalFindings, setFinalFindings] = useState([]);
     const [getActionTaken, setActionTaken] = useState([]);
+   
     const [getFilter, setFilter] = useState('');
     const { newJobCard, updateJobCard, closeJobCard } = jobCard;
     //const [settings, SetDefault] = useState()
@@ -341,6 +342,7 @@ useEffect(()=>{
 
                 event.target.value = "";
             }
+           
         }
     };
     const removeTags = (indexToRemove, items) => {
@@ -458,7 +460,7 @@ useEffect(()=>{
             theme: "dark",
         });
        if(!updateJobCard) { 
-        if(jobcardNumber != "" && jcback != 0 && jcfront !=0) {
+        if(jobcardNumber !== "" && jcback !== 0 && jcfront !== 0) {
             jobCardInfoService.createJobCard({
                 jcid,
                 userID,
@@ -482,10 +484,10 @@ useEffect(()=>{
                 customerAddress,
                 saName,
                 technicianName,
-                customerVoice: customerVoice != "" ? JSON.stringify(customerVoice) : "[]",
-                initialObservation: initialObservation != "" ? JSON.stringify(initialObservation) : "[]",
-                finalFinding: finalFinding != "" ? JSON.stringify(finalFinding) : "[]",
-                actionTaken: actionTaken != "" ? JSON.stringify(actionTaken) : "[]",
+                customerVoice: customerVoice !== "" ? JSON.stringify(customerVoice) : "[]",
+                initialObservation: initialObservation !== "" ? JSON.stringify(initialObservation) : "[]",
+                finalFinding: finalFinding !== "" ? JSON.stringify(finalFinding) : "[]",
+                actionTaken: actionTaken !== "" ? JSON.stringify(actionTaken) : "[]",
                 dealerObservation,
                 serviceTypeID,
                 isActive,

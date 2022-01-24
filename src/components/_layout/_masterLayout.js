@@ -261,12 +261,12 @@ const MasterLayout = ({ title = "", desc = "", pageMap = [], children }) => {
                     aria-labelledby="navbarDropdown"
                   >
                     <li>
-                      <Link className="dropdown-item" to="#">
+                      <Link className="dropdown-item disabled" to="#">
                         Profile
                       </Link>
                     </li>
                     <li>
-                      <Link className="dropdown-item" to="#">
+                      <Link className="dropdown-item disabled" to="#">
                         Settings
                       </Link>
                     </li>

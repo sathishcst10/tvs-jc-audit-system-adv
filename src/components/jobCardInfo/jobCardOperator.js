@@ -11,7 +11,7 @@ import dealerMasterService from "../../services/dealer-master.service";
 import jobCardInfoService from "../../services/job-card-info.service";
 import modelMasterService from "../../services/model-master.service";
 import userService from "../../services/user.service";
-import MasterLayout from "../_layout/_masterLayout"
+// import MasterLayout from "../_layout/_masterLayout"
 
 const JobCardOperator = () => {
     const toast = useRef(null);
@@ -55,10 +55,10 @@ const JobCardOperator = () => {
         backFileName : ""
     })
     const {frontType, frontFileName} = selectedDocument;
-    const { backType, backFileName } = selectedDoc;
+    const {backType, backFileName} = selectedDoc;
     const formData_front = new FormData();
     const formData_back = new FormData();
-    const { jcfront, jcback } = fileUpload;
+    const {jcfront, jcback } = fileUpload;
     const [getAllJobCards, setAllJobCards] = useState(
         {
             "pageNumber": 1,
@@ -74,6 +74,8 @@ const JobCardOperator = () => {
         dealerLocation : "",
         dealerName : ""
     });
+    const [getState , setState] = useState([]);
+    const [getDealersList , setDealersList] = useState([]);
     const {dealerName, dealerLocation} = dealerDetails;
     const [saveJobCard, setSaveJobCard] = useState({
         "jcid": 0,
@@ -225,7 +227,38 @@ const JobCardOperator = () => {
             }
         ).catch((err)=>console.log(err))
     }
+    const getAllStatesList = ()=>{
+        dealerMasterService.getStates(true).then(
+            (response)=>{
+                console.log("State : ",response);
+                setState(response.data.data.data);
+            }
+        ).catch(
+            (err)=>{
+                console.log(err);
+            }
+        )
+    }
+    const loadDealersByState =(event)=>{
+        console.log("stateSelected",event.target.value);
 
+        dealerMasterService.getDealerByState(event.target.value).then(
+            (response)=>{
+                console.log(response)
+                setDealers(response.data.data.data);
+            }
+        ).catch((err)=>{
+            console.log(err);
+        })
+
+        // dealerMasterService.getDealerByState(event.target.value).then(
+        //     (response)=>{
+        //         console.log(response)
+
+        //     }
+        // ).catch((err)=>{console.log(err)});
+
+    }
     const getAllTeleCallersList = ()=>{
         userService.getTeleCallersList(true).then(
             (response)=>{
@@ -496,8 +529,8 @@ const JobCardOperator = () => {
     const handleSaveJobcard = (event)=>{
         Loading(settings);
         console.log(saveJobCard);
-        debugger;
-        if(jobcardNumber != "" && jcback != 0 && jcfront !=0) {
+      
+        if(jobcardNumber !== "" && jcback !== 0 && jcfront !== 0) {
             jobCardInfoService.createJobCard({
                 jcid,
                 userID,
@@ -521,10 +554,10 @@ const JobCardOperator = () => {
                 customerAddress,
                 saName,
                 technicianName,
-                customerVoice: customerVoice != "" ? JSON.stringify(customerVoice) : "[]",
-                initialObservation: initialObservation != "" ? JSON.stringify(initialObservation) : "[]",
-                finalFinding: finalFinding != "" ? JSON.stringify(finalFinding) : "[]",
-                actionTaken: actionTaken != "" ? JSON.stringify(actionTaken) : "[]",
+                customerVoice: customerVoice !== "" ? JSON.stringify(customerVoice) : "[]",
+                initialObservation: initialObservation !== "" ? JSON.stringify(initialObservation) : "[]",
+                finalFinding: finalFinding !== "" ? JSON.stringify(finalFinding) : "[]",
+                actionTaken: actionTaken !== "" ? JSON.stringify(actionTaken) : "[]",
                 dealerObservation,
                 serviceTypeID,
                 isActive,
@@ -727,7 +760,8 @@ const JobCardOperator = () => {
         getAllModels();
         getAllServiceTypes();
         getAllTeleCallersList();
-        getDealerInfo()
+        getDealerInfo();
+        getAllStatesList();
     }, [])
     return (
         <>
@@ -1245,9 +1279,47 @@ const JobCardOperator = () => {
                                                 Save Jobcard
                                             </button>
                                         </div>
+                                        
                                         <div className="row">
-                                            <div className="col-4">
+                                            <div className="col">
                                                 <div className="mb-3">
+                                                    <label htmlFor="frmDealer" className="form-label">State</label>
+                                                        <select 
+                                                            className="form-select"
+                                                            name="StateID"     
+                                                            onChange={loadDealersByState}                                                   
+                                                        >
+                                                            <option value="">--Select State--</option>
+                                                            { getState.map((items, idx) => (
+                                                                <option key={idx} value={items.id}>
+                                                                    {items.text}
+                                                                </option>
+                                                                ))
+                                                            }
+                                                        </select>
+                                                </div>
+                                            </div>
+                                            <div className="col">
+                                            <div className="mb-3">
+                                                    <label htmlFor="frmDealer" className="form-label">Dealer Details</label>
+                                                        <select 
+                                                            className="form-select"
+                                                            name="dealerID"
+                                                            value={dealerID}
+                                                            onChange={handleChange("dealerID")}
+                                                        >
+                                                            <option value="">--Select Dealer--</option>
+                                                            { dealers.map((items, idx) => (
+                                                                <option key={idx} value={items.id}>
+                                                                    {items.text}
+                                                                </option>
+                                                                ))
+                                                            }
+                                                        </select>
+                                                    </div>
+                                            </div>
+                                            <div className="col">
+                                            <div className="mb-3">
                                                     <label
                                                         htmlFor="jobCardNumber"
                                                         className="form-label"
@@ -1264,7 +1336,11 @@ const JobCardOperator = () => {
                                                         onChange={handleChange("jobcardNumber")}
                                                     />
                                                 </div>
-                                                <div className="mb-3">
+                                            </div>
+                                        </div>
+                                        <div className="row">
+                                            <div className="col">
+                                            <div className="mb-3">
                                                     <label htmlFor="frmDesc" className="form-label">Customer Voice</label>
                                                     <div className="tags-input">
                                                         <ul className="ultag">
@@ -1290,8 +1366,9 @@ const JobCardOperator = () => {
                                                         />
                                                     </div>
                                                 </div>
-
-                                                <div className="mb-3">
+                                            </div>
+                                            <div className="col">
+                                            <div className="mb-3">
                                                     <label htmlFor="frmDesc" className="form-label">Initial Observation</label>
                                                     <div className="tags-input">
                                                         <ul className="ultag">
@@ -1315,14 +1392,9 @@ const JobCardOperator = () => {
                                                         />
                                                     </div>
                                                 </div>
-
-
-
-
                                             </div>
-
-                                            <div className="col-4">
-                                                <div className="mb-3">
+                                            <div className="col">
+                                            <div className="mb-3">
                                                     <label htmlFor="frmDesc" className="form-label">Final Findings</label>
                                                     <div className="tags-input">
                                                         <ul className="ultag">
@@ -1346,8 +1418,11 @@ const JobCardOperator = () => {
                                                         />
                                                     </div>
                                                 </div>
-
-                                                <div className="mb-3">
+                                            </div>
+                                        </div>
+                                        <div className="row">
+                                            <div className="col">
+                                            <div className="mb-3">
                                                     <label htmlFor="frmDesc" className="form-label">Action Taken</label>
                                                     <div className="tags-input">
                                                         <ul className="ultag">
@@ -1371,31 +1446,11 @@ const JobCardOperator = () => {
                                                         />
                                                     </div>
                                                 </div>
-                                                
-                                                <div className="mb-3">
-                                                <label htmlFor="frmDealer" className="form-label">Dealer Details</label>
-                                                    <select 
-                                                        className="form-select"
-                                                        name="dealerID"
-                                                        value={dealerID}
-                                                        onChange={handleChange("dealerID")}
-                                                    >
-                                                        <option value="">--Select Dealer--</option>
-                                                        { dealers.map((items, idx) => (
-                                                            <option key={idx} value={items.id}>
-                                                                {items.text}
-                                                            </option>
-                                                            ))
-                                                        }
-                                                    </select>
-                                                </div>
-
                                             </div>
-
-                                            <div className="col-4">
-                                                <div className="mb-3">
+                                            <div className="col">
+                                            <div className="mb-2">
                                                     <label htmlFor="formFileFront" className="form-label">
-                                                        Upload Job Card Front<sup>*</sup>
+                                                       Attachment - 1<sup>*</sup>
                                                     </label>
                                                     <input
                                                         className="form-control"
@@ -1409,9 +1464,11 @@ const JobCardOperator = () => {
                                                         <span className="badge bg-success ms-1">{frontFileName}</span>
                                                    </label>
                                                 </div>
-                                                <div className="mb-2">
+                                            </div>
+                                            <div className="col">
+                                            <div className="mb-3">
                                                     <label htmlFor="formFile" className="form-label">
-                                                        Upload Job Card Back<sup>*</sup>
+                                                        Attachment - 2
                                                     </label>
                                                     <input
                                                         className="form-control"
@@ -1424,14 +1481,13 @@ const JobCardOperator = () => {
                                                         <span className="badge bg-success me-1">{backType}</span>
                                                         <span className="badge bg-success ms-1">{backFileName}</span>
                                                     </label>
-                                                </div>
-                                                {
+                                                    {
                                                     updateJobCard &&
                                                     <p className="text-danger">Note : If select any image it will be overwrite existing image/file.</p>
                                                 }
-                                                
+                                                </div>
                                             </div>
-                                        </div>
+                                        </div>                                       
                                     </div>
                                 </div>                            
                             </div>

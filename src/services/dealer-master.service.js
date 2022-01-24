@@ -34,6 +34,10 @@ const getDealerForDropdown = (argID) =>{
     return axios.get(APP_API_URL + "/Dealer/Dropdown/" + argID, {headers : authHeader()});
 }
 
+const getDealerByState = (argID)=>{
+    return axios.get(APP_API_URL + "/Dealer/DealerDropdownFilterByState/" + argID, {headers : authHeader()});
+}
+
 export default {
     getStates,
     getAllDealersByPaging,
@@ -41,5 +45,6 @@ export default {
     getDealerById,
     deleteDealerById,
     updateDealer,
-    getDealerForDropdown
+    getDealerForDropdown,
+    getDealerByState
 }
