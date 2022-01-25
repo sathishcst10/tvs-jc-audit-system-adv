@@ -530,7 +530,7 @@ const JobCardOperator = () => {
         Loading(settings);
         console.log(saveJobCard);
       
-        if(jobcardNumber !== "" && jcback !== 0 && jcfront !== 0) {
+        if(jobcardNumber !== "" && jcfront !== 0) {
             jobCardInfoService.createJobCard({
                 jcid,
                 userID,
@@ -808,14 +808,17 @@ const JobCardOperator = () => {
                                                         <th>Job Card Number</th>
                                                         <th>Dealer Name</th>
                                                         <th>Customer Feedback</th>
-                                                        {/* <th>Attachments</th> */}
+                                                        <th>Initial Observation</th>
+                                                        <th>Final Finding</th>
+                                                        <th>Action Taken</th>
+                                                        <th>Status</th>
                                                         <th>Action</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     {
                                                         showJobcards.map((items, index) => (
-                                                            <tr key={index} onClick={() => getUpdateForm(items.jcid)}>
+                                                            <tr key={index} >
                                                                 <td>{items.jcNumber}</td>
                                                                 <td>{items.jobcardNumber}</td>
                                                                 <td>
@@ -825,6 +828,27 @@ const JobCardOperator = () => {
                                                                 <td>
                                                                     {
                                                                         JSON.parse(items.customerVoice).map((_items, idx) => (
+                                                                            <span key={idx} className="badge bg-dark mb-1 mx-1">{_items}</span>
+                                                                        ))
+                                                                    }
+                                                                </td>
+                                                                <td>
+                                                                    {
+                                                                        JSON.parse(items.initialObservation).map((_items, idx) => (
+                                                                            <span key={idx} className="badge bg-dark mb-1 mx-1">{_items}</span>
+                                                                        ))
+                                                                    }
+                                                                </td>
+                                                                <td>
+                                                                    {
+                                                                        JSON.parse(items.finalFinding).map((_items, idx) => (
+                                                                            <span key={idx} className="badge bg-dark mb-1 mx-1">{_items}</span>
+                                                                        ))
+                                                                    }
+                                                                </td>
+                                                                <td>
+                                                                    {
+                                                                        JSON.parse(items.actionTaken).map((_items, idx) => (
                                                                             <span key={idx} className="badge bg-dark mb-1 mx-1">{_items}</span>
                                                                         ))
                                                                     }
@@ -849,6 +873,14 @@ const JobCardOperator = () => {
                                                                         )
                                                                     }
                                                                     
+                                                                </td>
+                                                                <td>
+                                                                    <button 
+                                                                        onClick={() => getUpdateForm(items.jcid)} 
+                                                                        className="btn btn-sm btn-outline-primary"
+                                                                    >
+                                                                        Edit
+                                                                    </button>
                                                                 </td>
                                                             </tr>
                                                         ))
@@ -1217,18 +1249,26 @@ const JobCardOperator = () => {
                                                                     "id" : jcNumber
                                                                 })}
                                                             >
-                                                                Front View
+                                                                File 1
                                                             </button>
-                                                            <button 
-                                                                className="btn btn-sm btn-outline-primary ms-1 mt-2"
-                                                                onClick={()=>downloadDocs({
-                                                                    "documentId": jcBack,
-                                                                    "documentType": "JCBack",
-                                                                    "id" : jcNumber
-                                                                })}
-                                                            >
-                                                                Back View
-                                                            </button>
+                                                            {
+                                                                jcBack !== 0 ?
+                                                                (
+                                                                    <button 
+                                                                        className="btn btn-sm btn-outline-primary ms-1 mt-2"
+                                                                        onClick={()=>downloadDocs({
+                                                                            "documentId": jcBack,
+                                                                            "documentType": "JCBack",
+                                                                            "id" : jcNumber
+                                                                        })}
+                                                                    >
+                                                                        File 2
+                                                                    </button>
+                                                                )
+                                                                :
+                                                                (<></>)
+                                                            }
+                                                            
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1468,7 +1508,7 @@ const JobCardOperator = () => {
                                             <div className="col">
                                             <div className="mb-3">
                                                     <label htmlFor="formFile" className="form-label">
-                                                        Attachment - 2
+                                                        Attachment - 2 <small>(Optional)</small>
                                                     </label>
                                                     <input
                                                         className="form-control"

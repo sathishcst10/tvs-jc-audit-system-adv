@@ -146,12 +146,12 @@ export const SignIn = (props) => {
               Forgot Password?
             </Link>
           </div>
-          <div className="d-grid gap-1">
+          <div className="d-grid gap-1 mb-4">
             <button className="btn btn-sm btn-primary" type="submit">
               Login
             </button>
           </div>
-          <p className="mt-5 mb-0 text-muted text-center default-font-size">
+          <p className="mt-5 mb-0 text-muted text-center default-font-size d-none">
             Don't have a account?{" "}
             <Link to="/" className="link-default">
               Create

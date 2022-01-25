@@ -1,5 +1,6 @@
 import { getCardActionsUtilityClass } from "@mui/material";
 import { DataTable } from 'primereact/datatable';
+import TablePagination from '@mui/material/TablePagination';
 import { Column } from 'primereact/column';
 import exportFromJSON from "export-from-json";
 import { useEffect, useRef, useState } from "react";
@@ -16,7 +17,7 @@ const JobCardAuditTeam = ()=>{
         progressedClose: false,
         theme: "dark",
     };
-
+    const [totalCount, setTotalCount] = useState(0);
     const [getRequest, setRequest] = useState(
         {
             "pageNumber": 1,
@@ -135,6 +136,7 @@ const JobCardAuditTeam = ()=>{
             (response)=>{
                 Loading();
                 console.log(response);
+                setTotalCount(response.data.data.totalCount);
                 setJobCardList(response.data.data.data);
             }
         ).catch(
@@ -376,7 +378,48 @@ const JobCardAuditTeam = ()=>{
         exportType
        });
     }
-
+    const [page, setPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+  
+    const handleChangePage = (event, newPage) => {
+      Loading(settings);
+      setPage(newPage + 1);
+     
+      jobCardInfoService.getJobCardListForAudit({
+        pageNumber : newPage + 1,
+        pageSize,
+        sortOrderBy,
+        sortOrderColumn,
+        filters,
+      })
+      .then((response) => {
+        setTotalCount(response.data.data.totalCount);
+        setJobCardList(response.data.data.data);
+        Loading();
+      })
+      .catch((error) =>{console.log(error); Loading();});
+      
+    };
+  
+    const handleChangeRowsPerPage = (event) => {
+      Loading(settings);
+      jobCardInfoService.getJobCardListForAudit({
+        pageNumber,
+        pageSize : parseInt(event.target.value, 10),
+        sortOrderBy,
+        sortOrderColumn,
+        filters,
+      })
+      .then((response) => {
+        setTotalCount(response.data.data.totalCount);
+        setJobCardList(response.data.data.data);
+        Loading();
+      })
+      .catch((error) =>{console.log(error); Loading();});
+      setRowsPerPage(parseInt(event.target.value, 10));
+      setPage(1);
+  
+    };
     useEffect(()=>{
         getAllJobCardLists();        
     },[])
@@ -706,11 +749,11 @@ const JobCardAuditTeam = ()=>{
                                             <Column field="technicianName" header="Technician Name" style={{ flexGrow: 1, flexBasis: '200px' }}></Column>
                                             <Column field="jcCategoryStatus" header="JC Category" style={{ flexGrow: 1, flexBasis: '200px' }}></Column>
                                             <Column field="customerVoice" body={changeItemsCV} header="Customer Voice" style={{ flexGrow: 1, flexBasis: '350px' }}></Column>
-                                            <Column field="initialObservation" body={changeItemsIO} header="Initial Observation" style={{ flexGrow: 1, flexBasis: '200px' }}></Column>
-                                            <Column field="finalFinding" body={changeItemsFF} header="Final Findings" style={{ flexGrow: 1, flexBasis: '200px' }}></Column>
-                                            <Column field="actionTaken" body={changeItemsACKT} header="Action Taken" style={{ flexGrow: 1, flexBasis: '200px' }}></Column>
-                                            <Column field="customerVoiceByWMHO" body={changeItemsWM} header="Understanding of Customer Voice by WM/HO" style={{ flexGrow: 1, flexBasis: '200px' }}></Column>
-                                            <Column field="gapIdentifiedWMSA" body={changeItemsGapIden} header="Gap Identified Between WM/SA or Tech." style={{ flexGrow: 1, flexBasis: '200px' }}></Column>
+                                            <Column field="initialObservation" body={changeItemsIO} header="Initial Observation" style={{ flexGrow: 1, flexBasis: '300px' }}></Column>
+                                            <Column field="finalFinding" body={changeItemsFF} header="Final Findings" style={{ flexGrow: 1, flexBasis: '300px' }}></Column>
+                                            <Column field="actionTaken" body={changeItemsACKT} header="Action Taken" style={{ flexGrow: 1, flexBasis: '300px' }}></Column>
+                                            <Column field="customerVoiceByWMHO" body={changeItemsWM} header="Understanding of Customer Voice by WM/HO" style={{ flexGrow: 1, flexBasis: '300px' }}></Column>
+                                            <Column field="gapIdentifiedWMSA" body={changeItemsGapIden} header="Gap Identified Between WM/SA or Tech." style={{ flexGrow: 1, flexBasis: '300px' }}></Column>
                                             <Column field="jcAuditStatus" header="JC (OK/NOT OK)" style={{ flexGrow: 1, flexBasis: '200px' }}></Column>
                                             <Column field="vpsStatus" header="Vehicle Performance After Service(VPS)	" style={{ flexGrow: 1, flexBasis: '200px' }}></Column>
                                             <Column field="vpsReason1" header="VPS Reason 1" style={{ flexGrow: 1, flexBasis: '200px' }}></Column>
@@ -721,11 +764,20 @@ const JobCardAuditTeam = ()=>{
                                             <Column field="newProblemStatus" header="New Problem Reported After Service" style={{ flexGrow: 1, flexBasis: '200px' }}></Column>
                                             <Column field="problemNotCapturedStatus" header="Customer Told Problem Not Capturd" style={{ flexGrow: 1, flexBasis: '200px' }}></Column>
                                             <Column field="sameProblemInJCStatus" header="Same Problem IN JC(Y/N)" style={{ flexGrow: 1, flexBasis: '200px' }}></Column>
-                                            <Column field="jcGapRemarks" body={changeItemsJCGap} header="JC Gap Remarks" style={{ flexGrow: 1, flexBasis: '200px' }}></Column>
+                                            <Column field="jcGapRemarks" body={changeItemsJCGap} header="JC Gap Remarks" style={{ flexGrow: 1, flexBasis: '300px' }}></Column>
                                             <Column field="auditStatus" header="Audit Status" style={{ flexGrow: 1, flexBasis: '200px' }}></Column>
                                             <Column field="auditPerson" header="Audit Done By" style={{ flexGrow: 1, flexBasis: '200px' }}></Column>
                                             <Column field="callResponseStatus" header="Call Response By Customer" style={{ flexGrow: 1, flexBasis: '200px' }}></Column>
                                         </DataTable>
+
+                                        <TablePagination
+                                            component="div"
+                                            count={totalCount}
+                                            page={page - 1}
+                                            onPageChange={handleChangePage}
+                                            rowsPerPage={rowsPerPage}
+                                            onRowsPerPageChange={handleChangeRowsPerPage}
+                                        />
                                     </div>
                                 </div>
                             </div>

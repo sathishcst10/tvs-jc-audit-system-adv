@@ -801,6 +801,18 @@ const JobCardCaller = () => {
                                                             Customer Feedback
                                                         </th>
                                                         <th>
+                                                            Initial Observation
+                                                        </th>
+                                                        <th>
+                                                            Final Finding
+                                                        </th>
+                                                        <th>
+                                                            Action Taken
+                                                        </th>
+                                                        <th>
+                                                            Status
+                                                        </th>
+                                                        <th>
                                                             Action
                                                         </th>
                                                     </tr>
@@ -808,7 +820,7 @@ const JobCardCaller = () => {
                                                 <tbody>
                                                     {
                                                         showJobcards.map((items, idx) => (
-                                                            <tr key={idx} onClick={() => updateJobcard(items.jcid)}>
+                                                            <tr key={idx}>
                                                                 <td>{items.jcNumber}</td>
                                                                 <td>{items.jobcardNumber}</td>
                                                                 <td>
@@ -824,16 +836,45 @@ const JobCardCaller = () => {
                                                                 </td>
                                                                 <td>
                                                                     {
+                                                                        JSON.parse(items.initialObservation).map((_items, idx) => (
+                                                                            <span key={idx} className="badge bg-dark mb-1 mx-1">{_items}</span>
+                                                                        ))
+                                                                    }
+                                                                </td>
+                                                                <td>
+                                                                    {
+                                                                        JSON.parse(items.finalFinding).map((_items, idx) => (
+                                                                            <span key={idx} className="badge bg-dark mb-1 mx-1">{_items}</span>
+                                                                        ))
+                                                                    }
+                                                                </td>
+                                                                <td>
+                                                                    {
+                                                                        JSON.parse(items.actionTaken).map((_items, idx) => (
+                                                                            <span key={idx} className="badge bg-dark mb-1 mx-1">{_items}</span>
+                                                                        ))
+                                                                    }
+                                                                </td>
+                                                                <td>
+                                                                    {
                                                                         !items.isTelecallCompleted ?
                                                                             (
-                                                                                <span className="badge bg-primary">Open</span>
+                                                                                <span className="badge bg-primary">Live</span>
                                                                             )
                                                                             :
                                                                             (
-                                                                                <span className="badge bg-success">Completed</span>
+                                                                                <span className="badge bg-success">Closed</span>
                                                                             )
                                                                     }
 
+                                                                </td>
+                                                                <td>
+                                                                    <button
+                                                                        onClick={() => updateJobcard(items.jcid)}
+                                                                        className="btn btn-sm btn-outline-primary"
+                                                                    >
+                                                                        Edit
+                                                                    </button>
                                                                 </td>
                                                             </tr>
                                                         ))
@@ -1203,18 +1244,26 @@ const JobCardCaller = () => {
                                                                         "id" : jcNumber
                                                                     })}
                                                                 >
-                                                                    Front View
+                                                                    File - 1
                                                                 </button>
-                                                                <button 
-                                                                    className="btn btn-sm btn-outline-primary ms-1 mt-2"
-                                                                    onClick={()=>downloadDocs({
-                                                                        "documentId": jcBack,
-                                                                        "documentType": "JCBack",
-                                                                        "id" : jcNumber
-                                                                    })}
-                                                                >
-                                                                    Back View
-                                                                </button>
+                                                                {
+                                                                jcBack !== 0 ?
+                                                                (
+                                                                    <button 
+                                                                        className="btn btn-sm btn-outline-primary ms-1 mt-2"
+                                                                        onClick={()=>downloadDocs({
+                                                                            "documentId": jcBack,
+                                                                            "documentType": "JCBack",
+                                                                            "id" : jcNumber
+                                                                        })}
+                                                                    >
+                                                                        File - 2
+                                                                    </button>
+                                                                )
+                                                                :
+                                                                (<></>)
+}
+                                                               
                                                             </div>
                                                         </div>
                                                         <hr/>

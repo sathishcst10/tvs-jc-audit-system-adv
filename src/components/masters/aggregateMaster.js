@@ -273,8 +273,8 @@ const filterData = () => {
       <table className="table table-custom">
         <thead className="table-dark">
           <tr>
-            <th>Aggregate ID</th>
-            <th>Aggregate Name</th>
+            <th>ID</th>
+            <th>VPS Reason</th>
             <th>Status</th>
             <th>Actions</th>
           </tr>
@@ -312,7 +312,7 @@ const filterData = () => {
                         href="#"
                         onClick={() => getAggregateById(items.aggregateID)}
                       >
-                        Edit Aggregate
+                        Edit
                       </a>
                     </li>
                     <li>
@@ -321,7 +321,7 @@ const filterData = () => {
                         href="#"
                         onClick={() => deleteAggregate(items.aggregateID)}
                       >
-                        Delete Aggregate
+                        Delete
                       </a>
                     </li>
                     <li>
@@ -393,7 +393,7 @@ const filterData = () => {
               <form onSubmit={handleSubmit}>
                 <div className="mb-2">
                   <label htmlFor="aggregateName" className="form-label">
-                    Aggregate Name
+                    VPS Reason
                   </label>
                   <input
                     type="text"
@@ -418,14 +418,14 @@ const filterData = () => {
                       className="btn btn-sm btn-success ms-1"
                       type="submit"
                     >
-                      Update Aggregate
+                      Update Reason
                     </button>
                   ) : (
                     <button
                       className="btn btn-sm btn-success ms-1"
                       type="submit"
                     >
-                      Add Aggregate
+                      Add Reason
                     </button>
                   )}
                 </div>

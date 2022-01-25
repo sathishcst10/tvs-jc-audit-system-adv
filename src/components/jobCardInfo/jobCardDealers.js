@@ -460,7 +460,7 @@ useEffect(()=>{
             theme: "dark",
         });
        if(!updateJobCard) { 
-        if(jobcardNumber !== "" && jcback !== 0 && jcfront !== 0) {
+        if(jobcardNumber !== "" && jcfront !== 0) {
             jobCardInfoService.createJobCard({
                 jcid,
                 userID,
@@ -807,18 +807,25 @@ useEffect(()=>{
                                                                         "id" : items.jcNumber
                                                                       })}
                                                                 >
-                                                                    <i className="bi bi-file-earmark-arrow-down"></i> Front
+                                                                    <i className="bi bi-file-earmark-arrow-down"></i> File 1
                                                                 </button>
-                                                                <button 
-                                                                    className="btn" 
-                                                                    onClick={()=>downloadDocs({
-                                                                        "documentId": items.jcBack,
-                                                                        "documentType": "JCBack",
-                                                                        "id" : items.jcNumber
-                                                                      })}
-                                                                >
-                                                                    <i className="bi bi-file-earmark-arrow-down"></i> Back
-                                                                </button>
+                                                                {
+                                                                   items.jcBack !==0 ? (
+                                                                        <button 
+                                                                        className="btn" 
+                                                                        onClick={()=>downloadDocs({
+                                                                            "documentId": items.jcBack,
+                                                                            "documentType": "JCBack",
+                                                                            "id" : items.jcNumber
+                                                                          })}
+                                                                        >
+                                                                            <i className="bi bi-file-earmark-arrow-down"></i> File 2
+                                                                        </button>
+                                                                    ):(
+                                                                        <></>
+                                                                    )
+                                                                }
+                                                               
                                                             </td>
                                                             <td>
                                                                 <div className="d-flex">
@@ -1008,7 +1015,7 @@ useEffect(()=>{
                                             <div className="col-4">
                                                 <div className="mb-3">
                                                     <label htmlFor="formFileFront" className="form-label">
-                                                        Upload Job Card Front<sup>*</sup>
+                                                        Attachment 1<sup>*</sup>
                                                     </label>
                                                     <input
                                                         className="form-control"
@@ -1024,7 +1031,7 @@ useEffect(()=>{
                                                 </div>
                                                 <div className="mb-2">
                                                     <label htmlFor="formFile" className="form-label">
-                                                        Upload Job Card Back<sup>*</sup>
+                                                        Attachment 2 <small>(Optional)</small>
                                                     </label>
                                                     <input
                                                         className="form-control"

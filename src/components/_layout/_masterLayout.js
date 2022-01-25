@@ -208,7 +208,7 @@ const MasterLayout = ({ title = "", desc = "", pageMap = [], children }) => {
 
                               <li>
                                 <Link className="dropdown-item" to="/masters/aggregateMaster">
-                                  Aggregate Master
+                                  VPS Reason Master
                                 </Link>
                               </li>
                             </>
@@ -220,7 +220,7 @@ const MasterLayout = ({ title = "", desc = "", pageMap = [], children }) => {
                           (
                             <li>
                               <Link className="dropdown-item" to="/masters/aggregateMaster">
-                                Aggregate Master
+                                VPS Reason Master
                               </Link>
                             </li>
                           )
