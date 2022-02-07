@@ -465,7 +465,7 @@ const JobCardOperator = () => {
 
     const handleSubmit = (event)=>{
         event.preventDefault();
-       Loading(settings);
+        Loading(settings);
         jobCardInfoService.updateJobCard({
             jcid,
             userID,
@@ -722,18 +722,38 @@ const JobCardOperator = () => {
     const removeTags = (indexToRemove, items) => {
         if (items === "CustomerVoice") {
             setTagDesc([...getTagDesc.filter((_, index) => index !== indexToRemove)]);
+            setSaveJobCard({
+                ...saveJobCard,
+                customerVoice: [...customerVoice.filter((_, index) => index !== indexToRemove)]
+            });
         }
         else if (items === "InitialObs") {
             setInitialObs([...getInitialObs.filter((_, index) => index !== indexToRemove)]);
+            setSaveJobCard({
+                ...saveJobCard,
+                initialObservation: [...initialObservation.filter((_, index) => index !== indexToRemove)]
+            })
         }
         else if (items === "FinalFindings") {
             setFinalFindings([...getFinalFindings.filter((_, index) => index !== indexToRemove)]);
+            setSaveJobCard({
+                ...saveJobCard,
+                finalFinding: [...finalFinding.filter((_, index) => index !== indexToRemove)]
+            });
         }
         else if (items === "ActionTaken") {
             setActionTaken([...getActionTaken.filter((_, index) => index !== indexToRemove)]);
+            setSaveJobCard({
+                ...saveJobCard,
+                actionTaken: [...actionTaken.filter((_, index) => index !== indexToRemove)]
+            });
         }
         else if (items === "DealerObs") {
             setDealerObs([...getDealerObs.filter((_, index) => index !== indexToRemove)]);
+            setSaveJobCard({
+                ...saveJobCard,
+                dealerObservation: [...dealerObservation.filter((_, index) => index !== indexToRemove)]
+            });
         }
     };
     

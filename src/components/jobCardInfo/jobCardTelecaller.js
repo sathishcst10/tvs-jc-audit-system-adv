@@ -590,6 +590,15 @@ const JobCardCaller = () => {
         else if (items === "DealerObs") {
             setDealerObs([...getDealerObs.filter((_, index) => index !== indexToRemove)]);
         }
+        else if(items === "CustomerVoiceByWM"){
+            setCustomerVoiceByWMHO([...getCustomerVoiceByWMHO.filter((_, index) => index !== indexToRemove)]);
+        }
+        else if(items === "GapIdentifiedByWMSA"){
+            setGapIdentifiedWMSA([...getGapIdentifiedWMSA.filter((_, index) => index !== indexToRemove)]);
+        }
+        else if(items === "JCGapRemarks"){
+            setJcGapRemarks([...getJcGapRemarks.filter((_, index) => index !== indexToRemove)]);
+        }
     };
 
     const handleChange = (name) => (event) => {
