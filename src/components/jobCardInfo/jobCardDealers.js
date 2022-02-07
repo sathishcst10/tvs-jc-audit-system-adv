@@ -752,119 +752,120 @@ useEffect(()=>{
                                                 Create Job card
                                             </button>
                                         </div>
-                                        <table className="table table-striped table-hover table-custom">
-                                            <thead className="table-dark">
-                                                <tr>
-                                                    <th>ID No</th>
-                                                    <th>Job Card Number</th>
-                                                    <th>Customer Voice</th>
-                                                    <th>Initial Observation</th>
-                                                    <th>Final Findings</th>
-                                                    <th>Action Taken</th>
-                                                    <th>Attachments</th>
-                                                    <th className="text-center">Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
+                                        <div className="table-responsive">
+                                            <table className="table table-striped table-hover table-custom">
+                                                <thead className="table-dark">
+                                                    <tr>
+                                                        <th>ID No</th>
+                                                        <th>Job Card Number</th>
+                                                        <th>Customer Voice</th>
+                                                        <th>Initial Observation</th>
+                                                        <th>Final Findings</th>
+                                                        <th>Action Taken</th>
+                                                        <th>Attachments</th>
+                                                        <th className="text-center">Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
 
-                                                {
-                                                    showJobCardDetails.map((items, idx) => (
-                                                        <tr key={idx}>
-                                                            <td>
-                                                                {items.jcNumber}
-                                                            </td>
-                                                            <td>
-                                                                <a href="#" className="lnkAction">
-                                                                    {items.jobcardNumber}
-                                                                </a>
-                                                            </td>
-                                                            <td>
-                                                                {
-                                                                    JSON.parse(items.customerVoice).map((_items, _idx) => (
-                                                                        <span key={_idx} className="badge bg-primary mx-1 mb-1">
-                                                                            {_items}
-                                                                        </span>
-                                                                    ))
-                                                                }
-                                                            </td>
-                                                            <td>
-                                                                {
-                                                                    JSON.parse(items.initialObservation).map((_items, _idx) => (
-                                                                        <span key={_idx} className="badge bg-primary mx-1 mb-1">
-                                                                            {_items}
-                                                                        </span>
-                                                                    ))
-                                                                }
-                                                            </td>
-                                                            <td>
-                                                                {
-                                                                    JSON.parse(items.finalFinding).map((_items, _idx) => (
-                                                                        <span key={_idx} className="badge bg-primary mx-1 mb-1">
-                                                                            {_items}
-                                                                        </span>
-                                                                    ))
-                                                                }
-                                                            </td>
-                                                            <td>
-                                                                {
-                                                                    JSON.parse(items.actionTaken).map((_items, _idx) => (
-                                                                        <span key={_idx} className="badge bg-primary mx-1 mb-1">
-                                                                            {_items}
-                                                                        </span>
-                                                                    ))
-                                                                }
-                                                            </td>
-                                                            <td className="text-center">
-                                                                <button 
-                                                                    className="btn" 
-                                                                    onClick={()=>downloadDocs({
-                                                                        "documentId": items.jcFront,
-                                                                        "documentType": "JCFront",
-                                                                        "id" : items.jcNumber
-                                                                      })}
-                                                                >
-                                                                    <i className="bi bi-file-earmark-arrow-down"></i> File 1
-                                                                </button>
-                                                                {
-                                                                   items.jcBack !==0 ? (
-                                                                        <button 
+                                                    {
+                                                        showJobCardDetails.map((items, idx) => (
+                                                            <tr key={idx}>
+                                                                <td>
+                                                                    {items.jcNumber}
+                                                                </td>
+                                                                <td>
+                                                                    <a href="#" className="lnkAction">
+                                                                        {items.jobcardNumber}
+                                                                    </a>
+                                                                </td>
+                                                                <td>
+                                                                    {
+                                                                        JSON.parse(items.customerVoice).map((_items, _idx) => (
+                                                                            <span key={_idx} className="badge bg-primary mx-1 mb-1">
+                                                                                {_items}
+                                                                            </span>
+                                                                        ))
+                                                                    }
+                                                                </td>
+                                                                <td>
+                                                                    {
+                                                                        JSON.parse(items.initialObservation).map((_items, _idx) => (
+                                                                            <span key={_idx} className="badge bg-primary mx-1 mb-1">
+                                                                                {_items}
+                                                                            </span>
+                                                                        ))
+                                                                    }
+                                                                </td>
+                                                                <td>
+                                                                    {
+                                                                        JSON.parse(items.finalFinding).map((_items, _idx) => (
+                                                                            <span key={_idx} className="badge bg-primary mx-1 mb-1">
+                                                                                {_items}
+                                                                            </span>
+                                                                        ))
+                                                                    }
+                                                                </td>
+                                                                <td>
+                                                                    {
+                                                                        JSON.parse(items.actionTaken).map((_items, _idx) => (
+                                                                            <span key={_idx} className="badge bg-primary mx-1 mb-1">
+                                                                                {_items}
+                                                                            </span>
+                                                                        ))
+                                                                    }
+                                                                </td>
+                                                                <td className="text-center">
+                                                                    <button 
                                                                         className="btn" 
                                                                         onClick={()=>downloadDocs({
-                                                                            "documentId": items.jcBack,
-                                                                            "documentType": "JCBack",
+                                                                            "documentId": items.jcFront,
+                                                                            "documentType": "JCFront",
                                                                             "id" : items.jcNumber
-                                                                          })}
-                                                                        >
-                                                                            <i className="bi bi-file-earmark-arrow-down"></i> File 2
-                                                                        </button>
-                                                                    ):(
-                                                                        <></>
-                                                                    )
-                                                                }
-                                                               
-                                                            </td>
-                                                            <td>
-                                                                <div className="d-flex">
-                                                                    <button 
-                                                                        className="btn text-primary" 
-                                                                        title="Save" 
-                                                                        onClick={()=>getDataForUpdate(items.jcid)}
+                                                                        })}
                                                                     >
-                                                                        <i className="bi bi-pencil-square"></i>
+                                                                        <i className="bi bi-file-earmark-arrow-down"></i> File 1
                                                                     </button>
-                                                                    {/* <button className="btn text-danger" title="Delete">
-                                                                        <i className="bi bi-trash"></i>
-                                                                    </button> */}
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    ))
-                                                }
+                                                                    {
+                                                                    items.jcBack !==0 ? (
+                                                                            <button 
+                                                                            className="btn" 
+                                                                            onClick={()=>downloadDocs({
+                                                                                "documentId": items.jcBack,
+                                                                                "documentType": "JCBack",
+                                                                                "id" : items.jcNumber
+                                                                            })}
+                                                                            >
+                                                                                <i className="bi bi-file-earmark-arrow-down"></i> File 2
+                                                                            </button>
+                                                                        ):(
+                                                                            <></>
+                                                                        )
+                                                                    }
+                                                                
+                                                                </td>
+                                                                <td>
+                                                                    <div className="d-flex">
+                                                                        <button 
+                                                                            className="btn text-primary" 
+                                                                            title="Save" 
+                                                                            onClick={()=>getDataForUpdate(items.jcid)}
+                                                                        >
+                                                                            <i className="bi bi-pencil-square"></i>
+                                                                        </button>
+                                                                        {/* <button className="btn text-danger" title="Delete">
+                                                                            <i className="bi bi-trash"></i>
+                                                                        </button> */}
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        ))
+                                                    }
 
 
-                                            </tbody>
-                                        </table>
-
+                                                </tbody>
+                                            </table>
+                                        </div>
                                         <TablePagination
                                             component="div"
                                             count={totalCount}
@@ -899,7 +900,7 @@ useEffect(()=>{
                                             </button>
                                         </div>
                                         <div className="row">
-                                            <div className="col-4">
+                                            <div className="col-md-4">
                                                 <div className="mb-3">
                                                     <label
                                                         htmlFor="jobCardNumber"
@@ -974,7 +975,7 @@ useEffect(()=>{
 
                                             </div>
 
-                                            <div className="col-4">
+                                            <div className="col-md-4">
                                                 <div className="mb-3">
                                                     <label htmlFor="frmDesc" className="form-label">Final Findings</label>
                                                     <div className="tags-input">
@@ -1028,7 +1029,7 @@ useEffect(()=>{
 
                                             </div>
 
-                                            <div className="col-4">
+                                            <div className="col-md-4">
                                                 <div className="mb-3">
                                                     <label htmlFor="formFileFront" className="form-label">
                                                         Attachment 1<sup>*</sup>

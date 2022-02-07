@@ -868,7 +868,7 @@ const JobCardCaller = () => {
                                                                     {
                                                                         !items.isTelecallCompleted ?
                                                                             (
-                                                                                <span className="badge bg-primary">Live</span>
+                                                                                <span className="badge bg-primary">Open</span>
                                                                             )
                                                                             :
                                                                             (

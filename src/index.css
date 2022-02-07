@@ -128,12 +128,17 @@ table.table-custom tbody td .badge {
 }
 .navbar-toggler {
   padding: .25rem .75rem;
-  font-size: 1.0rem;
+  font-size: 1.2rem;
   line-height: 1;
   background-color: transparent;
-  border: 1px solid transparent;
+  border: 0px solid transparent;
   border-radius: .25rem;
   transition: box-shadow .15s ease-in-out;
+}
+.navbar-toggler:focus {
+  text-decoration: none;
+  outline: 0;
+  box-shadow: 0 0 0 0.0rem;
 }
 .chart-Holder{
   width: 350px;
@@ -268,7 +273,7 @@ ul.ultag{
 
 .tag {
   width: auto;
-  height: 26px;
+  height: auto;
   display: flex;
   align-items: center;
   justify-content: center;

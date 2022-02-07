@@ -65,7 +65,7 @@ const DealerDashboard = () =>{
       };
     return(
         <>
-            <div className="row row-cols-1 row-cols-sm-2 row-cols-md-5  g-1">
+            <div className="row row-cols-1 row-cols-sm-1 row-cols-md-5  g-1">
                 <div className='col px-3'>
                         <div className='card card-shadow border-0 custom-radius'>
                             <div className="card-body">
@@ -155,7 +155,7 @@ const DealerDashboard = () =>{
             </div>
 
             <div className='row g-1'>
-                <div className='col-8 mt-4 px-3'>
+                <div className='col-md-8 col-sm-12 mt-4 px-3'>
                     <div className='card card-shadow border-0 custom-radius'>
                         <h6 className='card-header'>
                             Last 7 Days Jobcard Upload
@@ -170,7 +170,7 @@ const DealerDashboard = () =>{
                         </div>
                     </div>  
                 </div>
-                <div className='col-4 mt-4 px-3'>
+                <div className='col-md-4 col-sm-12 mt-4 px-3'>
                     <div className='card card-shadow border-0 custom-radius h-100'>
                         <h6 className='card-header'>
                             Feedback Status
@@ -187,7 +187,7 @@ const DealerDashboard = () =>{
                 </div>
             </div>
             <div className='row g-1'>
-                <div className='col-6 my-4 px-3'>
+                <div className='col-md-6 col-sm-12 my-4 px-3'>
                     <div className='card card-shadow border-0 custom-radius'>
                         <h6 className='card-header'>
                             Dealers Top Ratings
@@ -216,7 +216,7 @@ const DealerDashboard = () =>{
                         </div>
                     </div>  
                 </div>
-                <div className='col-6 my-4 px-3'>
+                <div className='col-md-6 col-sm-12 my-4 px-3'>
                     <div className='card card-shadow border-0 custom-radius h-100'>
                         <h6 className='card-header'>
                             Notifications
