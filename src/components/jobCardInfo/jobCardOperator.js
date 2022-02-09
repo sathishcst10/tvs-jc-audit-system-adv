@@ -847,30 +847,96 @@ const JobCardOperator = () => {
                                                                 </td>
                                                                 <td>
                                                                     {
-                                                                        JSON.parse(items.customerVoice).map((_items, idx) => (
-                                                                            <span key={idx} className="badge bg-dark mb-1 mx-1">{_items}</span>
-                                                                        ))
+                                                                        
+                                                                        (
+                                                                            <>
+                                                                            <   span className="badge captionTxt bg-dark mb-1 mx-1">
+                                                                                    {JSON.parse(items.customerVoice)[0]}
+                                                                                </span> 
+                                                                                <a 
+                                                                                    href="#" 
+                                                                                    className="more-link"
+                                                                                    data-bs-toggle="tooltip" 
+                                                                                    data-bs-placement="top"
+                                                                                    title={JSON.parse(items.customerVoice).map((_items, idx) => _items)}
+                                                                                >
+                                                                                    More...
+                                                                                </a>
+                                                                            </>
+                                                                        )
+
                                                                     }
                                                                 </td>
                                                                 <td>
                                                                     {
-                                                                        JSON.parse(items.initialObservation).map((_items, idx) => (
-                                                                            <span key={idx} className="badge bg-dark mb-1 mx-1">{_items}</span>
-                                                                        ))
+                                                                        // JSON.parse(items.initialObservation).map((_items, idx) => (
+                                                                        //     <span key={idx} className="badge bg-dark mb-1 mx-1">{_items}</span>
+                                                                        // ))
+
+                                                                        (
+                                                                            <>
+                                                                            <   span className="badge captionTxt bg-dark mb-1 mx-1">
+                                                                                    {JSON.parse(items.initialObservation)[0]}
+                                                                                </span> 
+                                                                                <a 
+                                                                                    href="#" 
+                                                                                    className="more-link"
+                                                                                    data-bs-toggle="tooltip" 
+                                                                                    data-bs-placement="top"
+                                                                                    title={JSON.parse(items.initialObservation).map((_items, idx) => _items)}
+                                                                                >
+                                                                                    More...
+                                                                                </a>
+                                                                            </>
+                                                                        )
                                                                     }
                                                                 </td>
                                                                 <td>
                                                                     {
-                                                                        JSON.parse(items.finalFinding).map((_items, idx) => (
-                                                                            <span key={idx} className="badge bg-dark mb-1 mx-1">{_items}</span>
-                                                                        ))
+                                                                        // JSON.parse(items.finalFinding).map((_items, idx) => (
+                                                                        //     <span key={idx} className="badge bg-dark mb-1 mx-1">{_items}</span>
+                                                                        // ))
+
+                                                                        (
+                                                                            <>
+                                                                            <   span className="badge captionTxt bg-dark mb-1 mx-1">
+                                                                                    {JSON.parse(items.finalFinding)[0]}
+                                                                                </span> 
+                                                                                <a 
+                                                                                    href="#" 
+                                                                                    className="more-link"
+                                                                                    data-bs-toggle="tooltip" 
+                                                                                    data-bs-placement="top"
+                                                                                    title={JSON.parse(items.finalFinding).map((_items, idx) => _items)}
+                                                                                >
+                                                                                    More...
+                                                                                </a>
+                                                                            </>
+                                                                        )
                                                                     }
                                                                 </td>
                                                                 <td>
                                                                     {
-                                                                        JSON.parse(items.actionTaken).map((_items, idx) => (
-                                                                            <span key={idx} className="badge bg-dark mb-1 mx-1">{_items}</span>
-                                                                        ))
+                                                                        // JSON.parse(items.actionTaken).map((_items, idx) => (
+                                                                        //     <span key={idx} className="badge bg-dark mb-1 mx-1">{_items}</span>
+                                                                        // ))
+
+                                                                        (
+                                                                            <>
+                                                                            <   span className="badge captionTxt bg-dark mb-1 mx-1">
+                                                                                    {JSON.parse(items.actionTaken)[0]}
+                                                                                </span> 
+                                                                                <a 
+                                                                                    href="#" 
+                                                                                    className="more-link"
+                                                                                    data-bs-toggle="tooltip" 
+                                                                                    data-bs-placement="top"
+                                                                                    title={JSON.parse(items.actionTaken).map((_items, idx) => _items)}
+                                                                                >
+                                                                                    More...
+                                                                                </a>
+                                                                            </>
+                                                                        )
                                                                     }
                                                                 </td>
                                                                 {/* <td>

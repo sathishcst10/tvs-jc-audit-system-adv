@@ -165,7 +165,25 @@ const JobCardAuditTeam = ()=>{
             <span className="badge bg-dark me-1" key={idx}>{items}</span>
         ));
         console.log(items);
-        return <div>{items}</div>;
+        if( JSON.parse(argItems.customerVoice).length > 0){
+            return <><span className="badge captionTxt bg-dark me-1">
+                {
+                    JSON.parse(argItems.customerVoice)[0]            
+                }
+                </span>
+                <a 
+                    href="#" 
+                    className="more-link"
+                    data-bs-toggle="tooltip" 
+                    data-bs-placement="top"
+                    title={JSON.parse(argItems.customerVoice).map((_items, idx) => _items)}
+                >
+                    More...
+                </a>
+            </>;
+        }else{
+            return "";
+        }
     }
     const changeItemsIO=(argItems)=>{
         console.log(argItems);
@@ -173,7 +191,25 @@ const JobCardAuditTeam = ()=>{
             <span className="badge bg-dark me-1" key={idx}>{items}</span>
         ));
         console.log(items);
-        return <div>{items}</div>;
+        if( JSON.parse(argItems.initialObservation).length > 0){
+            return <><span className="badge captionTxt bg-dark me-1">
+                {
+                    JSON.parse(argItems.initialObservation)[0]            
+                }
+                </span>
+                <a 
+                    href="#" 
+                    className="more-link"
+                    data-bs-toggle="tooltip" 
+                    data-bs-placement="top"
+                    title={JSON.parse(argItems.initialObservation).map((_items, idx) => _items)}
+                >
+                    More...
+                </a>
+            </>;
+        }else{
+            return ""
+        }
     }
     const changeItemsFF=(argItems)=>{
         console.log(argItems);
@@ -181,7 +217,26 @@ const JobCardAuditTeam = ()=>{
             <span className="badge bg-dark me-1" key={idx}>{items}</span>
         ));
         console.log(items);
-        return <div>{items}</div>;
+        if( JSON.parse(argItems.finalFinding).length > 0){
+            return <><span className="badge captionTxt bg-dark me-1">
+                {
+                    JSON.parse(argItems.finalFinding)[0]            
+                }
+                </span>
+                <a 
+                    href="#" 
+                    className="more-link"
+                    data-bs-toggle="tooltip" 
+                    data-bs-placement="top"
+                    title={JSON.parse(argItems.finalFinding).map((_items, idx) => _items)}
+                >
+                    More...
+                </a>
+            </>;
+        }else {
+            return "";
+        }
+        
     }
     const changeItemsACKT=(argItems)=>{
         console.log(argItems);
@@ -189,7 +244,29 @@ const JobCardAuditTeam = ()=>{
             <span className="badge bg-dark me-1" key={idx}>{items}</span>
         ));
         console.log(items);
-        return <div>{items}</div>;
+        if( JSON.parse(argItems.actionTaken).length >0){
+            return <>
+                <span className="badge captionTxt bg-dark me-1">
+                {
+                    JSON.parse(argItems.actionTaken)[0]            
+                }
+                </span>
+                <a 
+                    href="#" 
+                    className="more-link"
+                    data-bs-toggle="tooltip" 
+                    data-bs-placement="top"
+                    title={JSON.parse(argItems.actionTaken).map((_items, idx) => _items)}
+                >
+                    More...
+                </a>
+            </>;
+        }
+        else{
+            return ""
+        }
+        
+        
     }
     const changeItemsWM=(argItems)=>{
         console.log(argItems);
@@ -197,7 +274,29 @@ const JobCardAuditTeam = ()=>{
             <span className="badge bg-dark me-1" key={idx}>{items}</span>
         ));
         console.log(items);
-        return <div>{items}</div>;
+        
+            if( JSON.parse(argItems.customerVoiceByWMHO).length !== 0){
+                return <>
+                
+                    <span className="badge captionTxt bg-dark me-1">
+                    {
+                        JSON.parse(argItems.customerVoiceByWMHO)[0]
+                    }
+                    </span>
+                    <a 
+                        href="#" 
+                        className="more-link"
+                        data-bs-toggle="tooltip" 
+                        data-bs-placement="top"
+                        title={JSON.parse(argItems.customerVoiceByWMHO).map((_items, idx) => _items)}
+                    >
+                        More...
+                    </a>
+                </>;
+            } else{
+                return "";
+            }
+         
     }
     const changeItemsGapIden=(argItems)=>{
         console.log(argItems);
@@ -205,15 +304,60 @@ const JobCardAuditTeam = ()=>{
             <span className="badge bg-dark me-1" key={idx}>{items}</span>
         ));
         console.log(items);
-        return <div>{items}</div>;
+         
+        
+            if(JSON.parse(argItems.gapIdentifiedWMSA).length > 0){
+                return <>
+                    <span className="badge captionTxt bg-dark me-1">
+                    {
+                        JSON.parse(argItems.gapIdentifiedWMSA)[0]            
+                    }
+                    </span>
+                    <a 
+                        href="#" 
+                        className="more-link"
+                        data-bs-toggle="tooltip" 
+                        data-bs-placement="top"
+                        title={JSON.parse(argItems.gapIdentifiedWMSA).map((_items, idx) => _items)}
+                    >
+                        More...
+                    </a>
+                </>;
+            }
+            else{
+                return "";
+            }
+        
+        
     }
     const changeItemsJCGap=(argItems)=>{
         console.log(argItems);
         let items = JSON.parse(argItems.jcGapRemarks).map((items,idx)=>(
             <span className="badge bg-dark me-1" key={idx}>{items}</span>
         ));
-        console.log(items);
-        return <div>{items}</div>;
+        console.log('dsadsa',items);
+        if(JSON.parse(argItems.jcGapRemarks).length > 0){
+            return  <>
+                        <span className="badge captionTxt bg-dark me-1">
+                        {
+                            JSON.parse(argItems.jcGapRemarks)[0]            
+                        }
+                        </span>
+                        <a 
+                            href="#" 
+                            className="more-link"
+                            data-bs-toggle="tooltip" 
+                            data-bs-placement="top"
+                            title={JSON.parse(argItems.jcGapRemarks).map((_items, idx) => _items)}
+                        >
+                            More...
+                        </a>
+                    </>;
+        }
+        else{
+            return "";
+        }
+            
     }
     const getJobCardData = (argID) =>{
         jobCardInfoService.getJobCardDataById(argID).then(

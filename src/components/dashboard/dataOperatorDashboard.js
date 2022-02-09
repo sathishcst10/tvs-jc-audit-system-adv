@@ -127,8 +127,10 @@ const DataOperatorDashboard = () =>{
                             </div>
                         </div>
                     </div>
-                </div>
-                <div className='col-6 mt-4 px-3'>
+                </div>               
+            </div>
+            <div className='row g-1'>
+                <div className='col-md-6 mt-4 px-3'>
                     <div className='card card-shadow border-0 custom-radius'>
                         <h6 className='card-header'>
                             Today's Telecallers Allocation
@@ -143,7 +145,7 @@ const DataOperatorDashboard = () =>{
                         </div>
                     </div>  
                 </div>
-                <div className='col-6 mt-4 px-3'>
+                <div className='col-md-6 mt-4 px-3'>
                     <div className='card card-shadow border-0 custom-radius'>
                         <h6 className='card-header'>
                             Last 7 Days Entry's

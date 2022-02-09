@@ -144,7 +144,7 @@ const CallerDashboard = () =>{
                 </div>
             </div>
             <div className="row g-1">
-                <div className='col-8 mt-4 px-3'>
+                <div className='col-md-8 mt-4 px-3'>
                     <div className='card card-shadow border-0 custom-radius'>
                         <h6 className='card-header'>
                             Last 7 Days Jobcard Upload
@@ -159,7 +159,7 @@ const CallerDashboard = () =>{
                         </div>
                     </div>  
                 </div>
-                <div className='col-4 mt-4 px-3'>
+                <div className='col-md-4 mt-4 px-3'>
                     <div className='card card-shadow border-0 custom-radius h-100'>
                         <h6 className='card-header'>
                             Jobcard Status

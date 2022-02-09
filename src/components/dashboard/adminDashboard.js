@@ -358,7 +358,7 @@ const AdminDashboard = () =>{
             </div>
 
             <div className='row g-1'>
-                <div className='col-8 mt-4 px-3'>
+                <div className='col-md-8 mt-4 px-3'>
                     <div className='card card-shadow border-0 custom-radius'>
                         <h6 className='card-header'>
                             Today's Telecallers Allocation
@@ -373,7 +373,7 @@ const AdminDashboard = () =>{
                         </div>
                     </div>  
                 </div>
-                <div className='col-4 mt-4 px-3'>
+                <div className='col-md-4 mt-4 px-3'>
                     <div className='card card-shadow border-0 custom-radius h-100'>
                         <h6 className='card-header'>
                             Feedback Status
@@ -391,7 +391,7 @@ const AdminDashboard = () =>{
             </div>
 
             <div className='row g-1'>
-                <div className='col-4 mt-4 px-3'>
+                <div className='col-md-4 mt-4 px-3'>
                     <div className='card card-shadow border-0 custom-radius h-100'>
                         <h6 className='card-header'>
                             Jobcard Status
@@ -406,7 +406,7 @@ const AdminDashboard = () =>{
                         </div>
                     </div>  
                 </div>
-                <div className='col-8 mt-4 px-3'>
+                <div className='col-md-8 mt-4 px-3'>
                     <div className='card card-shadow border-0 custom-radius'>
                         <h6 className='card-header'>
                             Last 7 Days Entry's
