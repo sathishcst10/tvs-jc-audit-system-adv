@@ -99,7 +99,15 @@ ul.navbar-nav .nav-link.active{
   font-size: 0.9rem;
   padding: 0.5rem 1rem;
 }
-
+.p-button {
+  color: #ffffff;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+  border-radius: 6px;
+}
 
 table.table-custom thead th{
   font-size: 0.9rem;
@@ -120,8 +128,8 @@ table.table-custom tbody td{
   border-color: #ecf0f1 !important;
 }
 table.table-custom tbody td > .badge.captionTxt {
-  font-size: 0.75rem;
-  font-weight: 600 !important;
+  font-size: 0.9rem;
+  font-weight: 500 !important;
   display: block;
   /* width: auto; */
   float: left;
@@ -131,8 +139,8 @@ table.table-custom tbody td > .badge.captionTxt {
   overflow: hidden;
 }
 .badge.captionTxt {
-  font-size: 0.75rem;
-  font-weight: 600 !important;
+  font-size: 0.9rem;
+  font-weight: 500 !important;
   display: block;
   /* width: auto; */
   float: left;
@@ -165,11 +173,16 @@ table.table-custom tbody td > .badge.captionTxt {
   margin-bottom: 0.15rem;
   font-weight: 700;
 }
-a.more-link {
+a.more-link, button.more-link {
   font-size: 0.75rem;
   padding: 0px 5px;
   text-decoration: none;
   float: left;
+  color: #007eff;
+}
+.p-tooltip{
+  font-size: 0.9rem !important;
+  max-width: 320px;
 }
 .breadcrumb{
 

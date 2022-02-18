@@ -72,7 +72,7 @@ const DealerDashboard = () =>{
                                 <div className='row d-block d-xl-flex align-items-center'>
                                     <div className='col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center'>
                                         <div className='icon-shape icon-primary'>
-                                            <i class="bi bi-file-ruled"></i>
+                                            <i className="bi bi-file-ruled"></i>
                                         </div>
                                     </div>
                                     <div className='col-12 col-xl-7 px-xl-0'>
@@ -90,7 +90,7 @@ const DealerDashboard = () =>{
                                 <div className='row d-block d-xl-flex align-items-center'>
                                     <div className='col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center'>
                                         <div className='icon-shape icon-dark'>
-                                            <i class="bi bi-calendar-check"></i>
+                                            <i className="bi bi-calendar-check"></i>
                                         </div>
                                     </div>
                                     <div className='col-12 col-xl-7 px-xl-0'>
@@ -107,7 +107,7 @@ const DealerDashboard = () =>{
                                 <div className='row d-block d-xl-flex align-items-center'>
                                     <div className='col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center'>
                                         <div className='icon-shape icon-success'>
-                                            <i class="bi bi-check-circle"></i>
+                                            <i className="bi bi-check-circle"></i>
                                         </div>
                                     </div>
                                     <div className='col-12 col-xl-7 px-xl-0'>
@@ -124,7 +124,7 @@ const DealerDashboard = () =>{
                                 <div className='row d-block d-xl-flex align-items-center'>
                                     <div className='col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center'>
                                         <div className='icon-shape icon-danger'>
-                                            <i class="bi bi-clock"></i>
+                                            <i className="bi bi-clock"></i>
                                         </div>
                                     </div>
                                     <div className='col-12 col-xl-7 px-xl-0'>
@@ -141,7 +141,7 @@ const DealerDashboard = () =>{
                                 <div className='row d-block d-xl-flex align-items-center'>
                                     <div className='col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center'>
                                         <div className='icon-shape icon-dark'>
-                                            <i class="bi bi-telephone"></i>
+                                            <i className="bi bi-telephone"></i>
                                         </div>
                                     </div>
                                     <div className='col-12 col-xl-7 px-xl-0'>
@@ -194,24 +194,24 @@ const DealerDashboard = () =>{
                         </h6>
                         <div className='card-body'>
                             <p>Dealer Name 1 - Dealer Location - Zone</p>
-                            <div class="progress">
-                                <div class="progress-bar" role="progressbar" style={{width: "75%"}} aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">75%</div>
+                            <div className="progress">
+                                <div className="progress-bar" role="progressbar" style={{width: "75%"}} aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">75%</div>
                             </div>
                             <p>Dealer Name 1 - Dealer Location - Zone</p>
-                            <div class="progress">
-                                <div class="progress-bar" role="progressbar" style={{width: "65%"}} aria-valuenow="65" aria-valuemin="0" aria-valuemax="100">65%</div>
+                            <div className="progress">
+                                <div className="progress-bar" role="progressbar" style={{width: "65%"}} aria-valuenow="65" aria-valuemin="0" aria-valuemax="100">65%</div>
                             </div>
                             <p>Dealer Name 1 - Dealer Location - Zone</p>
-                            <div class="progress">
-                                <div class="progress-bar" role="progressbar" style={{width: "55%"}} aria-valuenow="55" aria-valuemin="0" aria-valuemax="100">55%</div>
+                            <div className="progress">
+                                <div className="progress-bar" role="progressbar" style={{width: "55%"}} aria-valuenow="55" aria-valuemin="0" aria-valuemax="100">55%</div>
                             </div>
                             <p>Dealer Name 1 - Dealer Location - Zone</p>
-                            <div class="progress">
-                                <div class="progress-bar" role="progressbar" style={{width: "53%"}} aria-valuenow="53" aria-valuemin="0" aria-valuemax="100">53%</div>
+                            <div className="progress">
+                                <div className="progress-bar" role="progressbar" style={{width: "53%"}} aria-valuenow="53" aria-valuemin="0" aria-valuemax="100">53%</div>
                             </div>
                             <p>Dealer Name 1 - Dealer Location - Zone</p>
-                            <div class="progress">
-                                <div class="progress-bar" role="progressbar" style={{width: "52%"}} aria-valuenow="52" aria-valuemin="0" aria-valuemax="100">52%</div>
+                            <div className="progress">
+                                <div className="progress-bar" role="progressbar" style={{width: "52%"}} aria-valuenow="52" aria-valuemin="0" aria-valuemax="100">52%</div>
                             </div>
                         </div>
                     </div>  
@@ -222,35 +222,35 @@ const DealerDashboard = () =>{
                             Notifications
                         </h6>
                         <div className='card-body'>
-                        <div class="list-group">
-                            <a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-                                {/* <img src="https://github.com/twbs.png" alt="twbs" width="32" height="32" class="rounded-circle flex-shrink-0"/> */}
-                                <div class="d-flex gap-2 w-100 justify-content-between">
+                        <div className="list-group">
+                            <a href="#" className="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
+                                {/* <img src="https://github.com/twbs.png" alt="twbs" width="32" height="32" className="rounded-circle flex-shrink-0"/> */}
+                                <div className="d-flex gap-2 w-100 justify-content-between">
                                 <div>
-                                    <h6 class="mb-0">List group item heading</h6>
-                                    <p class="mb-0 opacity-75">Some placeholder content in a paragraph.</p>
+                                    <h6 className="mb-0">List group item heading</h6>
+                                    <p className="mb-0 opacity-75">Some placeholder content in a paragraph.</p>
                                 </div>
-                                <small class="opacity-50 text-nowrap">now</small>
+                                <small className="opacity-50 text-nowrap">now</small>
                                 </div>
                             </a>
-                            <a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-                                {/* <img src="https://github.com/twbs.png" alt="twbs" width="32" height="32" class="rounded-circle flex-shrink-0"/> */}
-                                <div class="d-flex gap-2 w-100 justify-content-between">
+                            <a href="#" className="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
+                                {/* <img src="https://github.com/twbs.png" alt="twbs" width="32" height="32" className="rounded-circle flex-shrink-0"/> */}
+                                <div className="d-flex gap-2 w-100 justify-content-between">
                                 <div>
-                                    <h6 class="mb-0">Another title here</h6>
-                                    <p class="mb-0 opacity-75">Some placeholder content in a paragraph that goes a little longer so it wraps to a new line.</p>
+                                    <h6 className="mb-0">Another title here</h6>
+                                    <p className="mb-0 opacity-75">Some placeholder content in a paragraph that goes a little longer so it wraps to a new line.</p>
                                 </div>
-                                <small class="opacity-50 text-nowrap">3d</small>
+                                <small className="opacity-50 text-nowrap">3d</small>
                                 </div>
                             </a>
-                            <a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-                                {/* <img src="https://github.com/twbs.png" alt="twbs" width="32" height="32" class="rounded-circle flex-shrink-0"/> */}
-                                <div class="d-flex gap-2 w-100 justify-content-between">
+                            <a href="#" className="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
+                                {/* <img src="https://github.com/twbs.png" alt="twbs" width="32" height="32" className="rounded-circle flex-shrink-0"/> */}
+                                <div className="d-flex gap-2 w-100 justify-content-between">
                                 <div>
-                                    <h6 class="mb-0">Third heading</h6>
-                                    <p class="mb-0 opacity-75">Some placeholder content in a paragraph.</p>
+                                    <h6 className="mb-0">Third heading</h6>
+                                    <p className="mb-0 opacity-75">Some placeholder content in a paragraph.</p>
                                 </div>
-                                <small class="opacity-50 text-nowrap">1w</small>
+                                <small className="opacity-50 text-nowrap">1w</small>
                                 </div>
                             </a>
                             </div> 

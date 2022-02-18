@@ -79,7 +79,7 @@ const CallerDashboard = () =>{
                             <div className='row d-block d-xl-flex align-items-center'>
                                 <div className='col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center'>
                                     <div className='icon-shape icon-primary'>
-                                        <i class="bi bi-file-ruled"></i>
+                                        <i className="bi bi-file-ruled"></i>
                                     </div>
                                 </div>
                                 <div className='col-12 col-xl-7 px-xl-0'>
@@ -97,7 +97,7 @@ const CallerDashboard = () =>{
                             <div className='row d-block d-xl-flex align-items-center'>
                                 <div className='col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center'>
                                     <div className='icon-shape icon-dark'>
-                                        <i class="bi bi-calendar-check"></i>
+                                        <i className="bi bi-calendar-check"></i>
                                     </div>
                                 </div>
                                 <div className='col-12 col-xl-7 px-xl-0'>
@@ -114,7 +114,7 @@ const CallerDashboard = () =>{
                             <div className='row d-block d-xl-flex align-items-center'>
                                 <div className='col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center'>
                                     <div className='icon-shape icon-success'>
-                                        <i class="bi bi-check-circle"></i>
+                                        <i className="bi bi-check-circle"></i>
                                     </div>
                                 </div>
                                 <div className='col-12 col-xl-7 px-xl-0'>
@@ -131,7 +131,7 @@ const CallerDashboard = () =>{
                             <div className='row d-block d-xl-flex align-items-center'>
                                 <div className='col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center'>
                                     <div className='icon-shape icon-danger'>
-                                        <i class="bi bi-clock"></i>
+                                        <i className="bi bi-clock"></i>
                                     </div>
                                 </div>
                                 <div className='col-12 col-xl-7 px-xl-0'>

@@ -142,7 +142,7 @@ const MasterLayout = ({ title = "", desc = "", pageMap = [], children }) => {
                   </Link>
                 </li>
 
-                <li className="nav-item dropdown d-none">
+                <li className="nav-item dropdown">
                   <Link
                     className="nav-link dropdown-toggle"
                     to="#"
@@ -155,11 +155,16 @@ const MasterLayout = ({ title = "", desc = "", pageMap = [], children }) => {
                   </Link>
                   <ul className="dropdown-menu border-0 shadow-sm" aria-labelledby="navbarDropdown">
                     <li>
-                      <Link className="dropdown-item" to="/Dashboard">
+                      <Link className="dropdown-item" to="/reports/AuditReports">
+                        Audit Report
+                      </Link>
+                    </li>
+                    <li>
+                      <Link className="dropdown-item" to="/reports/ComplaintReport">
                         Complaint Report
                       </Link>
                     </li>
-                    <li>
+                    {/* <li>
                       <Link className="dropdown-item" to="#">
                         Gap Report - SA
                       </Link>
@@ -168,7 +173,7 @@ const MasterLayout = ({ title = "", desc = "", pageMap = [], children }) => {
                       <Link className="dropdown-item" to="#">
                         Gap Report - SA
                       </Link>
-                    </li>
+                    </li> */}
                   </ul>
                 </li>
 
@@ -296,7 +301,7 @@ const MasterLayout = ({ title = "", desc = "", pageMap = [], children }) => {
             {
               pageMap.map((items, idx) => (
                 idx != pageMap.length - 1 ?
-                  <li key={idx} className="breadcrumb-item"><a href="#">{items}</a></li>
+                  <li key={idx} className="breadcrumb-item"><Link to="#">{items}</Link></li>
                   :
                   <li key={idx} className="breadcrumb-item active">{items}</li>
               ))

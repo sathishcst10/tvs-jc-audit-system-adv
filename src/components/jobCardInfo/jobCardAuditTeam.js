@@ -7,8 +7,10 @@ import { useEffect, useRef, useState } from "react";
 import { Loading } from "react-loading-ui"
 import jobCardInfoService from "../../services/job-card-info.service";
 import { ExportData } from "../exportData";
+import { Button } from "primereact/button";
+import { Tooltip } from "primereact/tooltip";
 
-const JobCardAuditTeam = ()=>{
+const JobCardAuditTeam = () =>{
     const toast = useRef(null);
     const settings = {
         title: "",
@@ -171,7 +173,7 @@ const JobCardAuditTeam = ()=>{
                     JSON.parse(argItems.customerVoice)[0]            
                 }
                 </span>
-                <a 
+                {/* <a 
                     href="#" 
                     className="more-link"
                     data-bs-toggle="tooltip" 
@@ -179,7 +181,14 @@ const JobCardAuditTeam = ()=>{
                     title={JSON.parse(argItems.customerVoice).map((_items, idx) => _items)}
                 >
                     More...
-                </a>
+                </a> */}
+                <Button 
+                    type="button"                                                                                    
+                    className="more-link"
+                    tooltip={JSON.parse(argItems.customerVoice).map((_items, idx) => _items)}
+                    tooltipOptions={{position: 'top'}} 
+                    label="More..."   
+                />
             </>;
         }else{
             return "";
@@ -197,7 +206,7 @@ const JobCardAuditTeam = ()=>{
                     JSON.parse(argItems.initialObservation)[0]            
                 }
                 </span>
-                <a 
+                {/* <a 
                     href="#" 
                     className="more-link"
                     data-bs-toggle="tooltip" 
@@ -205,7 +214,14 @@ const JobCardAuditTeam = ()=>{
                     title={JSON.parse(argItems.initialObservation).map((_items, idx) => _items)}
                 >
                     More...
-                </a>
+                </a> */}
+                <Button 
+                    type="button"                                                                                    
+                    className="more-link"
+                    tooltip={JSON.parse(argItems.initialObservation).map((_items, idx) => _items)}
+                    tooltipOptions={{position: 'top'}} 
+                    label="More..."   
+                />
             </>;
         }else{
             return ""
@@ -223,7 +239,7 @@ const JobCardAuditTeam = ()=>{
                     JSON.parse(argItems.finalFinding)[0]            
                 }
                 </span>
-                <a 
+                {/* <a 
                     href="#" 
                     className="more-link"
                     data-bs-toggle="tooltip" 
@@ -231,7 +247,14 @@ const JobCardAuditTeam = ()=>{
                     title={JSON.parse(argItems.finalFinding).map((_items, idx) => _items)}
                 >
                     More...
-                </a>
+                </a> */}
+                 <Button 
+                    type="button"                                                                                    
+                    className="more-link"
+                    tooltip={JSON.parse(argItems.finalFinding).map((_items, idx) => _items)}
+                    tooltipOptions={{position: 'top'}} 
+                    label="More..."   
+                />
             </>;
         }else {
             return "";
@@ -251,7 +274,7 @@ const JobCardAuditTeam = ()=>{
                     JSON.parse(argItems.actionTaken)[0]            
                 }
                 </span>
-                <a 
+                {/* <a 
                     href="#" 
                     className="more-link"
                     data-bs-toggle="tooltip" 
@@ -259,7 +282,14 @@ const JobCardAuditTeam = ()=>{
                     title={JSON.parse(argItems.actionTaken).map((_items, idx) => _items)}
                 >
                     More...
-                </a>
+                </a> */}
+                 <Button 
+                    type="button"                                                                                    
+                    className="more-link"
+                    tooltip={JSON.parse(argItems.actionTaken).map((_items, idx) => _items)}
+                    tooltipOptions={{position: 'top'}} 
+                    label="More..."   
+                />
             </>;
         }
         else{
@@ -283,7 +313,7 @@ const JobCardAuditTeam = ()=>{
                         JSON.parse(argItems.customerVoiceByWMHO)[0]
                     }
                     </span>
-                    <a 
+                    {/* <a 
                         href="#" 
                         className="more-link"
                         data-bs-toggle="tooltip" 
@@ -291,7 +321,14 @@ const JobCardAuditTeam = ()=>{
                         title={JSON.parse(argItems.customerVoiceByWMHO).map((_items, idx) => _items)}
                     >
                         More...
-                    </a>
+                    </a> */}
+                    <Button 
+                        type="button"                                                                                    
+                        className="more-link"
+                        tooltip={JSON.parse(argItems.customerVoiceByWMHO).map((_items, idx) => _items)}
+                        tooltipOptions={{position: 'top'}} 
+                        label="More..."   
+                    />
                 </>;
             } else{
                 return "";
@@ -313,7 +350,7 @@ const JobCardAuditTeam = ()=>{
                         JSON.parse(argItems.gapIdentifiedWMSA)[0]            
                     }
                     </span>
-                    <a 
+                    {/* <a 
                         href="#" 
                         className="more-link"
                         data-bs-toggle="tooltip" 
@@ -321,7 +358,15 @@ const JobCardAuditTeam = ()=>{
                         title={JSON.parse(argItems.gapIdentifiedWMSA).map((_items, idx) => _items)}
                     >
                         More...
-                    </a>
+                    </a> */}
+
+                    <Button 
+                        type="button"                                                                                    
+                        className="more-link"
+                        tooltip={JSON.parse(argItems.gapIdentifiedWMSA).map((_items, idx) => _items)}
+                        tooltipOptions={{position: 'top'}} 
+                        label="More..."   
+                    />
                 </>;
             }
             else{
@@ -343,7 +388,7 @@ const JobCardAuditTeam = ()=>{
                             JSON.parse(argItems.jcGapRemarks)[0]            
                         }
                         </span>
-                        <a 
+                        {/* <a 
                             href="#" 
                             className="more-link"
                             data-bs-toggle="tooltip" 
@@ -351,7 +396,14 @@ const JobCardAuditTeam = ()=>{
                             title={JSON.parse(argItems.jcGapRemarks).map((_items, idx) => _items)}
                         >
                             More...
-                        </a>
+                        </a> */}
+                        <Button 
+                            type="button"                                                                                    
+                            className="more-link"
+                            tooltip={JSON.parse(argItems.jcGapRemarks).map((_items, idx) => _items)}
+                            tooltipOptions={{position: 'top'}} 
+                            label="More..."   
+                        />
                     </>;
         }
         else{

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Loading } from "react-loading-ui";
 import { Toast } from "primereact/toast";
+
 import TablePagination from '@mui/material/TablePagination';
 import { Calendar } from "primereact/calendar"
 import { Dropdown } from "primereact/dropdown";
@@ -11,6 +12,8 @@ import dealerMasterService from "../../services/dealer-master.service";
 import jobCardInfoService from "../../services/job-card-info.service";
 import modelMasterService from "../../services/model-master.service";
 import userService from "../../services/user.service";
+import { Tooltip } from "primereact/tooltip";
+import { Button } from "primereact/button";
 // import MasterLayout from "../_layout/_masterLayout"
 
 const JobCardOperator = () => {
@@ -375,7 +378,7 @@ const JobCardOperator = () => {
       Loading(settings);
       setPage(newPage + 1);
      
-      jobCardInfoService.getAllJobCardsList({
+      jobCardInfoService.getJobCardDetailsForOperator({
         pageNumber : newPage + 1,
         pageSize,
         sortOrderBy,
@@ -401,7 +404,7 @@ const JobCardOperator = () => {
     }
     const handleChangeRowsPerPage = (event) => {
       Loading(settings);
-      jobCardInfoService.getAllJobCardsList({
+      jobCardInfoService.getJobCardDetailsForOperator({
         pageNumber,
         pageSize : parseInt(event.target.value, 10),
         sortOrderBy,
@@ -853,7 +856,7 @@ const JobCardOperator = () => {
                                                                             <   span className="badge captionTxt bg-dark mb-1 mx-1">
                                                                                     {JSON.parse(items.customerVoice)[0]}
                                                                                 </span> 
-                                                                                <a 
+                                                                                {/* <a 
                                                                                     href="#" 
                                                                                     className="more-link"
                                                                                     data-bs-toggle="tooltip" 
@@ -861,7 +864,14 @@ const JobCardOperator = () => {
                                                                                     title={JSON.parse(items.customerVoice).map((_items, idx) => _items)}
                                                                                 >
                                                                                     More...
-                                                                                </a>
+                                                                                </a> */}
+                                                                                <Button 
+                                                                                    type="button"                                                                                    
+                                                                                    className="more-link"
+                                                                                    tooltip={JSON.parse(items.customerVoice).map((_items, idx) => _items)}
+                                                                                    tooltipOptions={{position: 'top'}} 
+                                                                                    label="More..."   
+                                                                                />
                                                                             </>
                                                                         )
 
@@ -878,7 +888,7 @@ const JobCardOperator = () => {
                                                                             <   span className="badge captionTxt bg-dark mb-1 mx-1">
                                                                                     {JSON.parse(items.initialObservation)[0]}
                                                                                 </span> 
-                                                                                <a 
+                                                                                {/* <a 
                                                                                     href="#" 
                                                                                     className="more-link"
                                                                                     data-bs-toggle="tooltip" 
@@ -886,7 +896,14 @@ const JobCardOperator = () => {
                                                                                     title={JSON.parse(items.initialObservation).map((_items, idx) => _items)}
                                                                                 >
                                                                                     More...
-                                                                                </a>
+                                                                                </a> */}
+                                                                                <Button 
+                                                                                    type="button"                                                                                    
+                                                                                    className="more-link"
+                                                                                    tooltip={JSON.parse(items.initialObservation).map((_items, idx) => _items)}
+                                                                                    tooltipOptions={{position: 'top'}} 
+                                                                                    label="More..."   
+                                                                                />
                                                                             </>
                                                                         )
                                                                     }
@@ -902,7 +919,7 @@ const JobCardOperator = () => {
                                                                             <   span className="badge captionTxt bg-dark mb-1 mx-1">
                                                                                     {JSON.parse(items.finalFinding)[0]}
                                                                                 </span> 
-                                                                                <a 
+                                                                                {/* <a 
                                                                                     href="#" 
                                                                                     className="more-link"
                                                                                     data-bs-toggle="tooltip" 
@@ -910,7 +927,14 @@ const JobCardOperator = () => {
                                                                                     title={JSON.parse(items.finalFinding).map((_items, idx) => _items)}
                                                                                 >
                                                                                     More...
-                                                                                </a>
+                                                                                </a> */}
+                                                                                <Button 
+                                                                                    type="button"                                                                                    
+                                                                                    className="more-link"
+                                                                                    tooltip={JSON.parse(items.finalFinding).map((_items, idx) => _items)}
+                                                                                    tooltipOptions={{position: 'top'}} 
+                                                                                    label="More..."   
+                                                                                />
                                                                             </>
                                                                         )
                                                                     }
@@ -926,7 +950,7 @@ const JobCardOperator = () => {
                                                                             <   span className="badge captionTxt bg-dark mb-1 mx-1">
                                                                                     {JSON.parse(items.actionTaken)[0]}
                                                                                 </span> 
-                                                                                <a 
+                                                                                {/* <a 
                                                                                     href="#" 
                                                                                     className="more-link"
                                                                                     data-bs-toggle="tooltip" 
@@ -934,7 +958,14 @@ const JobCardOperator = () => {
                                                                                     title={JSON.parse(items.actionTaken).map((_items, idx) => _items)}
                                                                                 >
                                                                                     More...
-                                                                                </a>
+                                                                                </a> */}
+                                                                                <Button 
+                                                                                    type="button"                                                                                    
+                                                                                    className="more-link"
+                                                                                    tooltip={JSON.parse(items.actionTaken).map((_items, idx) => _items)}
+                                                                                    tooltipOptions={{position: 'top'}} 
+                                                                                    label="More..."   
+                                                                                />
                                                                             </>
                                                                         )
                                                                     }

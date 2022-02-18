@@ -19,6 +19,8 @@ import { AggregateMaster } from "./components/masters/aggregateMaster";
 
 import Dashboard from "./components/dashboard";
 import JobCardInformation from "./components/jobCardInfo";
+import AuditReport from "./components/reports/auditReport";
+import ComplaintReport from "./components/reports/complaintReport";
 
 
 function App() {
@@ -72,6 +74,11 @@ function App() {
         {/* //User */}
         <Route path="/jobCardInformation"  element={<JobCardInformation/>}/>      
         <Route path="/dashboard" element={<Dashboard/>}/>
+
+        {/* Reports */}
+
+        <Route path="/reports/AuditReports" element={<AuditReport/>}/>
+        <Route path="/reports/ComplaintReport" element={<ComplaintReport/>}/>
       </Routes>      
     </Router>
     
