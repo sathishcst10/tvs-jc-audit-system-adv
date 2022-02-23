@@ -109,6 +109,9 @@ ul.navbar-nav .nav-link.active{
   border-radius: 6px;
 }
 
+.select-custom{
+  width: 220px;
+}
 table.table-custom thead th{
   font-size: 0.9rem;
   font-weight: 500;
@@ -470,4 +473,8 @@ span.p-column-title {
   color: rgb(236 240 241 / 85%);
   background:#212529;
   transition: box-shadow 0.2s;
+}
+.date-picker-text {
+  width: 220px;
+  display: inline-block !important;
 }

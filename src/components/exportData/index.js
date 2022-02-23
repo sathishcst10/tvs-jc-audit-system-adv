@@ -144,7 +144,7 @@ const ExportData = () =>{
                 // "GapAggregateId" : GapAggregateId,
                 // "serviceTypeId" : serviceTypeId,
                 // "StatusId" : StatusId,
-                 "startDate" : startDate,
+                "startDate" : startDate,
                 "endDate" : endDate
             }
         }).then(
@@ -299,7 +299,7 @@ const ExportData = () =>{
                     
                 </div>
                 <div className="mb-2 col-6">
-                    <label htmlFor="pickEndDate" className="form-label">Start Date</label>
+                    <label htmlFor="pickEndDate" className="form-label">End Date</label>
                     <input 
                         className="form-control" 
                         id="pickEndDate" 
