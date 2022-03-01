@@ -24,8 +24,8 @@ const JobCardAuditTeam = () =>{
         {
             "pageNumber": 1,
             "pageSize": 10,
-            "sortOrderBy": "",
-            "sortOrderColumn": "",
+            "sortOrderBy": "DESC",
+            "sortOrderColumn": "JCID",
             "filters": ""
         }
     );

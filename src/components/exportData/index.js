@@ -139,7 +139,7 @@ const ExportData = () =>{
             filters :
             {
                 "jobcardNumber" : jobcardNumber,
-                "dealerId" : dealerId != "" ? dealerId : 0,
+                "dealerId" : dealerId !== "" ? dealerId : 0,
                 "modelId" : modelId !=="" ? modelId : 0,
                 // "GapAggregateId" : GapAggregateId,
                 // "serviceTypeId" : serviceTypeId,
@@ -155,7 +155,7 @@ const ExportData = () =>{
                 const fileName =  'Report';
                 const exportType = exportFromJSON.types.xls;
 
-                if(data.length == 0){
+                if(data.length === 0){
                     toast.current.show(
                         {
                             severity: 'warn',

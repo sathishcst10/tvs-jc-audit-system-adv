@@ -1,11 +1,48 @@
-
+//subash
 import { Link, useLocation } from "react-router-dom";
 import Chart from 'react-apexcharts'
-import { useEffect, useState } from "react";
-
+import { Toast } from "primereact/toast";
+import dashboardService from "../../services/dashboard.service";
+import { Loading } from "react-loading-ui";
+import { useEffect, useRef, useState } from "react";
 
 const AdminDashboard = () =>{ 
+   const toast = useRef(null);
+    const settings = {
+        title: "",
+        text: "",
+        progress: false,
+        progressedClose: false,
+        theme: "dark",
+    };
+  const [dashboardDetails, setdashboardDetails] = useState({
+    TotalJC: 0,
+    TodayJC: 0,
+    AuditCompletedJC:0,
+    PendingJC:0,
+    FeedbackCompletedJC:0
+});
+const { TotalJC, TodayJC ,AuditCompletedJC,PendingJC,FeedbackCompletedJC} = dashboardDetails;
 
+const getAdminDashboardList = () => {
+  Loading(settings);
+  dashboardService.getAdminDashboardData(true).then(
+      (response) => {        
+          setdashboardDetails({
+            ...dashboardDetails,           
+            TotalJC:response.data.data.data[0].totalJC,
+            TodayJC:response.data.data.data[0].todayJC,
+            AuditCompletedJC:response.data.data.data[0].auditCompletedJC,
+            PendingJC:response.data.data.data[0].pendingJC,
+            FeedbackCompletedJC:response.data.data.data[0].feedbackCompletedJC         
+        })
+        Loading();       
+      }
+  ).catch((err) => {
+      console.log(err);
+      Loading()
+  })
+}
       const state = {
         options: {
           chart: {
@@ -270,9 +307,16 @@ const AdminDashboard = () =>{
           },   
       
       };
+      useEffect(() => {
+        getAdminDashboardList();
+    }, [])
+
     return(
          <>
+         
             <div className="row row-cols-1 row-cols-sm-2 row-cols-md-5  g-1">
+            
+               
                 <div className='col px-3'>
                     <div className='card card-shadow border-0 custom-radius'>
                         <div className="card-body">
@@ -284,7 +328,9 @@ const AdminDashboard = () =>{
                                 </div>
                                 <div className='col-12 col-xl-7 px-xl-0'>
                                     <p className="mb-4">Total JobCards</p>
-                                    <p className="fs-30 mb-1">4006</p>   
+                                  
+                                    <p className="fs-30 mb-1"> {TotalJC} </p>   
+                                   
                                 </div>
                             </div>
                                                    
@@ -302,7 +348,7 @@ const AdminDashboard = () =>{
                                 </div>
                                 <div className='col-12 col-xl-7 px-xl-0'>
                                     <p className="mb-4">Today Entries</p>
-                                    <p className="fs-30 mb-1">4006</p>   
+                                    <p className="fs-30 mb-1">{TodayJC}</p>   
                                 </div>
                             </div>
                         </div>
@@ -319,7 +365,7 @@ const AdminDashboard = () =>{
                                 </div>
                                 <div className='col-12 col-xl-7 px-xl-0'>
                                     <p className="mb-4">Completed</p>
-                                    <p className="fs-30 mb-1">4006</p>   
+                                    <p className="fs-30 mb-1">{AuditCompletedJC}</p>   
                                 </div>
                             </div>                           
                         </div>
@@ -336,7 +382,7 @@ const AdminDashboard = () =>{
                                 </div>
                                 <div className='col-12 col-xl-7 px-xl-0'>
                                     <p className="mb-4">Pending/Open</p>
-                                    <p className="fs-30 mb-1">4006</p>   
+                                    <p className="fs-30 mb-1">{PendingJC}</p>   
                                 </div>
                             </div>
                         </div>
@@ -353,12 +399,13 @@ const AdminDashboard = () =>{
                                 </div>
                                 <div className='col-12 col-xl-7 px-xl-0'>
                                     <p className="mb-4">Feedback Completed</p>
-                                    <p className="fs-30 mb-1">4006</p>   
+                                    <p className="fs-30 mb-1">{FeedbackCompletedJC}</p>   
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>               
+                </div>     
+            
             </div>
 
             <div className='row g-1'>
@@ -564,7 +611,7 @@ const AdminDashboard = () =>{
                     </div>  
                 </div>
             </div>
-           
+            <Toast ref={toast} />
          </>
     );
 }

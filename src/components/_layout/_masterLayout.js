@@ -164,6 +164,11 @@ const MasterLayout = ({ title = "", desc = "", pageMap = [], children }) => {
                         Complaint Report
                       </Link>
                     </li>
+                    <li>
+                      <Link className="dropdown-item" to="/reports/MonthlyReport">
+                        Monthly Report
+                      </Link>
+                    </li>
                     {/* <li>
                       <Link className="dropdown-item" to="#">
                         Gap Report - SA

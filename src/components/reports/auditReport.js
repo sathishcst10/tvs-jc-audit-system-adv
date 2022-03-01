@@ -2,21 +2,19 @@ import MasterLayout from "../_layout/_masterLayout";
 import Chart from 'react-apexcharts'
 import { Loading } from "react-loading-ui"
 import { Calendar } from "primereact/calendar"
-import { Dropdown } from "primereact/dropdown";
 import { useEffect, useState } from "react";
-import dashboardService from "../../services/dashboard.service";
-import { start } from "@popperjs/core";
+import reportService from "../../services/report.service";
 
-
+//subash
 const AuditReport = () => {
-    const settings = {
-      title: "",
-      text: "",
-      progress: false,
-      progressedClose: false,
-      theme: "dark",
-    };
-    const [requestParam, setRequestParam] = useState({
+      const settings = {
+        title: "",
+        text: "",
+        progress: false,
+        progressedClose: false,
+        theme: "dark",
+      };
+      const [requestParam, setRequestParam] = useState({
         "pageNumber": 0,
         "pageSize": 0,
         "sortOrderBy": "",
@@ -35,7 +33,7 @@ const AuditReport = () => {
       const [getRegionDetails, setRegionDetails] = useState([]);
 
       const getRegions = ()=>{
-        dashboardService.getRegionDetails().then(
+        reportService.getRegionDetails().then(
           (response)=>{
             console.log("region",response)
             setRegionDetails(response.data.data.data);
@@ -44,7 +42,7 @@ const AuditReport = () => {
       }
       const getAuditReportData = () =>{
         Loading(settings)
-        dashboardService.getJobcardAuditReport({
+        reportService.getJobcardAuditReport({
           pageNumber,
           pageSize,
           sortOrderBy,
@@ -79,7 +77,7 @@ const AuditReport = () => {
     
       const getAuditReportDataByFilters = ()=>{
         Loading(settings)
-        dashboardService.getJobcardAuditReport({
+        reportService.getJobcardAuditReport({
           pageNumber,
           pageSize,
           sortOrderBy,
@@ -118,7 +116,6 @@ const AuditReport = () => {
       }
       const handleChange = (name) => (event) => {
         console.log(getFilter)
-        debugger
         const value = event.target.value;
         setFilter({
             ...getFilter,
@@ -144,7 +141,8 @@ const AuditReport = () => {
           },
           dataLabels : {
               style : {
-                  fontSize : '1rem'
+                  fontSize : '1rem',
+                  colors : ["#212121"]
               }
           },
             xaxis : {
@@ -168,7 +166,7 @@ const AuditReport = () => {
         },
         series: [
           {
-            name: "series-1",
+            name: "Jobcard Count",
             data: getReportValues
           }
         ]
@@ -183,6 +181,7 @@ const AuditReport = () => {
                         value={startDate}                  
                         name="startDate"
                         onChange={handleChange("startDate")}
+                        placeholder="DD/MM/YYYY"
                         className="date-picker-text"
                       />
                       <span className="px-1 py-2 ">to</span>
@@ -191,6 +190,7 @@ const AuditReport = () => {
                         value={endDate} 
                         name="endDate"
                         onChange={handleChange("endDate")}
+                        placeholder="DD/MM/YYYY"
                         className="date-picker-text"                      
                       />                      
                     

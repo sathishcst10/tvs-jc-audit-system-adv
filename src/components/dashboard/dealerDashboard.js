@@ -1,5 +1,46 @@
+import { useEffect, useState } from 'react';
 import Chart from 'react-apexcharts'
+import { Loading } from 'react-loading-ui';
+import dashboardService from '../../services/dashboard.service';
 const DealerDashboard = () =>{
+    const settings = {
+        title: "",
+        text: "",
+        progress: false,
+        progressedClose: false,
+        theme: "dark",
+    };
+    const [getDashboardCounts, setDashboardCounts] =  useState({
+        totalJCCounts : 0,
+        todayJCCounts : 0,
+        auditCompletedJC : 0,
+        pendingJC : 0,
+        feedbackCompletedJC : 0
+    });
+    const {totalJCCounts, todayJCCounts, auditCompletedJC, pendingJC, feedbackCompletedJC} = getDashboardCounts;
+   
+    const fnDashboardCounts = ()=>{
+        Loading(settings)
+        dashboardService.getDealerDataCount(true).then(
+            (response)=>{
+                console.log(response);
+                setDashboardCounts({
+                    ...getDashboardCounts,
+                    totalJCCounts : response.data.data.data[0].totalJC,
+                    todayJCCounts : response.data.data.data[0].todayJC,
+                    auditCompletedJC : response.data.data.data[0].auditCompletedJC,
+                    pendingJC : response.data.data.data[0].pendingJC,
+                    feedbackCompletedJC : response.data.data.data[0].feedbackCompletedJC
+                });
+                Loading();
+            }
+        ).catch(
+            (err)=>{
+                Loading();
+                console.log(err);
+            }
+        )
+    }
 
     const lineState = {          
         series: [{
@@ -62,7 +103,12 @@ const DealerDashboard = () =>{
         },
       
       
-      };
+    };
+
+    useEffect(()=>{
+        fnDashboardCounts();
+    },[])
+
     return(
         <>
             <div className="row row-cols-1 row-cols-sm-1 row-cols-md-5  g-1">
@@ -77,7 +123,7 @@ const DealerDashboard = () =>{
                                     </div>
                                     <div className='col-12 col-xl-7 px-xl-0'>
                                         <p className="mb-4">Total JobCards</p>
-                                        <p className="fs-30 mb-1">4006</p>   
+                                        <p className="fs-30 mb-1">{totalJCCounts}</p>   
                                     </div>
                                 </div>
                                                     
@@ -95,7 +141,7 @@ const DealerDashboard = () =>{
                                     </div>
                                     <div className='col-12 col-xl-7 px-xl-0'>
                                         <p className="mb-4">Today Entries</p>
-                                        <p className="fs-30 mb-1">4006</p>   
+                                        <p className="fs-30 mb-1">{todayJCCounts}</p>   
                                     </div>
                                 </div>
                             </div>
@@ -112,7 +158,7 @@ const DealerDashboard = () =>{
                                     </div>
                                     <div className='col-12 col-xl-7 px-xl-0'>
                                         <p className="mb-4">Completed</p>
-                                        <p className="fs-30 mb-1">4006</p>   
+                                        <p className="fs-30 mb-1">{auditCompletedJC}</p>   
                                     </div>
                                 </div>                           
                             </div>
@@ -129,7 +175,7 @@ const DealerDashboard = () =>{
                                     </div>
                                     <div className='col-12 col-xl-7 px-xl-0'>
                                         <p className="mb-4">Pending/Open</p>
-                                        <p className="fs-30 mb-1">4006</p>   
+                                        <p className="fs-30 mb-1">{pendingJC}</p>   
                                     </div>
                                 </div>
                             </div>
@@ -146,7 +192,7 @@ const DealerDashboard = () =>{
                                     </div>
                                     <div className='col-12 col-xl-7 px-xl-0'>
                                         <p className="mb-4">Feedback Completed</p>
-                                        <p className="fs-30 mb-1">4006</p>   
+                                        <p className="fs-30 mb-1">{feedbackCompletedJC}</p>   
                                     </div>
                                 </div>
                             </div>

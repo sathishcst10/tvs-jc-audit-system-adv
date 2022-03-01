@@ -1,7 +1,49 @@
+
+import { useEffect, useState } from 'react';
 import Chart from 'react-apexcharts'
+import { Loading } from 'react-loading-ui';
+import dashboardService from '../../services/dashboard.service';
 
 const CallerDashboard = () =>{
-    
+    const settings = {
+        title: "",
+        text: "",
+        progress: false,
+        progressedClose: false,
+        theme: "dark",
+    };
+    const [getDashboardCounts, setDashboardCounts] =  useState({
+        totalJCCounts : 0,
+        todayJCCounts : 0,
+        auditCompletedJC : 0,
+        pendingJC : 0,
+        feedbackCompletedJC : 0
+    });
+    const {totalJCCounts, todayJCCounts, auditCompletedJC, pendingJC, feedbackCompletedJC} = getDashboardCounts;
+   
+    const fnDashboardCounts = ()=>{
+        Loading(settings)
+        dashboardService.getTeleCallerDataCount(true).then(
+            (response)=>{
+                console.log(response);
+                setDashboardCounts({
+                    ...getDashboardCounts,
+                    totalJCCounts : response.data.data.data[0].totalJC,
+                    todayJCCounts : response.data.data.data[0].todayJC,
+                    auditCompletedJC : response.data.data.data[0].auditCompletedJC,
+                    pendingJC : response.data.data.data[0].pendingJC,
+                    feedbackCompletedJC : response.data.data.data[0].feedbackCompletedJC
+                });
+                Loading()
+            }
+        ).catch(
+            (err)=>{
+                Loading();
+                console.log(err);
+            }
+        )
+    }
+
     const lineState = {          
         series: [{
             name: "Allocated",
@@ -69,7 +111,11 @@ const CallerDashboard = () =>{
         },
       
       
-      };
+    };
+
+    useEffect(()=>{
+        fnDashboardCounts();
+    },[])
     return (
         <>
             <div className='row g-1'>
@@ -84,7 +130,7 @@ const CallerDashboard = () =>{
                                 </div>
                                 <div className='col-12 col-xl-7 px-xl-0'>
                                     <p className="mb-4">Total JobCards</p>
-                                    <p className="fs-30 mb-1">4006</p>   
+                                    <p className="fs-30 mb-1">{totalJCCounts}</p>   
                                 </div>
                             </div>
                                                    
@@ -102,7 +148,7 @@ const CallerDashboard = () =>{
                                 </div>
                                 <div className='col-12 col-xl-7 px-xl-0'>
                                     <p className="mb-4">Today Entries</p>
-                                    <p className="fs-30 mb-1">4006</p>   
+                                    <p className="fs-30 mb-1">{todayJCCounts}</p>   
                                 </div>
                             </div>
                         </div>
@@ -119,7 +165,7 @@ const CallerDashboard = () =>{
                                 </div>
                                 <div className='col-12 col-xl-7 px-xl-0'>
                                     <p className="mb-4">Completed</p>
-                                    <p className="fs-30 mb-1">4006</p>   
+                                    <p className="fs-30 mb-1">{auditCompletedJC}</p>   
                                 </div>
                             </div>                           
                         </div>
@@ -136,7 +182,7 @@ const CallerDashboard = () =>{
                                 </div>
                                 <div className='col-12 col-xl-7 px-xl-0'>
                                     <p className="mb-4">Pending/Open</p>
-                                    <p className="fs-30 mb-1">4006</p>   
+                                    <p className="fs-30 mb-1">{pendingJC}</p>   
                                 </div>
                             </div>
                         </div>

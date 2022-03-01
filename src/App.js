@@ -21,6 +21,7 @@ import Dashboard from "./components/dashboard";
 import JobCardInformation from "./components/jobCardInfo";
 import AuditReport from "./components/reports/auditReport";
 import ComplaintReport from "./components/reports/complaintReport";
+import MonthlyReport from "./components/reports/monthlyReport";
 
 
 function App() {
@@ -57,7 +58,6 @@ function App() {
   //   return _navigateTo("/masters/dealerMaster");
   // }
  
-
   return (
     <Router history={history}>
       <Routes>
@@ -79,6 +79,7 @@ function App() {
 
         <Route path="/reports/AuditReports" element={<AuditReport/>}/>
         <Route path="/reports/ComplaintReport" element={<ComplaintReport/>}/>
+        <Route path="/reports/MonthlyReport" element={<MonthlyReport/>}/>
       </Routes>      
     </Router>
     

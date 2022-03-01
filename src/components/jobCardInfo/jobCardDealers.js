@@ -59,8 +59,8 @@ const JobCardDealers = () => {
     const [getJobCardDetails, setJobCardDetails] = useState({
         "pageNumber": 1,
         "pageSize": 10,
-        "sortOrderBy": "",
-        "sortOrderColumn": "",
+        "sortOrderBy": "DESC",
+        "sortOrderColumn": "JCID",
         "filters": ""
     });
     const [showJobCardDetails, setShowJobCardDetails] = useState([]);

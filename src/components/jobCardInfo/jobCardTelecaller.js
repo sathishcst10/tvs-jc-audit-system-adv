@@ -49,8 +49,8 @@ const JobCardCaller = () => {
     const [getJobCardItems, setJobCardItems] = useState({
         "pageNumber": 1,
         "pageSize": 10,
-        "sortOrderBy": "",
-        "sortOrderColumn": "",
+        "sortOrderBy": "DESC",
+        "sortOrderColumn": "JCID",
         "filters": ""
     });
 
@@ -502,6 +502,35 @@ const JobCardCaller = () => {
             openJobCard: false,
             updateJobCard : false
         });
+
+        setJobCardAudit({
+            ...getJobCardAudit,            
+            "isActive": true,
+            "jcaid": 0,
+            "jcid": 0,
+            "jcCategory": 0,
+            "customerVoiceByWMHO": "",
+            "gapIdentifiedWMSA": "",
+            "jcStatus": 0,
+            "vps": 0,
+            "vpsReason1": 0,
+            "vpsReason2": 0,
+            "vpsReason3": 0,
+            "customerFeedbackDate": "",
+            "newProblem": 0,
+            "problemNotCaptured": 0,
+            "sameProblemInJC": 0,
+            "jcGapRemarks": "string",
+            "auditStatus": 0,
+            "callResponse": 0,
+            "createdDate": "",
+            "createdBy": 0,
+            "modifiedDate": "",
+            "modifiedBy": 0,
+            "isActive": true,
+            "isDeleted": true
+            }
+        )
     }
     const addTags = async (event, items) => {
         //debugger
@@ -958,14 +987,19 @@ const JobCardCaller = () => {
                                                                 </td>
                                                                 <td>
                                                                     {
-                                                                        !items.isTelecallCompleted ?
-                                                                            (
-                                                                                <span className="badge bg-primary">Open</span>
-                                                                            )
-                                                                            :
-                                                                            (
-                                                                                <span className="badge bg-success">Closed</span>
-                                                                            )
+                                                                        items.status==1 ?
+                                                                        (
+                                                                            <span className="badge bg-success">Closed</span>
+                                                                           
+                                                                        )
+                                                                        : items.status==2 ?                                                                            
+                                                                        (
+                                                                            <span className="badge bg-warning">WIP</span>
+                                                                        )
+                                                                        :
+                                                                        (
+                                                                            <span className="badge bg-primary">Open</span>
+                                                                        )
                                                                     }
 
                                                                 </td>
