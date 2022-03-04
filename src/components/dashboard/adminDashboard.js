@@ -23,7 +23,15 @@ const AdminDashboard = () =>{
     FeedbackCompletedJC:0
 });
 const { TotalJC, TodayJC ,AuditCompletedJC,PendingJC,FeedbackCompletedJC} = dashboardDetails;
-
+const [getVPSCount, setVPSCount] = useState([]);
+const [getNewPbmCount, setNewPbmCount] = useState([]);
+const [getSamePbmCount, setSamePbmCount] = useState([]);
+const [getCallResponseLabels, setCallResponseLabels] = useState([]);
+const [getCallResponseCounts, setCallResponseCounts] = useState([]);
+const [getJCProcessStatusCount, setJCProcessStatusCount] = useState([]);
+const [getJobCardStatus, setJobCardStatus] = useState([]);
+const [getTelecallerCatogory,setTelecallerCatogory] = useState([]);
+const [getTelecallerData,setTelecallerData] = useState([]);
 const getAdminDashboardList = () => {
   Loading(settings);
   dashboardService.getAdminDashboardData(true).then(
@@ -43,23 +51,143 @@ const getAdminDashboardList = () => {
       Loading()
   })
 }
+
+const getTeleCallerAssignData = ()=>{
+  dashboardService.getTeleCallerAssignChart(true).then(
+    (response)=>{
+      console.log("Res-TeleCallerAssign", response);
+      response.data.data.data.map((items,idx)=>{
+        setTelecallerCatogory([items.name]);
+        setTelecallerData([items.values]);
+      })
+      
+    }
+  ).catch((err)=>{
+    console.error(err);
+  })
+}
+
+const getJCProcessStatusChart = ()=>{
+  dashboardService.getJCProcessStatus(true).then(
+    (response)=>{
+      console.log("Res-OPen/WIP Status", response);
+      setJCProcessStatusCount([
+        response.data.data.data[0].wipCount,
+        response.data.data.data[0].openCount
+      ])
+    }
+  ).catch((err)=>{
+    console.error(err)
+  })
+}
+
+const getVPSChartDetails = ()=>{
+  dashboardService.getVPSChartData(true).then(
+    (response)=>{
+      console.log("Res-VPS Chart", response);
+      //setVPSCount([]);     
+      setVPSCount([
+        response.data.data.data[0].values,
+        response.data.data.data[1].values
+      ])
+      console.log(getVPSCount);     
+    }
+  ).catch((err)=>console.error(err));
+}
+
+const getNewProblemDataChart = ()=>{
+  dashboardService.getNewProblemData(true).then(
+    (response)=>{
+      console.log("Res-New Problem", response);
+      setNewPbmCount([
+        response.data.data.data[0].values,
+        response.data.data.data[1].values
+      ])
+    }
+  ).catch((err)=>{console.error(err)})
+}
+
+const getSameProblemDataChart = ()=>{
+  dashboardService.getSameProblemData(true).then(
+    (response)=>{
+      console.log("Res-Same Problem", response)
+      setSamePbmCount([
+        response.data.data.data[0].values,
+        response.data.data.data[1].values
+      ])
+    }
+  ).catch((err)=>{console.error(err)})
+}
+
+const getCallReponseDataChart =()=>{
+  dashboardService.getCallReponseData(true).then(
+    (response)=>{
+      console.log("Res-Call Response",response);
+      setCallResponseLabels([]);
+      setCallResponseCounts([])
+      response.data.data.data.map((items, idx)=>{
+        setCallResponseLabels(getCallResponseLabels=>[...getCallResponseLabels,items.name]);
+        setCallResponseCounts(getCallResponseLabels=>[...getCallResponseLabels,items.values]);
+      })
+      console.log(getCallResponseCounts, getCallResponseLabels);
+    }
+  ).catch((err)=>{console.error(err)})
+}
+
+const getJobCardStatusChart = () =>{
+  dashboardService.getJobCardStatus(true).then(
+    (response)=>{
+      console.log("Res-JobCardStatus", response);
+      setTimeout(() => {
+        setJobCardStatus([
+          response.data.data.data[1].values,
+          response.data.data.data[0].values
+        ])  
+        console.log(getJobCardStatus)
+      }, 1500);
+      
+    }
+  ).catch((err)=>{console.error(err)})
+}
+    
       const state = {
         options: {
           chart: {
             id: "basic-bar"
           },
-          xaxis: {
-            categories: ["Telecaller-1","Telecaller-2","Telecaller-3","Telecaller-4","Telecaller-5"]
-          }
+          plotOptions : {
+            bar : {
+                columnWidth : '8px',
+                borderRadius : 8
+            }
+          },
+          dataLabels : {
+            style : {
+                fontSize : '1rem',
+                colors : ["#212121"]
+            }
         },
-        series: [
-          {
-            name: "series-1",
-            data: [3, 4, 4, 1, 3]
-          }
-        ]
+          xaxis: {
+            categories: getTelecallerCatogory,
+            labels : {
+              rotate: 0,
+              style : {
+                  fontSize : '0.8rem',
+                  fontWeight : 600
+              }
+            }
+          },
+          yaxis : {
+            labels : {            
+                style : {
+                    fontSize : '0.8rem',
+                    fontWeight : 600
+                }
+            }
+        }
+        },
+        series: [{name:"Jobcard Count",data:getTelecallerData}]
       };
-
       const lineState = {          
         series: [{
             name: "Desktops",
@@ -153,16 +281,31 @@ const getAdminDashboardList = () => {
       };
       const feedbackState = {
           
-        series: [70, 15],
+        series: getJCProcessStatusCount,
         options: {
           chart: {
             type: 'pie',
           },
           legend: {
-              position : "bottom"
+              position : "bottom",
+              fontWeight : 600
           },
-          colors: ['#05c46b', '#ff3f34'],
-          labels: ['Satisfied', 'Not Satisfied'],
+          dataLabels : {
+            style : {
+                fontSize : '0.9rem',
+                colors : ["#212121"]
+            },
+            dropShadow: {
+              enabled: false,
+              top: 1,
+              left: 1,
+              blur: 1,
+              color: '#000',
+              opacity: 0.0
+            }
+          },
+          colors: ['#f1c40f', '#d35400'],
+          labels: ['WIP', 'OPEN'],
           responsive: [{
             breakpoint: 480,
             options: {
@@ -181,14 +324,29 @@ const getAdminDashboardList = () => {
 
       const JCState = {
           
-        series: [70, 15],
+        series: getJobCardStatus,
         options: {
           chart: {
             type: 'pie',
           },
           legend: {
-              position : "bottom"
+              position : "bottom",
+              fontWeight : 600
           },
+          dataLabels : {
+            style : {
+                fontSize : '0.9rem',
+                colors : ["#212121"]
+            },
+            dropShadow: {
+              enabled: false,
+              top: 1,
+              left: 1,
+              blur: 1,
+              color: '#000',
+              opacity: 0.0
+            }
+          },         
           colors: ['#f39c12','#05c46b'],
           labels: ['Live', 'Closed'],
           responsive: [{
@@ -209,15 +367,31 @@ const getAdminDashboardList = () => {
 
       const VPSState = {
           
-        series: [44, 55],
+        series: getVPSCount,
         options: {
             chart: {
-              type: 'donut',
+              type: 'donut'              
             },
+            colors: ['#e74c3c', '#27ae60'],
             legend: {
-                position : "bottom"
+                position : "bottom",
+                fontWeight : 600
             },
-            labels: ['OK', 'NOT OK'],
+            dataLabels : {
+              style : {
+                  fontSize : '0.9rem',
+                  colors : ["#212121"]
+              },
+              dropShadow: {
+                enabled: false,
+                top: 1,
+                left: 1,
+                blur: 1,
+                color: '#000',
+                opacity: 0.0
+              }
+            },
+            labels: ['NOT OK', 'OK'],
             responsive: [{
               breakpoint: 480,
               options: {
@@ -234,15 +408,31 @@ const getAdminDashboardList = () => {
       };
       const NewPbmState = {
           
-        series: [44, 55],
+        series: getNewPbmCount,
         options: {
             chart: {
               type: 'donut',
             },
+            colors: [ '#27ae60','#e74c3c'],
             legend: {
-                position : "bottom"
+                position : "bottom",
+                fontWeight : 600
             },
-            labels: ['YES', 'NO'],
+            dataLabels : {
+              style : {
+                  fontSize : '0.9rem',
+                  colors : ["#212121"]
+              },
+              dropShadow: {
+                enabled: false,
+                top: 1,
+                left: 1,
+                blur: 1,
+                color: '#000',
+                opacity: 0.0
+              }
+            },
+            labels: ['No', 'YES'],
             responsive: [{
               breakpoint: 480,
               options: {
@@ -259,15 +449,31 @@ const getAdminDashboardList = () => {
       };
       const SamePbmState = {
           
-        series: [34, 55],
+        series: getSamePbmCount,
         options: {
             chart: {
               type: 'donut',
             },
+            colors: ['#2ecc71','#e74c3c'],
             legend: {
-                position : "bottom"
+                position : "bottom",
+                fontWeight : 600
             },
-            labels: ['YES', 'NO'],
+            dataLabels : {
+              style : {
+                  fontSize : '0.9rem',
+                  colors : ["#212121"]
+              },
+              dropShadow: {
+                enabled: false,
+                top: 1,
+                left: 1,
+                blur: 1,
+                color: '#000',
+                opacity: 0.0
+              }
+            },
+            labels: ['NO', 'YES'],
             responsive: [{
               breakpoint: 480,
               options: {
@@ -284,15 +490,31 @@ const getAdminDashboardList = () => {
       };
       const CallResState = {
           
-        series: [15, 25,35,10],
+        series: getCallResponseCounts,
         options: {
             chart: {
               type: 'donut',
             },
+            
             legend: {
-                position : "bottom"
+                position : "bottom",
+                fontWeight : 600
             },
-            labels: ['YES', 'SWITCH OFF', 'NOT REACHABLE', 'NO RESPONSE'],
+            dataLabels : {
+              style : {
+                  fontSize : '0.9rem',
+                  colors : ["#212121"]
+              },
+              dropShadow: {
+                enabled: false,
+                top: 1,
+                left: 1,
+                blur: 1,
+                color: '#000',
+                opacity: 0.0
+              }
+            },
+            labels: getCallResponseLabels,
             responsive: [{
               breakpoint: 480,
               options: {
@@ -309,7 +531,14 @@ const getAdminDashboardList = () => {
       };
       useEffect(() => {
         getAdminDashboardList();
-    }, [])
+        getVPSChartDetails();
+        getNewProblemDataChart();
+        getSameProblemDataChart();
+        getCallReponseDataChart();
+        getJCProcessStatusChart();
+        getTeleCallerAssignData();
+        getJobCardStatusChart();
+    },[])
 
     return(
          <>
@@ -381,7 +610,7 @@ const getAdminDashboardList = () => {
                                     </div>
                                 </div>
                                 <div className='col-12 col-xl-7 px-xl-0'>
-                                    <p className="mb-4">Pending/Open</p>
+                                    <p className="mb-4">WIP/Open</p>
                                     <p className="fs-30 mb-1">{PendingJC}</p>   
                                 </div>
                             </div>
@@ -407,9 +636,72 @@ const getAdminDashboardList = () => {
                 </div>     
             
             </div>
+            <div className='row row-cols-1 row-cols-sm-2 row-cols-md-4 g-1'>
+                <div className='col mt-4 px-3'>
+                    <div className='card card-shadow border-0 custom-radius h-100'>
+                        <h6 className='card-header'>
+                            Vehicle Performance after Service(VPS)
+                        </h6>
+                        <div className='card-body'>
+                            <Chart
+                                options={VPSState.options} 
+                                series={VPSState.series} 
+                                type="donut" 
+                                height={350 + Math.floor(Math.random() * 2) + 1} 
+                            />  
+                        </div>
+                    </div>  
+                </div>
+                <div className='col mt-4 px-3'>
+                    <div className='card card-shadow border-0 custom-radius'>
+                        <h6 className='card-header'>
+                            New Problem After Service
+                        </h6>
+                        <div className='card-body'>
+                            <Chart
+                                options={NewPbmState.options} 
+                                series={NewPbmState.series} 
+                                type="donut" 
+                                height={350 + Math.floor(Math.random() * 2) + 1} 
+                            />         
+                        </div>
+                    </div>  
+                </div>
 
+                <div className='col mt-4 px-3'>
+                    <div className='card card-shadow border-0 custom-radius'>
+                        <h6 className='card-header'>
+                            Same Problem in JC
+                        </h6>
+                        <div className='card-body'>
+                            <Chart
+                                options={SamePbmState.options} 
+                                series={SamePbmState.series} 
+                                type="donut" 
+                                height={350 + Math.floor(Math.random() * 2) + 1} 
+                            />          
+                        </div>
+                    </div>  
+                </div>
+
+                <div className='col mt-4 px-3'>
+                    <div className='card card-shadow border-0 custom-radius'>
+                        <h6 className='card-header'>
+                            Call Response by Customer
+                        </h6>
+                        <div className='card-body'>
+                            <Chart
+                                options={CallResState.options} 
+                                series={CallResState.series} 
+                                type="donut" 
+                                height={350 + Math.floor(Math.random() * 2) + 1}
+                            />         
+                        </div>
+                    </div>  
+                </div>
+            </div>
             <div className='row g-1'>
-                <div className='col-md-8 mt-4 px-3'>
+                <div className='col-md-6 mt-4 px-3'>
                     <div className='card card-shadow border-0 custom-radius'>
                         <h6 className='card-header'>
                             Today's Telecallers Allocation
@@ -424,24 +716,39 @@ const getAdminDashboardList = () => {
                         </div>
                     </div>  
                 </div>
-                <div className='col-md-4 mt-4 px-3'>
+                <div className='col-md-3 mt-4 px-3'>
                     <div className='card card-shadow border-0 custom-radius h-100'>
                         <h6 className='card-header'>
-                            Feedback Status
+                            WIP/OPEN
                         </h6>
                         <div className='card-body'>
                             <Chart
                                 options={feedbackState.options} 
                                 series={feedbackState.series} 
                                 type="pie" 
-                                height={350} 
+                                height={350 + Math.floor(Math.random() * 2) + 1} 
                             />       
+                        </div>
+                    </div>  
+                </div>
+                <div className='col-md-3 mt-4 px-3'>
+                    <div className='card card-shadow border-0 custom-radius h-100'>
+                        <h6 className='card-header'>
+                            Jobcard Status
+                        </h6>
+                        <div className='card-body'>
+                            <Chart
+                                options={JCState.options} 
+                                series={JCState.series} 
+                                type="pie" 
+                                height={350 + Math.floor(Math.random() * 2) + 1} 
+                            />  
                         </div>
                     </div>  
                 </div>
             </div>
 
-            <div className='row g-1'>
+            <div className='row g-1 d-none'>
                 <div className='col-md-4 mt-4 px-3'>
                     <div className='card card-shadow border-0 custom-radius h-100'>
                         <h6 className='card-header'>
@@ -474,72 +781,9 @@ const getAdminDashboardList = () => {
                 </div>
             </div>
 
-            <div className='row row-cols-1 row-cols-sm-2 row-cols-md-4 g-1'>
-                <div className='col mt-4 px-3'>
-                    <div className='card card-shadow border-0 custom-radius h-100'>
-                        <h6 className='card-header'>
-                            Vehicle Performance after Service(VPS)
-                        </h6>
-                        <div className='card-body'>
-                            <Chart
-                                options={VPSState.options} 
-                                series={VPSState.series} 
-                                type="donut" 
-                                height={350} 
-                            />  
-                        </div>
-                    </div>  
-                </div>
-                <div className='col mt-4 px-3'>
-                    <div className='card card-shadow border-0 custom-radius'>
-                        <h6 className='card-header'>
-                            New Problem After Service
-                        </h6>
-                        <div className='card-body'>
-                            <Chart
-                                options={NewPbmState.options} 
-                                series={NewPbmState.series} 
-                                type="donut" 
-                                height={350} 
-                            />         
-                        </div>
-                    </div>  
-                </div>
+            
 
-                <div className='col mt-4 px-3'>
-                    <div className='card card-shadow border-0 custom-radius'>
-                        <h6 className='card-header'>
-                            Same Problem in JC
-                        </h6>
-                        <div className='card-body'>
-                            <Chart
-                                options={SamePbmState.options} 
-                                series={SamePbmState.series} 
-                                type="donut" 
-                                height={350} 
-                            />          
-                        </div>
-                    </div>  
-                </div>
-
-                <div className='col mt-4 px-3'>
-                    <div className='card card-shadow border-0 custom-radius'>
-                        <h6 className='card-header'>
-                            Call Response by Customer
-                        </h6>
-                        <div className='card-body'>
-                            <Chart
-                                options={CallResState.options} 
-                                series={CallResState.series} 
-                                type="donut" 
-                                height={350} 
-                            />         
-                        </div>
-                    </div>  
-                </div>
-            </div>
-
-            <div className='row g-1'>
+            <div className='row g-1 d-none'>
                 <div className='col-6 my-4 px-3'>
                     <div className='card card-shadow border-0 custom-radius'>
                         <h6 className='card-header'>

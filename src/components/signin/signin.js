@@ -7,9 +7,21 @@ import authServices from "../../services/auth.services";
 import logo from "../../assets/tvs-logo.png";
 import "./signin.css";
 import userService from "../../services/user.service";
+import BackgroundSlider from "react-background-slider";
+import image1 from '../../assets/login-bg.png';
+import image2 from '../../assets/login-bg-2.png';
+import image3 from '../../assets/login-bg-3.png';
+import { Loading } from "react-loading-ui";
 
 export const SignIn = (props) => {
   const toast = useRef(null);
+  const settings = {
+    title: "",
+    text: "",
+    progress: false,
+    progressedClose: false,
+    theme: "dark",
+  };
   //adding class for Login screen only
   document.body.classList.add("bg-Login");
 
@@ -43,14 +55,16 @@ export const SignIn = (props) => {
   const handleLogin = (e) => {
     e.preventDefault();
 
-    setLoading(true);
+    Loading(settings);
     dispatch(login(userName, password))
       .then((response) => {
         console.log(response)
+        Loading();
         _navigateTo("/dashboard");
       })
       .catch((error) => {
           //console.log("h", error);
+          Loading();
           toast.current.show(
             {
                 severity: 'error',
@@ -164,7 +178,9 @@ export const SignIn = (props) => {
 
 
 
-
+      <BackgroundSlider
+        images={[image1,image2,image3]}
+        duration={5} transition={5} />
 
 
 

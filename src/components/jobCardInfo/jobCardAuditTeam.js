@@ -9,6 +9,9 @@ import jobCardInfoService from "../../services/job-card-info.service";
 import { ExportData } from "../exportData";
 import { Button } from "primereact/button";
 import { Tooltip } from "primereact/tooltip";
+import commonService from "../../services/common.service";
+import reportService from "../../services/report.service";
+import dealerMasterService from "../../services/dealer-master.service";
 
 const JobCardAuditTeam = () =>{
     const toast = useRef(null);
@@ -30,6 +33,16 @@ const JobCardAuditTeam = () =>{
         }
     );
     const [jobCardList, setJobCardList] = useState([]);
+    const [dealers, setDealers] = useState([]);
+    const [getRegionDetails, setRegionDetails] = useState([]);
+    const [auditStatusList, setAuditStatus] = useState([]);
+    const [getFilter, setFilter] = useState({
+        "region" : "",
+        "dealerId" : 0,
+        "_status" : "",
+        "_jobcardNumber" : ""
+    });
+    const {region, dealerId, _status, _jobcardNumber}=getFilter;
     const [jobcardActions, setJobCardActions] = useState({
         openJobcard : false,
         updateJobCard : false
@@ -616,8 +629,106 @@ const JobCardAuditTeam = () =>{
       setPage(1);
   
     };
+
+    
+    const getRegions = ()=>{
+        reportService.getRegionDetails().then(
+            (response)=>{
+            console.log("region",response)
+            setRegionDetails(response.data.data.data);
+            }          
+        ).catch((err)=>{console.log(err)})
+    }
+    const getDealersListByRegion = (argID)=>{
+        
+        commonService.getDealersByRegion(argID).then(
+            (response)=>{
+                console.log("DealerbyRegion", response);
+                setDealers(response.data.data.data);
+               
+            }
+        ).catch((err)=>{console.log(err)});
+    }
+    const getDealerInfo = () => {
+        dealerMasterService
+          .getDealerForDropdown(
+           true
+          )
+          .then((response) => {
+            console.log(response);
+            setDealers(response.data.data.data);
+          })
+          .catch((error) => console.log(error));
+      };
+      const getAuditStatusList = ()=>{
+        commonService.getAuditStatus(true).then(
+            (response)=>{
+                console.log("AuditStatus",response.data.data.data);
+                setAuditStatus(response.data.data.data);
+            }
+        ).catch(
+            (err)=>{
+                console.log(err);
+            }
+        )
+    }
+    const handleFilter = (name) => (event) => {
+        const value = event.target.value;
+        if(name === 'region'){
+            if(value !== ""){
+                getDealersListByRegion(value);
+            }else{
+                getDealerInfo();
+            }
+            
+        }
+
+        setFilter({
+            ...getFilter,
+            [name] : value
+        });
+    }
+    const filterJobcardNumber = () => {
+       // debugger
+        Loading(settings)
+        jobCardInfoService.getJobCardListForAudit({
+            pageNumber, 
+            pageSize, 
+            sortOrderBy, 
+            sortOrderColumn, 
+            filters : {
+                "region" : region,
+                "dealerId" : dealerId,
+                "status" : _status,
+                "jobcardNumber" : _jobcardNumber
+            }
+        }).then(
+            (response)=>{
+                Loading();
+                console.log(response);
+                setTotalCount(response.data.data.totalCount);
+                setJobCardList(response.data.data.data);
+            }
+        ).catch(
+            (err)=>{
+                Loading();
+                console.log(err);
+            }
+        )
+        // setTimeout(() => {
+        //     setJobCardItems({
+        //         ...getJobCardItems,
+        //         "filters": ""
+        //     });
+        //     setFilter("");
+        // }, 5000);
+        
+    }
     useEffect(()=>{
-        getAllJobCardLists();        
+        getAllJobCardLists();  
+        getDealerInfo();
+        getRegions();
+        getAuditStatusList();
     },[])
 
     return (
@@ -630,6 +741,69 @@ const JobCardAuditTeam = () =>{
                             <div className="card shadow-sm">
                                 <div className="card-body p-1">
                                     <div className="d-flex justify-content-end mb-1">
+                                        <select 
+                                            name="region"
+                                            value={region}
+                                            onChange={handleFilter("region")}
+                                            className="form-select select-custom me-1"
+                                        >
+                                            <option value="">--Select Region--</option>
+                                            {
+                                                getRegionDetails.map((items, idx)=>(
+                                                    <option value={items.text} key={idx}>{items.text}</option>
+                                                ))
+                                            }
+                                        </select>
+                                        <select 
+                                            className="form-select select-custom me-1"
+                                            name="dealerId"
+                                            value={dealerId}
+                                            onChange={handleFilter("dealerId")}
+                                        >
+                                            <option value="">--Select Dealer--</option>
+                                            {
+                                                dealers.map((items, idx)=>(
+                                                    <option value={items.id} key={idx}>{items.text}</option>
+                                                ))
+                                            }   
+                                        </select>
+                                        <select 
+                                            className="form-select select-custom me-1"
+                                            name="_status"
+                                            value={_status}
+                                            onChange={handleFilter("_status")}
+                                        >
+                                            <option value="0">--Select Status--</option>
+                                            {
+                                                auditStatusList.map((items, idx)=>(
+                                                    <option key={idx} value={items.id}>
+                                                        {items.text}
+                                                    </option>
+                                                ))
+                                            }
+                                        </select>
+                                        <div className="input-group me-2 searchBox" >
+                                            <input
+                                                type="text"
+                                                className="form-control form-control-sm"
+                                                placeholder="Search..."
+                                                aria-label="Search..."
+                                                aria-describedby="button-addon2"
+                                                name="_jobcardNumber"
+                                                value={_jobcardNumber}
+                                                onChange={handleFilter("_jobcardNumber")}
+                                            />
+                                            <button
+                                                className="btn btn-sm btn-outline-secondary"
+                                                type="button"
+                                                id="button-addon2"
+                                                onClick={filterJobcardNumber}
+                                            >
+                                                <i className="bi bi-search"></i>
+                                            </button>
+
+                                            
+                                        </div>
                                         <button 
                                             className="btn btn-sm btn-primary" 
                                             data-bs-toggle="modal" 
@@ -638,6 +812,15 @@ const JobCardAuditTeam = () =>{
                                             Export Data
                                         </button>
                                     </div>
+                                    {/* <div className="d-flex justify-content-end mb-1">
+                                        <button 
+                                            className="btn btn-sm btn-primary" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#staticBackdrop"
+                                        >
+                                            Export Data
+                                        </button>
+                                    </div> */}
                                     <div className="table-responsive d-none">
                                         <table className="table table-striped table-hover table-custom">
                                             <thead className="table-dark">                                        

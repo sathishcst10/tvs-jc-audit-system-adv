@@ -51,11 +51,11 @@ div#root{
   height: 100%;
 }
 .bg-Login{
-  background-image:url(./assets/login-bg.png);
+  /* background-image:url(./assets/login-bg-3.png);
   background-position: top center;
   background-repeat: no-repeat;
   background-size: cover;
-  background-attachment: fixed;
+  background-attachment: fixed; */
   padding-top: 0;
 }
 .app-logo{
@@ -354,6 +354,8 @@ select.form-select.custom-select {
   border-radius: 1.15rem;
 }
 .card-header:first-child {
+  font-size: 0.9rem;
+  font-weight: 600;
   border-radius: 1.15rem 1.15rem 0 0;
 }
 .fs-30 {

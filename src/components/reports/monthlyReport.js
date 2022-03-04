@@ -4,9 +4,10 @@ import { Loading } from "react-loading-ui"
 import { Calendar } from "primereact/calendar"
 import { useEffect, useState } from "react";
 import reportService from "../../services/report.service";
+import { useSelector } from "react-redux";
 
 const MonthlyReport = ()=>{
-
+    const { user: currentUser } = useSelector((state) => state.auth);
     const settings = {
         title: "",
         text: "",
@@ -82,7 +83,8 @@ const MonthlyReport = ()=>{
             filters : {
                 "year" : selectedYear,
                 "month" : selectedMonth,
-                "region" : region
+                "region" : region,
+                "dealerId" : currentUser.data.roles.roleName === 'Dealers' ? currentUser.data.user.dealerID : 0
             }            
         }).then((response)=>{
             console.log("MonthlyReport",response);

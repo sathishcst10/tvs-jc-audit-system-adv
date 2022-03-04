@@ -15,6 +15,8 @@ import modelMasterService from "../../services/model-master.service";
 import userService from "../../services/user.service";
 import aggregateMasterService from "../../services/aggregate-master.service";
 import commonService from "../../services/common.service";
+import { ExportData } from "../exportData";
+import reportService from "../../services/report.service";
 
 
 const JobCardCaller = () => {
@@ -42,9 +44,10 @@ const JobCardCaller = () => {
     const [ServiceTypes, setServiceTypes] = useState([]);
     const [teleCallers, setTeleCallers] = useState([]);
     const [aggregates, setAggregates] = useState([]);
-    const [getFilter, setFilter] = useState('');
     const [customerFeedbackStatus, setCustomerFeedbackStatus] = useState([]);
     const [page, setPage] = useState(1);
+    const [dealers, setDealers] = useState([]);
+    const [getRegionDetails, setRegionDetails] = useState([]);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [getJobCardItems, setJobCardItems] = useState({
         "pageNumber": 1,
@@ -57,6 +60,7 @@ const JobCardCaller = () => {
     const { pageNumber, pageSize, sortOrderBy, sortOrderColumn, filters } = getJobCardItems;
     const { openJobCard, updateJobCard } = jobcardActions;
     const [totalCount, setTotalCount] = useState(0);
+    const [auditStatusFilter, setAuditStatusFilter] = useState([]);
     const [getTagDesc, setTagDesc] = useState([]);
     const [getInitialObs, setInitialObs] = useState([]);
     const [getFinalFindings, setFinalFindings] = useState([]);
@@ -65,7 +69,13 @@ const JobCardCaller = () => {
     const [getCustomerVoiceByWMHO, setCustomerVoiceByWMHO] = useState([]);
     const [getJcGapRemarks, setJcGapRemarks] = useState([]);
     const [getGapIdentifiedWMSA, setGapIdentifiedWMSA] = useState([]);
-
+    const [getFilter, setFilter] = useState({
+        "region" : "",
+        "dealerId" : 0,
+        "status" : "",
+        "_jobcardNumber" : ""
+    });
+    const {region, dealerId, status, _jobcardNumber}=getFilter;
     const [getJobCardAudit, setJobCardAudit] = useState(
         {
             "isActive": true,
@@ -212,7 +222,17 @@ const JobCardCaller = () => {
             Loading()
         })
     }
-
+    const getDealerInfo = () => {
+        dealerMasterService
+          .getDealerForDropdown(
+           true
+          )
+          .then((response) => {
+            console.log(response);
+            setDealers(response.data.data.data);
+          })
+          .catch((error) => console.log(error));
+      };
     const getJobCardDetailsByID = (argID) => {
         jobCardInfoService.getJobCardById(argID).then(
             (response) => {
@@ -427,6 +447,25 @@ const JobCardCaller = () => {
         )
     }
 
+    const getRegions = ()=>{
+        reportService.getRegionDetails().then(
+            (response)=>{
+            console.log("region",response)
+            setRegionDetails(response.data.data.data);
+            }          
+        ).catch((err)=>{console.log(err)})
+    }
+    const getDealersListByRegion = (argID)=>{
+        
+        commonService.getDealersByRegion(argID).then(
+            (response)=>{
+                console.log("DealerbyRegion", response);
+                setDealers(response.data.data.data);
+               
+            }
+        ).catch((err)=>{console.log(err)});
+    }
+
     const handleChangePage = (event, newPage) => {
         Loading(settings);
         setPage(newPage + 1);
@@ -466,7 +505,14 @@ const JobCardCaller = () => {
         setPage(1);
 
     };
-
+    const getAuditStatusDropdown = ()=>{
+        commonService.getAuditStatus(true).then(
+            (response)=>{
+                console.log("AdutidSta", response);
+                setAuditStatus(response.data.data.data)
+            }
+        ).catch((err)=>{console.error(err)});
+    }
 
     const updateJobcard = (argID) => {
         setJobCardActions({
@@ -477,23 +523,52 @@ const JobCardCaller = () => {
     }
     const handleFilter = (name) => (event) => {
         const value = event.target.value;
-        setFilter(value);
-        setJobCardItems({
-            ...getJobCardItems,
-            "filters": {
-                "jobcardNumber": value
+        if(name === 'region'){
+            if(value !== ""){
+                getDealersListByRegion(value);
+            }else{
+                getDealerInfo();
             }
+            
+        }
+
+        setFilter({
+            ...getFilter,
+            [name] : value
         });
     }
     const filterJobcardNumber = () => {
-        getAllJobCardsList();
-        setTimeout(() => {
-            setJobCardItems({
-                ...getJobCardItems,
-                "filters": ""
-            });
-            setFilter("");
-        }, 5000);
+        //debugger
+        Loading(settings)
+        jobCardInfoService.getJobCardListForTeleCaller({
+            pageNumber,
+            pageSize,
+            sortOrderBy,
+            sortOrderColumn,
+            filters : {
+                "region" : region,
+                "dealerId" : dealerId,
+                "status" : status,
+                "jobcardNumber" : _jobcardNumber
+            }
+        }).then(
+            (response) => {
+                Loading();
+                console.log(response);
+                setTotalCount(response.data.data.totalCount);
+                setShowJobCards(response.data.data.data);
+            }
+        ).catch((err) => {
+            console.log(err);
+            Loading()
+        })
+        // setTimeout(() => {
+        //     setJobCardItems({
+        //         ...getJobCardItems,
+        //         "filters": ""
+        //     });
+        //     setFilter("");
+        // }, 5000);
         
     }
     const closeForm = () => {
@@ -790,6 +865,8 @@ const JobCardCaller = () => {
         getYesNoStatusList();
         getJCCategoryList();
         getCallResponseStatusList();
+        getDealerInfo();
+        getRegions()
 
     }, [])
 
@@ -803,6 +880,47 @@ const JobCardCaller = () => {
                                 <div className="card shadow-sm">
                                     <div className="card-body p-1">
                                         <div className="d-flex justify-content-end mb-1">
+                                            <select 
+                                                name="region"
+                                                value={region}
+                                                onChange={handleFilter("region")}
+                                                className="form-select select-custom me-1"
+                                            >
+                                                <option value="">--Select Region--</option>
+                                                {
+                                                    getRegionDetails.map((items, idx)=>(
+                                                        <option value={items.text} key={idx}>{items.text}</option>
+                                                    ))
+                                                }
+                                            </select>
+                                            <select 
+                                                className="form-select select-custom me-1"
+                                                name="dealerId"
+                                                value={dealerId}
+                                                onChange={handleFilter("dealerId")}
+                                            >
+                                                <option value="">--Select Dealer--</option>
+                                                {
+                                                    dealers.map((items, idx)=>(
+                                                        <option value={items.id} key={idx}>{items.text}</option>
+                                                    ))
+                                                }   
+                                            </select>
+                                            <select 
+                                                className="form-select select-custom me-1"
+                                                name="status"
+                                                value={status}
+                                                onChange={handleFilter("status")}
+                                            >
+                                                <option value="0">--Select Status--</option>
+                                                {
+                                                    auditStatusList.map((items, idx)=>(
+                                                        <option key={idx} value={items.id}>
+                                                            {items.text}
+                                                        </option>
+                                                    ))
+                                                }
+                                            </select>
                                             <div className="input-group me-2 searchBox" >
                                                 <input
                                                     type="text"
@@ -810,9 +928,9 @@ const JobCardCaller = () => {
                                                     placeholder="Search..."
                                                     aria-label="Search..."
                                                     aria-describedby="button-addon2"
-                                                    name="getFilter"
-                                                    value={getFilter}
-                                                    onChange={handleFilter("getFilter")}
+                                                    name="_jobcardNumber"
+                                                    value={_jobcardNumber}
+                                                    onChange={handleFilter("_jobcardNumber")}
                                                 />
                                                 <button
                                                     className="btn btn-sm btn-outline-secondary"
@@ -822,7 +940,16 @@ const JobCardCaller = () => {
                                                 >
                                                     <i className="bi bi-search"></i>
                                                 </button>
+
+                                                
                                             </div>
+                                            <button 
+                                                className="btn btn-sm btn-primary" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#staticBackdrop"
+                                            >
+                                                Export Data
+                                            </button>
                                         </div>
                                         <div className="table-responsive">
                                             <table className="table table-striped table-hover table-custom">
@@ -1753,6 +1880,23 @@ const JobCardCaller = () => {
 
             </div>
             <Toast ref={toast} />
+
+            <div className="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div className="modal-dialog">
+                <div className="modal-content">
+                    <div className="modal-header">
+                    <h5 className="modal-title" id="staticBackdropLabel">Export Data</h5>
+                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div className="modal-body">
+                        <ExportData/>
+                    </div>
+                    <div className="modal-footer">
+                   
+                    </div>
+                </div>
+                </div>
+            </div>
         </>
     )
 }

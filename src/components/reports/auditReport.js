@@ -4,9 +4,11 @@ import { Loading } from "react-loading-ui"
 import { Calendar } from "primereact/calendar"
 import { useEffect, useState } from "react";
 import reportService from "../../services/report.service";
+import { useSelector } from "react-redux";
 
 //subash
 const AuditReport = () => {
+      const { user: currentUser } = useSelector((state) => state.auth);
       const settings = {
         title: "",
         text: "",
@@ -47,12 +49,15 @@ const AuditReport = () => {
           pageSize,
           sortOrderBy,
           sortOrderColumn,
-          filters
+          filters :{
+            "dealerId" : currentUser.data.roles.roleName === 'Dealers' ? currentUser.data.user.dealerID : 0
+          }
         }).then((response)=>{
           console.log("chart Data", response)
           setReportValues([
               response.data.data.data[0].totalJCReceived, 
               response.data.data.data[0].totalJCAudited,
+              response.data.data.data[0].totalCallResponse,
               response.data.data.data[0].jcFoundOK,
               response.data.data.data[0].vpsokNos,
               response.data.data.data[0].sameProblemReported,
@@ -61,13 +66,14 @@ const AuditReport = () => {
             ]);
           setReportCaptions(
             [
-              "Total JC Received",
+              "Total JC",
               "Total JC Audited",
-              "Total JC Found OK",
-              "VPS OK No's",
-              "Same Problem Reported",
-              "New Problem Reported",
-              "Customer Told Problem not Captured"
+              "Call Response",
+              "JC Found OK",
+              "VPS OK",
+              "Same Problem",
+              "New Problem",
+              "Problem not Captured"
             ]
           )
             console.log(getReportValues);
@@ -86,13 +92,14 @@ const AuditReport = () => {
            "startDate" : new Date(startDate).toLocaleDateString(),
            "endDate" : new Date(endDate).toLocaleDateString(),
            "region" : region,
-           "dealerId" : 0
+           "dealerId" : currentUser.data.roles.roleName === 'Dealers' ? currentUser.data.user.dealerID : 0
           }
         }).then((response)=>{
           console.log("chart Data", response)
           setReportValues([
               response.data.data.data[0].totalJCReceived, 
               response.data.data.data[0].totalJCAudited,
+              response.data.data.data[0].totalCallResponse,
               response.data.data.data[0].jcFoundOK,
               response.data.data.data[0].vpsokNos,
               response.data.data.data[0].sameProblemReported,
@@ -101,13 +108,14 @@ const AuditReport = () => {
             ]);
           setReportCaptions(
             [
-              "Total JC Received",
+              "Total JC",
               "Total JC Audited",
-              "Total JC Found OK",
-              "VPS OK No's",
-              "Same Problem Reported",
-              "New Problem Reported",
-              "Customer Told Problem not Captured"
+              "Call Response",
+              "JC Found OK",
+              "VPS OK",
+              "Same Problem",
+              "New Problem",
+              "Problem not Captured"
             ]
           )
             console.log(getReportValues);
@@ -124,6 +132,7 @@ const AuditReport = () => {
         console.log(endDate, startDate)
       }
       useEffect(()=>{
+        console.log(currentUser);
         getAuditReportData();
         getRegions();
       },[])

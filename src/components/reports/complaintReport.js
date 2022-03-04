@@ -5,9 +5,11 @@ import { Loading } from "react-loading-ui"
 import { Calendar } from "primereact/calendar"
 import { useEffect, useState } from "react";
 import reportService from "../../services/report.service";
+import { useSelector } from "react-redux";
 
 //subash
  const ComplaintReport = () =>{
+    const { user: currentUser } = useSelector((state) => state.auth);
     const settings = {
         title: "",
         text: "",
@@ -49,7 +51,9 @@ const [requestParam, setRequestParam] = useState({
       pageSize,
       sortOrderBy,
       sortOrderColumn,
-      filters
+      filters :{
+        "dealerId" : currentUser.data.roles.roleName === 'Dealers' ? currentUser.data.user.dealerID : 0
+      }
     }).then((response)=>{
         console.log("chart Data", response)
         setReportCaptions([]);
@@ -79,7 +83,7 @@ const [requestParam, setRequestParam] = useState({
        "startDate" : new Date(startDate).toLocaleDateString(),
        "endDate" : new Date(endDate).toLocaleDateString(),
        "region" : region,
-       "dealerId" : 0
+       "dealerId" : currentUser.data.roles.roleName === 'Dealers' ? currentUser.data.user.dealerID : 0
       }
     }).then((response)=>{
       console.log("chart Data filter", response)
@@ -134,7 +138,7 @@ const [requestParam, setRequestParam] = useState({
             xaxis : {
                 categories: getReportCaptions,
                 labels : {
-                    rotate: -45,
+                    rotate: -40,
                     style : {
                         fontSize : '0.8rem',
                         fontWeight : 600
@@ -202,7 +206,7 @@ const [requestParam, setRequestParam] = useState({
             <div className="col">
                 <div className='card card-shadow border-0 custom-radius'>
                     <h6 className='card-header'>
-                        Audit Report
+                        Complaint Report
                     </h6>
                     <div className='card-body'>
                         <Chart

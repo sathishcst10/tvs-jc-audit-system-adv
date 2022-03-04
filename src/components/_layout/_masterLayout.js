@@ -101,7 +101,7 @@ const MasterLayout = ({ title = "", desc = "", pageMap = [], children }) => {
     })
   }, [currentUser, logOut])
 
-  const _userName = currentUser.data.user.firstName;
+  const _userName = currentUser.data.user.firstName +" "+ currentUser.data.user.lastName; 
 
   document.body.classList.remove("bg-Login");
   return (

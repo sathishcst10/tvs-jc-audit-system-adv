@@ -23,12 +23,16 @@ const getCallResponseStatus = (argID)=>{
     return axios.get(APP_API_URL + "/Status/GetCallResponseStatusMasterDropdwon/" + argID, {headers: authHeader()});
 }
 
+const getDealersByRegion = (argID)=>{
+    return axios.get(APP_API_URL + "/Dealer/DealerDropdownFilterByRegion/" + argID, {headers: authHeader()});
+}
+
 
 export default {
     getAuditStatus,
     getConfirmStatus,
     getYesNoStatus,
     getJCCategoryStatus,
-    getCallResponseStatus
-
+    getCallResponseStatus,
+    getDealersByRegion
 }

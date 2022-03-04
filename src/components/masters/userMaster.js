@@ -389,9 +389,7 @@ const filterData = () => {
             <th>Username</th>
             <th>Fullname</th>
 
-            <th>Email</th>
-            <th>phone</th>
-
+            <th>Email/Phone</th>
             <th>Dealer Details</th>
             <th>Role</th>
             <th>Status</th>
@@ -405,8 +403,10 @@ const filterData = () => {
               <td>
                 {items.firstName} {items.lastName}
               </td>
-              <td>{items.email}</td>
-              <td>{items.phoneNo}</td>
+              <td>
+                {items.email}
+                <p className="secondary-text mb-0">{items.phoneNo}</p>              
+              </td>
               <td>
                 {items.dealerName}
                 <p className="secondary-text mb-0">{items.dealerLocation}</p>
@@ -614,7 +614,7 @@ const filterData = () => {
                   </select>
                 </div>
                 {
-                  roleId == 3 &&
+                  roleId === 3 &&
                 
                   <div className="mb-2">
                     <label htmlFor="dealerName" className="form-label">

@@ -10,6 +10,7 @@ import MasterLayout from "../_layout/_masterLayout";
 import { APP_DOWNLOAD_URL } from "../../BackendAccess";
 import { Tooltip } from "primereact/tooltip";
 import { Button } from "primereact/button";
+import { ExportData } from "../exportData";
 
 
 
@@ -747,9 +748,15 @@ useEffect(()=>{
                                                     <i className="bi bi-search"></i>
                                                 </button>
                                             </div>
-
+                                            <button 
+                                                className="btn btn-sm btn-primary me-1" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#staticBackdrop"
+                                            >
+                                                Export Data
+                                            </button>
                                             <button
-                                                className="btn btn-sm btn-primary"
+                                                className="btn btn-sm btn-primary ms-1"
                                                 onClick={createJobCard}
                                             >
                                                 Create Job card
@@ -1175,6 +1182,23 @@ useEffect(()=>{
                 }
             </div>
             <Toast ref={toast} />
+
+            <div className="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div className="modal-dialog">
+                <div className="modal-content">
+                    <div className="modal-header">
+                    <h5 className="modal-title" id="staticBackdropLabel">Export Data</h5>
+                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div className="modal-body">
+                        <ExportData/>
+                    </div>
+                    <div className="modal-footer">
+                   
+                    </div>
+                </div>
+                </div>
+            </div>
         </>
     )
 }

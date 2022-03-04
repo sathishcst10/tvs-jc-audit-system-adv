@@ -6,6 +6,7 @@ import authHeader from "./auth-header";
 const getRegionDetails = ()=>{
     return axios.get(APP_API_URL + "/State/RegionDropdown", { headers : authHeader()});
 }
+
 const getYear = () =>{
     return axios.post(APP_API_URL + "/Report/GetYearDropdown", true, { headers : authHeader() });
 }

@@ -14,6 +14,9 @@ import modelMasterService from "../../services/model-master.service";
 import userService from "../../services/user.service";
 import { Tooltip } from "primereact/tooltip";
 import { Button } from "primereact/button";
+import { ExportData } from "../exportData";
+import reportService from "../../services/report.service";
+import commonService from "../../services/common.service";
 // import MasterLayout from "../_layout/_masterLayout"
 
 const JobCardOperator = () => {
@@ -40,7 +43,13 @@ const JobCardOperator = () => {
     const [modelLists, setModelLists] = useState([]);
     const [ServiceTypes, setServiceTypes] = useState([]);
     const [teleCallers, setTeleCallers] = useState([]);
-    const [getFilter, setFilter] = useState('');
+    const [getFilter, setFilter] = useState({
+        "region" : "",
+        "dealerId" : 0,
+        "status" : "",
+        "_jobcardNumber" : ""
+    });
+    const {region, dealerId, status, _jobcardNumber}=getFilter;
     const { openJobCard, updateJobCard, newJobCard } = jobcardActions;
     const [showJobcards, setShowJobCards] = useState([]);
     const [fileUpload, setFileUpload] = useState({
@@ -79,6 +88,7 @@ const JobCardOperator = () => {
     });
     const [getState , setState] = useState([]);
     const [getDealersList , setDealersList] = useState([]);
+    const [getRegionDetails, setRegionDetails] = useState([]);
     const {dealerName, dealerLocation} = dealerDetails;
     const [saveJobCard, setSaveJobCard] = useState({
         "jcid": 0,
@@ -242,6 +252,25 @@ const JobCardOperator = () => {
             }
         )
     }
+
+    const getRegions = ()=>{
+        reportService.getRegionDetails().then(
+            (response)=>{
+            console.log("region",response)
+            setRegionDetails(response.data.data.data);
+            }          
+        ).catch((err)=>{console.log(err)})
+    }
+    const getDealersListByRegion = (argID)=>{
+        
+        commonService.getDealersByRegion(argID).then(
+            (response)=>{
+                console.log("DealerbyRegion", response);
+                setDealers(response.data.data.data);
+               
+            }
+        ).catch((err)=>{console.log(err)});
+    }
     const loadDealersByState =(event)=>{
         console.log("stateSelected",event.target.value);
 
@@ -340,24 +369,96 @@ const JobCardOperator = () => {
         })
     }
     const handleFilter = (name) => (event) => {
+        //debugger;
         const value = event.target.value;
-        setFilter(value);
-        setAllJobCards({
-            ...getAllJobCards,
-            "filters": {
-                "jobcardNumber": value
+
+        if(name === 'region'){
+            if(value !== ""){
+                getDealersListByRegion(value);
+            }else{
+                getDealerInfo();
             }
+            
+        }
+
+        setFilter({
+            ...getFilter,
+            [name] : value
         });
+        // setAllJobCards({
+        //     ...getAllJobCards,
+        //     "filters": {
+        //         [name]: value
+        //     }
+        // });
+        console.log(getFilter);
     }
     const filterJobcardNumber = () => {
-        getAllJobCardsList();
-        setTimeout(() => {
-            setAllJobCards({
-                ...getAllJobCards,
-                "filters": ""
-            });
-            setFilter("");
-        }, 5000);
+        Loading(settings)
+        console.log(getFilter);
+        // setAllJobCards({
+        //     ...getAllJobCards,
+        //     "filters": {
+        //         "region" : region,
+        //         "dealerId" : dealerId,
+        //         "status" : status,
+        //         "jobcardNumber" : _jobcardNumber
+        //     }
+        // });
+        status !== "" ?
+        jobCardInfoService.getJobCardDetailsForOperator(
+        {
+            pageNumber,
+            pageSize,
+            sortOrderBy,
+            sortOrderColumn,
+            filters : {
+                "region" : region,
+                "dealerId" : dealerId,
+                "status" : status === 'true' ? true : false,
+                "jobcardNumber" : _jobcardNumber
+            }
+        }).then(
+            (response) => {
+                Loading();
+                console.log(response);
+                setTotalCount(response.data.data.totalCount);
+                setShowJobCards(response.data.data.data);
+            }
+        ).catch((err) => {
+            Loading();
+            console.log(err)
+        })
+        :
+        jobCardInfoService.getJobCardDetailsForOperator(
+            {
+                pageNumber,
+                pageSize,
+                sortOrderBy,
+                sortOrderColumn,
+                filters : {
+                    "region" : region,
+                    "dealerId" : dealerId,
+                    "jobcardNumber" : _jobcardNumber
+                }
+            }).then(
+                (response) => {
+                    Loading();
+                    console.log(response);
+                    setTotalCount(response.data.data.totalCount);
+                    setShowJobCards(response.data.data.data);
+                }
+            ).catch((err) => {
+                Loading();
+                console.log(err)
+            })
+        // setTimeout(() => {
+        //     setAllJobCards({
+        //         ...getAllJobCards,
+        //         "filters": ""
+        //     });
+        //     setFilter("");
+        // }, 5000);
         
     }
     const [page, setPage] = useState(1);
@@ -785,6 +886,7 @@ const JobCardOperator = () => {
         getAllTeleCallersList();
         getDealerInfo();
         getAllStatesList();
+        getRegions();
     }, [])
     return (
         <>
@@ -796,6 +898,45 @@ const JobCardOperator = () => {
                                 <div className="card shadow-sm">
                                     <div className="card-body p-1">
                                         <div className="d-flex justify-content-end mb-1">
+                                            <select 
+                                                name="region"
+                                                value={region}
+                                                onChange={handleFilter("region")}
+                                                className="form-select select-custom me-1"
+                                            >
+                                                <option value="">--Select Region--</option>
+                                                {
+                                                    getRegionDetails.map((items, idx)=>(
+                                                        <option value={items.text} key={idx}>{items.text}</option>
+                                                    ))
+                                                }
+                                            </select>
+                                            <select 
+                                                className="form-select select-custom me-1"
+                                                name="dealerId"
+                                                value={dealerId}
+                                                onChange={handleFilter("dealerId")}
+                                            >
+                                                <option value="">--Select Dealer--</option>
+                                                {
+                                                    dealers.map((items, idx)=>(
+                                                        <option value={items.id} key={idx}>{items.text}</option>
+                                                    ))
+                                                }   
+                                            </select>
+                                            <select 
+                                                className="form-select select-custom me-1"
+                                                name="status"
+                                                value={status}
+                                                onChange={handleFilter("status")}
+                                            >
+                                                <option value="">--Select Status--</option>
+                                                <option value="false">Open</option>
+                                                <option value="true">Completed</option>
+                                            </select>
+                                            {/* <button className="btn btn-sm btn-dark me-1">
+                                                Filter
+                                            </button> */}
                                             <div className="input-group me-2 searchBox" >
                                                 <input
                                                     type="text"
@@ -803,9 +944,9 @@ const JobCardOperator = () => {
                                                     placeholder="Search..."
                                                     aria-label="Search..."
                                                     aria-describedby="button-addon2"
-                                                    name="getFilter"
-                                                    value={getFilter}
-                                                    onChange={handleFilter("getFilter")}
+                                                    name="_jobcardNumber"
+                                                    value={_jobcardNumber}
+                                                    onChange={handleFilter("_jobcardNumber")}
                                                 />
                                                 <button
                                                     className="btn btn-sm btn-outline-secondary"
@@ -816,8 +957,16 @@ const JobCardOperator = () => {
                                                     <i className="bi bi-search"></i>
                                                 </button>
                                             </div>
+                                            
                                             <button 
-                                                className="btn btn-sm btn-primary"
+                                                className="btn btn-sm btn-primary me-1" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#staticBackdrop"
+                                            >
+                                                Export Data
+                                            </button>
+                                            <button 
+                                                className="btn btn-sm btn-primary ms-1"
                                                 onClick={createNewJobcard}
                                             >
                                                 New Jobcard
@@ -1654,6 +1803,25 @@ const JobCardOperator = () => {
 
             </div>
             <Toast ref={toast} />
+
+
+            <div className="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div className="modal-dialog">
+                <div className="modal-content">
+                    <div className="modal-header">
+                    <h5 className="modal-title" id="staticBackdropLabel">Export Data</h5>
+                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div className="modal-body">
+                        <ExportData/>
+                    </div>
+                    <div className="modal-footer">
+                   
+                    </div>
+                </div>
+                </div>
+            </div>
+
         </>
     )
 }

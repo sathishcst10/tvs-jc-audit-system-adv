@@ -20,7 +20,10 @@ const DataOperatorDashboard = () =>{
         feedbackCompletedJC : 0
     });
     const {totalJCCounts, todayJCCounts, auditCompletedJC, pendingJC, feedbackCompletedJC} = getDashboardCounts;
-   
+    const [getTelecallerCatogory,setTelecallerCatogory] = useState([]);
+    const [getTelecallerData,setTelecallerData] = useState([]);
+    const [getLineChartData, setLineChartData] = useState([]);
+    const [getLineChartCategory, setLineChartCategory] = useState([]);
     const fnDashboardCounts = ()=>{
         Loading(settings)
         dashboardService.getDataOperatorDataCount(true).then(
@@ -43,26 +46,85 @@ const DataOperatorDashboard = () =>{
         )
     }
    
+    const getTeleCallerAssignData = ()=>{
+        dashboardService.getTeleCallerAssignChart(true).then(
+        (response)=>{
+            console.log("Res-TeleCallerAssign", response);
+            response.data.data.data.map((items,idx)=>{
+            setTelecallerCatogory([items.name]);
+            setTelecallerData([items.values]);
+            })
+            
+        }
+        ).catch((err)=>{
+        console.error(err);
+        })
+    };
+
+    const getDataOperatorEntryByDate = () =>{
+        dashboardService.getDataOperatorEntryChart(true).then(
+            (response)=>{
+                console.log("Data entry chart",response);
+                let tempArray = [];
+                let tempArray2= [];
+                setLineChartCategory([]);
+                setLineChartData([]);                
+                response.data.data.data.forEach(element => {  
+                    let fullDate = element.month + "-" + element.day;               
+                    setLineChartCategory(getLineChartCategory=>[...getLineChartCategory, fullDate]);
+                });
+                response.data.data.data.forEach(element => {                   
+                    setLineChartData(getLineChartData=>[...getLineChartData, element.values])
+                });
+               
+                console.log(getLineChartData, getLineChartCategory)
+            }
+        ).catch((err)=>{console.log(err)});
+    }
+
     const state = {
         options: {
           chart: {
             id: "basic-bar"
           },
-          xaxis: {
-            categories: ["Telecaller-1","Telecaller-2","Telecaller-3","Telecaller-4","Telecaller-5"]
-          }
+          plotOptions : {
+            bar : {
+                columnWidth : '8px',
+                borderRadius : 8
+            }
+          },
+          dataLabels : {
+            style : {
+                fontSize : '1rem',
+                colors : ["#212121"]
+            }
         },
-        series: [
-          {
-            name: "series-1",
-            data: [3, 4, 4, 1, 3]
-          }
-        ]
+          xaxis: {
+            categories: getTelecallerCatogory,
+            labels : {
+              rotate: 0,
+              style : {
+                  fontSize : '0.8rem',
+                  fontWeight : 600
+              }
+            }
+          },
+          yaxis : {
+            labels : {            
+                style : {
+                    fontSize : '0.8rem',
+                    fontWeight : 600
+                }
+            }
+        }
+        },
+        series: [{name:"Jobcard Count",data:getTelecallerData}]
     };
+
     const lineState = {          
         series: [{
-            name: "Desktops",
-            data: [4, 12, 8, 6, 3, 5, 9]
+            name: "Data Entry by Date",
+            data: getLineChartData
         }],
         options: {
           chart: {
@@ -89,7 +151,7 @@ const DataOperatorDashboard = () =>{
             },
           },
           xaxis: {
-            categories: ['18-Jan', '19-Jan', '20-Jan', '21-Jan', '22-Jan', '23-Jan', '24-Jan'],
+            categories: getLineChartCategory
           }
         },
       
@@ -97,6 +159,8 @@ const DataOperatorDashboard = () =>{
     };
     useEffect(()=>{
        fnDashboardCounts();
+       getTeleCallerAssignData();
+       getDataOperatorEntryByDate();
     },[])
     return(
          <>

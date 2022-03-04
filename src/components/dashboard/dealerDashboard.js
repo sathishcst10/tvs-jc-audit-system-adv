@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import Chart from 'react-apexcharts'
 import { Loading } from 'react-loading-ui';
+import { useSelector } from 'react-redux';
 import dashboardService from '../../services/dashboard.service';
 const DealerDashboard = () =>{
+    const { user: currentUser } = useSelector((state) => state.auth);
     const settings = {
         title: "",
         text: "",
@@ -18,12 +20,14 @@ const DealerDashboard = () =>{
         feedbackCompletedJC : 0
     });
     const {totalJCCounts, todayJCCounts, auditCompletedJC, pendingJC, feedbackCompletedJC} = getDashboardCounts;
-   
+    const [getLineChartData, setLineChartData] = useState([]);
+    const [getLineChartCategory, setLineChartCategory] = useState([]);
+    const [getVPSCount, setVPSCount] = useState([]);
     const fnDashboardCounts = ()=>{
         Loading(settings)
         dashboardService.getDealerDataCount(true).then(
             (response)=>{
-                console.log(response);
+                //console.log("user",);
                 setDashboardCounts({
                     ...getDashboardCounts,
                     totalJCCounts : response.data.data.data[0].totalJC,
@@ -42,10 +46,45 @@ const DealerDashboard = () =>{
         )
     }
 
+    const getDealerEntryChartByDate = ()=>{
+        dashboardService.getDealerEntryChart(currentUser.data.user.dealerID).then(
+            (response)=>{
+                console.log(response);
+                setLineChartCategory([]);
+                setLineChartData([]);                
+                response.data.data.data.forEach(element => {  
+                    let fullDate = element.month + "-" + element.day;               
+                    setLineChartCategory(getLineChartCategory=>[...getLineChartCategory, fullDate]);
+                });
+                response.data.data.data.forEach(element => {                   
+                    setLineChartData(getLineChartData=>[...getLineChartData, element.values])
+                });
+               
+                console.log(getLineChartData, getLineChartCategory);
+            }
+        ).catch((err)=>{console.log(err)});
+    }
+    const getDealerVPSChartData = ()=>{
+        dashboardService.getDealerVPSChart(currentUser.data.user.dealerID).then((response)=>{
+            console.log(response);
+            setVPSCount([]);
+            // response.data.data.data.forEach(element => {                   
+            //     setVPSCount([element.values]);    
+            // });        
+            setVPSCount([
+                response.data.data.data[1].values,
+                response.data.data.data[0].values
+            ]);
+            // setTimeout(() => {
+            
+            // }, 1500);
+            console.log(getVPSCount);
+        }).catch((err)=>{console.log(err)})
+    }
     const lineState = {          
         series: [{
-            name: "Desktops",
-            data: [4, 12, 8, 6, 3, 5, 9]
+            name: "JobCard Upload",
+            data: getLineChartData
         }],
         options: {
           chart: {
@@ -72,14 +111,14 @@ const DealerDashboard = () =>{
             },
           },
           xaxis: {
-            categories: ['18-Jan', '19-Jan', '20-Jan', '21-Jan', '22-Jan', '23-Jan', '24-Jan'],
+            categories: getLineChartCategory
           }
         }
     };
 
     const feedbackState = {
           
-        series: [70, 15],
+        series: getVPSCount,
         options: {
           chart: {
             type: 'pie',
@@ -88,7 +127,7 @@ const DealerDashboard = () =>{
               position : "bottom"
           },
           colors: ['#05c46b', '#ff3f34'],
-          labels: ['Satisfied', 'Not Satisfied'],
+          labels: ['OK', 'Not OK'],
           responsive: [{
             breakpoint: 480,
             options: {
@@ -107,6 +146,9 @@ const DealerDashboard = () =>{
 
     useEffect(()=>{
         fnDashboardCounts();
+        getDealerVPSChartData();
+        getDealerEntryChartByDate();
+        
     },[])
 
     return(
@@ -174,7 +216,7 @@ const DealerDashboard = () =>{
                                         </div>
                                     </div>
                                     <div className='col-12 col-xl-7 px-xl-0'>
-                                        <p className="mb-4">Pending/Open</p>
+                                        <p className="mb-4">WIP / Open</p>
                                         <p className="fs-30 mb-1">{pendingJC}</p>   
                                     </div>
                                 </div>
@@ -211,7 +253,7 @@ const DealerDashboard = () =>{
                                 options={lineState.options} 
                                 series={lineState.series} 
                                 type="line" 
-                                height={320} 
+                                height={350 + Math.floor(Math.random() * 2) + 1} 
                             />      
                         </div>
                     </div>  
@@ -219,20 +261,20 @@ const DealerDashboard = () =>{
                 <div className='col-md-4 col-sm-12 mt-4 px-3'>
                     <div className='card card-shadow border-0 custom-radius h-100'>
                         <h6 className='card-header'>
-                            Feedback Status
+                        Vehicle Performance after Service(VPS)
                         </h6>
                         <div className='card-body'>
                             <Chart
                                 options={feedbackState.options} 
                                 series={feedbackState.series} 
                                 type="pie" 
-                                height={350} 
+                                height={350 + Math.floor(Math.random() * 2) + 1} 
                             />      
                         </div>
                     </div>  
                 </div>
             </div>
-            <div className='row g-1'>
+            <div className='row g-1 d-none'>
                 <div className='col-md-6 col-sm-12 my-4 px-3'>
                     <div className='card card-shadow border-0 custom-radius'>
                         <h6 className='card-header'>

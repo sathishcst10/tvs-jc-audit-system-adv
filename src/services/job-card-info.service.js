@@ -89,6 +89,10 @@ const getAllDataForExport = (argItems) =>{
     return axios.post(APP_API_URL + "/JobCard/AllByPaging", argItems, {headers:authHeader()})
 }
 
+const getExcelExport = (argItems) =>{
+    return axios.post(APP_API_URL + "/JobCard/ExportJobCard", argItems, {headers:authHeader(), responseType: 'arraybuffer' })
+}
+
 export default {
     uploadJobCard,
     createJobCard,
@@ -111,5 +115,6 @@ export default {
     getJobCardListForAudit,
     getJobCardDataById,
 
-    getAllDataForExport
+    getAllDataForExport,
+    getExcelExport
 }
