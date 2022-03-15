@@ -9,7 +9,7 @@ const uploadJobCard = (argItems) =>{
     //debugger;232131
     return axios.post(APP_API_URL + "/Document", argItems, 
         {headers : {
-            Authorization: "bearer " + user.data.token,
+            Authorization: "bearer " + JSON.parse(localStorage.getItem('user')).data.token,
             "Content-Type" : "multipart/form-data"
         }}        
     )

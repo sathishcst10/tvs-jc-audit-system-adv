@@ -37,12 +37,13 @@ const JobCardAuditTeam = () =>{
     const [getRegionDetails, setRegionDetails] = useState([]);
     const [auditStatusList, setAuditStatus] = useState([]);
     const [getFilter, setFilter] = useState({
+        "filterStatus":false,
         "region" : "",
         "dealerId" : 0,
         "_status" : "",
         "_jobcardNumber" : ""
     });
-    const {region, dealerId, _status, _jobcardNumber}=getFilter;
+    const {filterStatus,region, dealerId, _status, _jobcardNumber}=getFilter;
     const [jobcardActions, setJobCardActions] = useState({
         openJobcard : false,
         updateJobCard : false
@@ -138,7 +139,8 @@ const JobCardAuditTeam = () =>{
         gapIdendtified,
         status,
         statusName
-    } = jobCardDetails
+    } = jobCardDetails;
+
     const getAllJobCardLists = () =>{
         Loading(settings)
         jobCardInfoService.getJobCardListForAudit({
@@ -157,7 +159,7 @@ const JobCardAuditTeam = () =>{
         ).catch(
             (err)=>{
                 Loading();
-                console.log(err);
+                console.error(err);
             }
         )
     }
@@ -594,37 +596,150 @@ const JobCardAuditTeam = () =>{
       Loading(settings);
       setPage(newPage + 1);
      
-      jobCardInfoService.getJobCardListForAudit({
-        pageNumber : newPage + 1,
-        pageSize,
-        sortOrderBy,
-        sortOrderColumn,
-        filters,
-      })
-      .then((response) => {
-        setTotalCount(response.data.data.totalCount);
-        setJobCardList(response.data.data.data);
-        Loading();
-      })
-      .catch((error) =>{console.log(error); Loading();});
+    //   jobCardInfoService.getJobCardListForAudit({
+    //     pageNumber : newPage + 1,
+    //     pageSize,
+    //     sortOrderBy,
+    //     sortOrderColumn,
+    //     filters,
+    //   })
+    //   .then((response) => {
+    //     setTotalCount(response.data.data.totalCount);
+    //     setJobCardList(response.data.data.data);
+    //     Loading();
+    //   })
+    //   .catch((error) =>{console.log(error); Loading();});
       
+      if(filterStatus){
+        status !== "" ?
+            jobCardInfoService.getJobCardListForAudit({
+                pageNumber : newPage + 1,
+                pageSize,
+                sortOrderBy,
+                sortOrderColumn,
+                filters : {
+                    "region" : region,
+                    "dealerId" : dealerId,
+                    "status" : status === 'true' ? true : false,
+                    "jobcardNumber" : _jobcardNumber
+                }
+            })
+            .then((response) => {
+                setTotalCount(response.data.data.totalCount);
+                setJobCardList(response.data.data.data);
+                Loading();
+            })
+            .catch((error) =>{console.log(error); Loading();})
+        :
+            jobCardInfoService.getJobCardListForAudit({
+                pageNumber : newPage + 1,
+                pageSize,
+                sortOrderBy,
+                sortOrderColumn,
+                filters : {
+                    "region" : region,
+                    "dealerId" : dealerId,
+                    "jobcardNumber" : _jobcardNumber
+                }
+            })
+            .then((response) => {
+                setTotalCount(response.data.data.totalCount);
+                setJobCardList(response.data.data.data);
+                Loading();
+            })
+            .catch((error) =>{console.log(error); Loading();});
+        
+     }
+     else{
+            jobCardInfoService.getJobCardListForAudit({
+                pageNumber : newPage + 1,
+                pageSize,
+                sortOrderBy,
+                sortOrderColumn,
+                filters,
+            })
+            .then((response) => {
+                setTotalCount(response.data.data.totalCount);
+                setJobCardList(response.data.data.data);
+                Loading();
+            })
+            .catch((error) =>{console.log(error); Loading();});
+        
+        }
     };
   
     const handleChangeRowsPerPage = (event) => {
       Loading(settings);
-      jobCardInfoService.getJobCardListForAudit({
-        pageNumber,
-        pageSize : parseInt(event.target.value, 10),
-        sortOrderBy,
-        sortOrderColumn,
-        filters,
-      })
-      .then((response) => {
-        setTotalCount(response.data.data.totalCount);
-        setJobCardList(response.data.data.data);
-        Loading();
-      })
-      .catch((error) =>{console.log(error); Loading();});
+    //   jobCardInfoService.getJobCardListForAudit({
+    //     pageNumber,
+    //     pageSize : parseInt(event.target.value, 10),
+    //     sortOrderBy,
+    //     sortOrderColumn,
+    //     filters,
+    //   })
+    //   .then((response) => {
+    //     setTotalCount(response.data.data.totalCount);
+    //     setJobCardList(response.data.data.data);
+    //     Loading();
+    //   })
+    //   .catch((error) =>{console.log(error); Loading();});
+
+      if(filterStatus){
+        status !== "" ?
+        jobCardInfoService.getJobCardListForAudit({
+            pageNumber,
+            pageSize : parseInt(event.target.value, 10),
+            sortOrderBy,
+            sortOrderColumn,
+            filters : {
+                "region" : region,
+                "dealerId" : dealerId,
+                "status" : status === 'true' ? true : false,
+                "jobcardNumber" : _jobcardNumber
+            }
+        })
+        .then((response) => {
+            setTotalCount(response.data.data.totalCount);
+            setJobCardList(response.data.data.data);
+            Loading();
+        })
+        .catch((error) =>{console.log(error); Loading();})
+        :
+        jobCardInfoService.getJobCardListForAudit({
+            pageNumber,
+            pageSize:parseInt(event.target.value, 10),
+            sortOrderBy,
+            sortOrderColumn,
+            filters : {
+                "region" : region,
+                "dealerId" : dealerId,
+                "jobcardNumber" : _jobcardNumber
+            }
+        })
+        .then((response) => {
+            setTotalCount(response.data.data.totalCount);
+            setJobCardList(response.data.data.data);
+            Loading();
+        })
+        .catch((error) =>{console.log(error); Loading();});
+        
+     }
+     else{
+        jobCardInfoService.getJobCardListForAudit({
+            pageNumber,
+            pageSize:parseInt(event.target.value, 10),
+            sortOrderBy,
+            sortOrderColumn,
+            filters,
+        })
+        .then((response) => {
+            setTotalCount(response.data.data.totalCount);
+            setJobCardList(response.data.data.data);
+            Loading();
+        })
+        .catch((error) =>{console.log(error); Loading();});
+        
+        }
       setRowsPerPage(parseInt(event.target.value, 10));
       setPage(1);
   
@@ -659,8 +774,8 @@ const JobCardAuditTeam = () =>{
             setDealers(response.data.data.data);
           })
           .catch((error) => console.log(error));
-      };
-      const getAuditStatusList = ()=>{
+    };
+    const getAuditStatusList = ()=>{
         commonService.getAuditStatus(true).then(
             (response)=>{
                 console.log("AuditStatus",response.data.data.data);
@@ -723,6 +838,13 @@ const JobCardAuditTeam = () =>{
         //     setFilter("");
         // }, 5000);
         
+    }
+
+    const showJCID = (rowData, column)=>{
+        return (<div>
+            {rowData}
+        {/* <a href="#" onClick={()=>setJobCardActions({ ...jobcardActions, openJobcard : true })}>{rowData}</a> */}
+        </div>);
     }
     useEffect(()=>{
         getAllJobCardLists();  
@@ -1106,7 +1228,17 @@ const JobCardAuditTeam = () =>{
 
                                     <div>
                                         <DataTable value={jobCardList} scrollable scrollHeight="400px"  scrollDirection="both" className="mt-3">
-                                            <Column field="jcNumber" header="JC ID" style={{ flexGrow: 1, flexBasis: '100px' }} frozen></Column>
+                                            <Column field="jcNumber" header="JC ID" style={{ flexGrow: 1, flexBasis: '100px' }} frozen body={(data, props) => 
+                                                <div> 
+                                                    <Button label={data.jcNumber} className="p-button-rounded p-button-text" 
+                                                            onClick={(e) => {
+                                                                showJobCardDetails(data.jcid)
+                                                                console.log("row idx: " + props.rowIndex, data);
+                                                            }
+                                                        }/>
+                                                </div>
+                                            }>                
+                                            </Column>
                                             <Column field="jobcardNumber" header="Jobcard Number" style={{ flexGrow: 1, flexBasis: '200px' }} frozen></Column>
                                             <Column field="auditDate" body={convertDate} header="Audit Date" style={{ flexGrow: 1, flexBasis: '130px' }}></Column>
                                             <Column field="serviceDate" body={convertServiceDate} header="Service Date" style={{ flexGrow: 1, flexBasis: '130px' }}></Column>

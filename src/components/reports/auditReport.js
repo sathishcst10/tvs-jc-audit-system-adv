@@ -5,6 +5,8 @@ import { Calendar } from "primereact/calendar"
 import { useEffect, useState } from "react";
 import reportService from "../../services/report.service";
 import { useSelector } from "react-redux";
+import commonService from "../../services/common.service";
+import dealerMasterService from "../../services/dealer-master.service";
 
 //subash
 const AuditReport = () => {
@@ -25,12 +27,16 @@ const AuditReport = () => {
       });
       const [getReportValues, setReportValues] = useState([]);
       const [getReportCaptions, setReportCaptions] = useState([]);
+      const [getStates, setStates] = useState([]);
+      const [getDealers, setDealers] = useState([]);
       const [getFilter, setFilter] = useState({
         "endDate": new Date(),
         "startDate" : new Date(),
-        "region": ""
+        "region": "",
+        "states" : 0,
+        "dealer" : 0
       });
-      const {endDate, startDate, region} = getFilter;
+      const {endDate, startDate, region, states,dealer} = getFilter;
       const {pageNumber,pageSize,sortOrderBy,sortOrderColumn,filters} = requestParam;
       const [getRegionDetails, setRegionDetails] = useState([]);
 
@@ -41,6 +47,37 @@ const AuditReport = () => {
             setRegionDetails(response.data.data.data);
           }          
         ).catch((err)=>{console.log(err)})
+      }
+      const getAllStates = ()=>{
+        dealerMasterService.getStates().then(
+          (response)=>{
+            console.log("getStates", response);
+            setStates(response.data.data.data);
+          }
+        ).catch((err)=>{console.error(err)});
+      }
+      const getAllDealer = ()=>{
+        dealerMasterService.getDealerForDropdown(true).then(
+          (response)=>{
+            console.log(response);
+            setDealers(response.data.data.data)
+          }
+        ).catch((err)=>{console.error(err)});
+      }
+      const getDealerByState = (argId)=>{
+        dealerMasterService.getDealerByState(argId).then(
+          (response)=>{
+            setDealers(response.data.data.data);
+          }
+        ).catch((err)=>{console.error(err)})
+      }
+      const getStateByRegion = (argID)=>{
+        commonService.getStatesByRegion(argID).then(
+          (response)=>{
+            console.log("getStates", response);
+            setStates(response.data.data.data);
+          }
+        ).catch((err)=>{console.error(err)});
       }
       const getAuditReportData = () =>{
         Loading(settings)
@@ -92,7 +129,8 @@ const AuditReport = () => {
            "startDate" : new Date(startDate).toLocaleDateString(),
            "endDate" : new Date(endDate).toLocaleDateString(),
            "region" : region,
-           "dealerId" : currentUser.data.roles.roleName === 'Dealers' ? currentUser.data.user.dealerID : 0
+           "dealerId" : currentUser.data.roles.roleName === 'Dealers' ? currentUser.data.user.dealerID : dealer,
+           "states" : states
           }
         }).then((response)=>{
           console.log("chart Data", response)
@@ -125,6 +163,21 @@ const AuditReport = () => {
       const handleChange = (name) => (event) => {
         console.log(getFilter)
         const value = event.target.value;
+
+        if(name === 'region'){
+          if(value == ""){
+            getAllStates();
+          }else{
+            getStateByRegion(value);
+          }
+        }else if(name === 'states'){
+          if(value == ""){
+            getAllDealer();
+          }else{
+            getDealerByState(value)
+          }
+        } 
+
         setFilter({
             ...getFilter,
             [name] : value
@@ -135,6 +188,8 @@ const AuditReport = () => {
         console.log(currentUser);
         getAuditReportData();
         getRegions();
+        getAllStates();
+        getAllDealer();
       },[])
       const state = {
         options: {
@@ -216,7 +271,30 @@ const AuditReport = () => {
                           ))
                         }
                       </select>
-
+                      <select 
+                        className="form-select select-custom ms-1"
+                        value={states}
+                        name="states"
+                        onChange={handleChange("states")}>
+                          <option value="">--Select State--</option>
+                          {
+                          getStates.map((items, idx)=>(
+                            <option value={items.id} key={idx}>{items.text}</option>
+                          ))
+                        }
+                      </select>
+                      <select 
+                        className="form-select select-custom ms-1"
+                        value={dealer}
+                        name="dealer"
+                        onChange={handleChange("dealer")}>
+                          <option value="">--Select Dealer--</option>
+                          {
+                          getDealers.map((items, idx)=>(
+                            <option value={items.id} key={idx}>{items.text}</option>
+                          ))
+                        }
+                      </select>
                       <button className="btn btn-sm btn-primary ms-2" onClick={getAuditReportDataByFilters}>
                         Filter
                       </button>

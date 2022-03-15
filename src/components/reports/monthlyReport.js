@@ -5,6 +5,8 @@ import { Calendar } from "primereact/calendar"
 import { useEffect, useState } from "react";
 import reportService from "../../services/report.service";
 import { useSelector } from "react-redux";
+import commonService from "../../services/common.service";
+import dealerMasterService from "../../services/dealer-master.service";
 
 const MonthlyReport = ()=>{
     const { user: currentUser } = useSelector((state) => state.auth);
@@ -22,11 +24,17 @@ const MonthlyReport = ()=>{
         "sortOrderColumn": "",
         "filters": ""
     });
-    const [getFilter, setFilter] = useState({
-        "selectedYear": "",
-        "selectedMonth" : "",
-        "region": ""
-    });
+    const [getStates, setStates] = useState([]);
+      const [getDealers, setDealers] = useState([]);
+      const [getFilter, setFilter] = useState({
+        "endDate": new Date(),
+        "startDate" : new Date(),
+        "region": "",
+        "states" : 0,
+        "dealer" : 0,
+        "compYear" : "",
+        "compMonth" : "",
+      });
     const [getReportCatagories, setCategory] = useState(
         [
             'Total JC',
@@ -40,7 +48,7 @@ const MonthlyReport = ()=>{
         ]
     )
     const [getReportValues, setReportValues] = useState([]); 
-    const {selectedYear, selectedMonth, region} = getFilter;
+    const {selectedYear, selectedMonth, region,states,dealer, compMonth, compYear} = getFilter;
     const {pageNumber,pageSize,sortOrderBy,sortOrderColumn,filters} = requestParam;
     const [getRegionDetails, setRegionDetails] = useState([]);
     const [getYears, setYears] = useState([]);
@@ -53,7 +61,37 @@ const MonthlyReport = ()=>{
             }          
         ).catch((err)=>{console.log(err)})
     }
-
+    const getAllStates = ()=>{
+        dealerMasterService.getStates().then(
+          (response)=>{
+            console.log("getStates", response);
+            setStates(response.data.data.data);
+          }
+        ).catch((err)=>{console.error(err)});
+      }
+      const getAllDealer = ()=>{
+        dealerMasterService.getDealerForDropdown(true).then(
+          (response)=>{
+            console.log(response);
+            setDealers(response.data.data.data)
+          }
+        ).catch((err)=>{console.error(err)});
+      }
+      const getDealerByState = (argId)=>{
+        dealerMasterService.getDealerByState(argId).then(
+          (response)=>{
+            setDealers(response.data.data.data);
+          }
+        ).catch((err)=>{console.error(err)})
+      }
+      const getStateByRegion = (argID)=>{
+        commonService.getStatesByRegion(argID).then(
+          (response)=>{
+            console.log("getStates", response);
+            setStates(response.data.data.data);
+          }
+        ).catch((err)=>{console.error(err)});
+      }
     const getYearForDropdown = ()=>{
         reportService.getYear().then(
             (response)=>{
@@ -84,7 +122,10 @@ const MonthlyReport = ()=>{
                 "year" : selectedYear,
                 "month" : selectedMonth,
                 "region" : region,
-                "dealerId" : currentUser.data.roles.roleName === 'Dealers' ? currentUser.data.user.dealerID : 0
+                "dealerId" : currentUser.data.roles.roleName === 'Dealers' ? currentUser.data.user.dealerID : dealer,
+                "states" : states,
+                "compYear" : compYear,
+                "compMonth" : compMonth
             }            
         }).then((response)=>{
             console.log("MonthlyReport",response);
@@ -122,6 +163,22 @@ const MonthlyReport = ()=>{
         if(name === 'selectedYear'){
             getMonthForDropdown(value);
         }
+
+        if(name === 'region'){
+            if(value === ""){
+              getAllStates();
+            }else{
+              getStateByRegion(value);
+            }
+          }else if(name === 'states'){
+            if(value === ""){
+              getAllDealer();
+            }else{
+              getDealerByState(value)
+            }
+          }  
+
+
         setFilter({
             ...getFilter,
             [name] : value
@@ -131,6 +188,8 @@ const MonthlyReport = ()=>{
     useEffect(()=>{
         getRegions();
         getYearForDropdown();
+        getAllStates();
+        getAllDealer();
     },[])
 
 
@@ -227,6 +286,34 @@ const MonthlyReport = ()=>{
                                 ))
                             }
                         </select>
+                        <span className="p-1"><i class="bi bi-chevron-double-right"></i></span>
+                        <select
+                            className="form-select select-custom ms-1"
+                            value={compYear}
+                            name="compYear"
+                            onChange={handleChange("compYear")}
+                        >
+                            <option value="">--Select Year--</option>
+                            {
+                                getYears.map((items,idx)=>(
+                                    <option value={items.year} key={idx}>{items.year}</option>
+                                ))
+                            }
+                        </select>
+                        
+                        <select
+                            className="form-select select-custom ms-1"
+                            value={compMonth}
+                            name="compMonth"
+                            onChange={handleChange("compMonth")}
+                        >
+                            <option value="">--Select Month--</option>
+                            {
+                                getMonths.map((items,idx)=>(
+                                    <option value={items.id} key={idx}>{items.text}</option>
+                                ))
+                            }
+                        </select>
                         <select 
                             className="form-select select-custom ms-1"
                             value={region}
@@ -240,7 +327,30 @@ const MonthlyReport = ()=>{
                             ))
                             }
                         </select>
-
+                        <select 
+                        className="form-select select-custom ms-1"
+                        value={states}
+                        name="states"
+                        onChange={handleChange("states")}>
+                          <option value="">--Select State--</option>
+                          {
+                          getStates.map((items, idx)=>(
+                            <option value={items.id} key={idx}>{items.text}</option>
+                          ))
+                        }
+                      </select>
+                      <select 
+                        className="form-select select-custom ms-1"
+                        value={dealer}
+                        name="dealer"
+                        onChange={handleChange("dealer")}>
+                          <option value="">--Select Dealer--</option>
+                          {
+                          getDealers.map((items, idx)=>(
+                            <option value={items.id} key={idx}>{items.text}</option>
+                          ))
+                        }
+                      </select>
                         <button className="btn btn-sm btn-primary ms-2" onClick={loadMonthlyChartByFilter}>
                             Filter
                         </button>

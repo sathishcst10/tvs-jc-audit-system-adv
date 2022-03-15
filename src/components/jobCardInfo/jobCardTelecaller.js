@@ -70,12 +70,13 @@ const JobCardCaller = () => {
     const [getJcGapRemarks, setJcGapRemarks] = useState([]);
     const [getGapIdentifiedWMSA, setGapIdentifiedWMSA] = useState([]);
     const [getFilter, setFilter] = useState({
+        "filterStatus":false,
         "region" : "",
         "dealerId" : 0,
         "status" : "",
         "_jobcardNumber" : ""
     });
-    const {region, dealerId, status, _jobcardNumber}=getFilter;
+    const {filterStatus,region, dealerId, status, _jobcardNumber}=getFilter;
     const [getJobCardAudit, setJobCardAudit] = useState(
         {
             "isActive": true,
@@ -465,11 +466,52 @@ const JobCardCaller = () => {
             }
         ).catch((err)=>{console.log(err)});
     }
-
     const handleChangePage = (event, newPage) => {
         Loading(settings);
         setPage(newPage + 1);
-
+        //debugger
+       if(filterStatus){
+          status !== "" ?
+          jobCardInfoService.getJobCardListForTeleCaller({
+              pageNumber : newPage + 1,
+              pageSize,
+              sortOrderBy,
+              sortOrderColumn,
+              filters : {
+                  "region" : region,
+                  "dealerId" : dealerId,
+                  "status" : status === 'true' ? true : false,
+                  "jobcardNumber" : _jobcardNumber
+              }
+          })
+          .then((response) => {
+              setTotalCount(response.data.data.totalCount);
+              setShowJobCards(response.data.data.data);
+              Loading();
+          })
+          .catch((error) =>{console.log(error); Loading();})
+          :
+          
+          jobCardInfoService.getJobCardListForTeleCaller({
+            pageNumber: newPage + 1,
+            pageSize,
+            sortOrderBy,
+            sortOrderColumn,
+            filters : {
+                "region" : region,
+                "dealerId" : dealerId,
+                "jobcardNumber" : _jobcardNumber
+            }
+        })
+            .then((response) => {
+                setTotalCount(response.data.data.totalCount);
+                setShowJobCards(response.data.data.data);
+                Loading();
+            })
+            .catch((error) => { console.log(error); Loading(); });
+          
+       }
+       else{
         jobCardInfoService.getJobCardListForTeleCaller({
             pageNumber: newPage + 1,
             pageSize,
@@ -477,30 +519,106 @@ const JobCardCaller = () => {
             sortOrderColumn,
             filters,
         })
-            .then((response) => {
-                setTotalCount(response.data.data.totalCount);
-                setShowJobCards(response.data.data.data);
-                Loading();
-            })
-            .catch((error) => { console.log(error); Loading(); });
+        .then((response) => {
+            setTotalCount(response.data.data.totalCount);
+            setShowJobCards(response.data.data.data);
+            Loading();
+        })
+        .catch((error) => { console.log(error); Loading(); });
+          
+          }
+      }
+    // const handleChangePage = (event, newPage) => {
+    //     Loading(settings);
+    //     setPage(newPage + 1);
 
-    };
+    //     jobCardInfoService.getJobCardListForTeleCaller({
+    //         pageNumber: newPage + 1,
+    //         pageSize,
+    //         sortOrderBy,
+    //         sortOrderColumn,
+    //         filters,
+    //     })
+    //         .then((response) => {
+    //             setTotalCount(response.data.data.totalCount);
+    //             setShowJobCards(response.data.data.data);
+    //             Loading();
+    //         })
+    //         .catch((error) => { console.log(error); Loading(); });
+
+    // };
 
     const handleChangeRowsPerPage = (event) => {
         Loading(settings);
-        jobCardInfoService.getJobCardListForTeleCaller({
-            pageNumber,
-            pageSize: parseInt(event.target.value, 10),
-            sortOrderBy,
-            sortOrderColumn,
-            filters,
-        })
+        if(filterStatus){
+            status !== "" ?
+            jobCardInfoService.getJobCardListForTeleCaller({
+                pageNumber,
+                pageSize : parseInt(event.target.value, 10),
+                sortOrderBy,
+                sortOrderColumn,
+                filters : {
+                    "region" : region,
+                    "dealerId" : dealerId,
+                    "status" : status === 'true' ? true : false,
+                    "jobcardNumber" : _jobcardNumber
+                }
+            })
             .then((response) => {
                 setTotalCount(response.data.data.totalCount);
                 setShowJobCards(response.data.data.data);
                 Loading();
             })
-            .catch((error) => { console.log(error); Loading(); });
+            .catch((error) =>{console.log(error); Loading();})
+            :
+            jobCardInfoService.getJobCardListForTeleCaller({
+                pageNumber,
+                pageSize:parseInt(event.target.value, 10),
+                sortOrderBy,
+                sortOrderColumn,
+                filters : {
+                    "region" : region,
+                    "dealerId" : dealerId,
+                    "jobcardNumber" : _jobcardNumber
+                }
+            })
+            .then((response) => {
+                setTotalCount(response.data.data.totalCount);
+                setShowJobCards(response.data.data.data);
+                Loading();
+            })
+            .catch((error) =>{console.log(error); Loading();});
+            
+         }
+         else{
+            jobCardInfoService.getJobCardListForTeleCaller({
+                pageNumber,
+                pageSize:parseInt(event.target.value, 10),
+                sortOrderBy,
+                sortOrderColumn,
+                filters,
+            })
+            .then((response) => {
+                setTotalCount(response.data.data.totalCount);
+                setShowJobCards(response.data.data.data);
+                Loading();
+            })
+            .catch((error) =>{console.log(error); Loading();});
+            
+            }
+        // jobCardInfoService.getJobCardListForTeleCaller({
+        //     pageNumber,
+        //     pageSize: parseInt(event.target.value, 10),
+        //     sortOrderBy,
+        //     sortOrderColumn,
+        //     filters,
+        // })
+        //     .then((response) => {
+        //         setTotalCount(response.data.data.totalCount);
+        //         setShowJobCards(response.data.data.data);
+        //         Loading();
+        //     })
+        //     .catch((error) => { console.log(error); Loading(); });
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(1);
 
@@ -534,6 +652,7 @@ const JobCardCaller = () => {
 
         setFilter({
             ...getFilter,
+            "filterStatus" : true,
             [name] : value
         });
     }

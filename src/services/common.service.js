@@ -27,6 +27,9 @@ const getDealersByRegion = (argID)=>{
     return axios.get(APP_API_URL + "/Dealer/DealerDropdownFilterByRegion/" + argID, {headers: authHeader()});
 }
 
+const getStatesByRegion = (argID)=>{
+    return axios.get(APP_API_URL + "/State/StateDropdwonFilterByRegion/" + argID, {headers: authHeader()});
+}
 
 export default {
     getAuditStatus,
@@ -34,5 +37,6 @@ export default {
     getYesNoStatus,
     getJCCategoryStatus,
     getCallResponseStatus,
-    getDealersByRegion
+    getDealersByRegion,
+    getStatesByRegion
 }

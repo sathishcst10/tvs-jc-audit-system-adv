@@ -44,12 +44,13 @@ const JobCardOperator = () => {
     const [ServiceTypes, setServiceTypes] = useState([]);
     const [teleCallers, setTeleCallers] = useState([]);
     const [getFilter, setFilter] = useState({
+        "filterStatus":false,
         "region" : "",
         "dealerId" : 0,
         "status" : "",
         "_jobcardNumber" : ""
     });
-    const {region, dealerId, status, _jobcardNumber}=getFilter;
+    const {region, dealerId, status, _jobcardNumber, filterStatus}=getFilter;
     const { openJobCard, updateJobCard, newJobCard } = jobcardActions;
     const [showJobcards, setShowJobCards] = useState([]);
     const [fileUpload, setFileUpload] = useState({
@@ -383,6 +384,7 @@ const JobCardOperator = () => {
 
         setFilter({
             ...getFilter,
+            "filterStatus" : true,
             [name] : value
         });
         // setAllJobCards({
@@ -478,22 +480,64 @@ const JobCardOperator = () => {
     const handleChangePage = (event, newPage) => {
       Loading(settings);
       setPage(newPage + 1);
-     
-      jobCardInfoService.getJobCardDetailsForOperator({
-        pageNumber : newPage + 1,
-        pageSize,
-        sortOrderBy,
-        sortOrderColumn,
-        filters,
-      })
-      .then((response) => {
-        setTotalCount(response.data.data.totalCount);
-        setShowJobCards(response.data.data.data);
-        Loading();
-      })
-      .catch((error) =>{console.log(error); Loading();});
-      
-    };
+      //debugger
+     if(filterStatus){
+        status !== "" ?
+        jobCardInfoService.getJobCardDetailsForOperator({
+            pageNumber : newPage + 1,
+            pageSize,
+            sortOrderBy,
+            sortOrderColumn,
+            filters : {
+                "region" : region,
+                "dealerId" : dealerId,
+                "status" : status === 'true' ? true : false,
+                "jobcardNumber" : _jobcardNumber
+            }
+        })
+        .then((response) => {
+            setTotalCount(response.data.data.totalCount);
+            setShowJobCards(response.data.data.data);
+            Loading();
+        })
+        .catch((error) =>{console.log(error); Loading();})
+        :
+        jobCardInfoService.getJobCardDetailsForOperator({
+            pageNumber : newPage + 1,
+            pageSize,
+            sortOrderBy,
+            sortOrderColumn,
+            filters : {
+                "region" : region,
+                "dealerId" : dealerId,
+                "jobcardNumber" : _jobcardNumber
+            }
+        })
+        .then((response) => {
+            setTotalCount(response.data.data.totalCount);
+            setShowJobCards(response.data.data.data);
+            Loading();
+        })
+        .catch((error) =>{console.log(error); Loading();});
+        
+     }
+     else{
+        jobCardInfoService.getJobCardDetailsForOperator({
+            pageNumber : newPage + 1,
+            pageSize,
+            sortOrderBy,
+            sortOrderColumn,
+            filters,
+        })
+        .then((response) => {
+            setTotalCount(response.data.data.totalCount);
+            setShowJobCards(response.data.data.data);
+            Loading();
+        })
+        .catch((error) =>{console.log(error); Loading();});
+        
+        }
+    }
     const createNewJobcard = ()=>{
         
         setJobCardActions({
@@ -505,19 +549,75 @@ const JobCardOperator = () => {
     }
     const handleChangeRowsPerPage = (event) => {
       Loading(settings);
-      jobCardInfoService.getJobCardDetailsForOperator({
-        pageNumber,
-        pageSize : parseInt(event.target.value, 10),
-        sortOrderBy,
-        sortOrderColumn,
-        filters,
-      })
-      .then((response) => {
-        setTotalCount(response.data.data.totalCount);
-        setShowJobCards(response.data.data.data);
-        Loading();
-      })
-      .catch((error) =>{console.log(error); Loading();});
+    //   jobCardInfoService.getJobCardDetailsForOperator({
+    //     pageNumber,
+    //     pageSize : parseInt(event.target.value, 10),
+    //     sortOrderBy,
+    //     sortOrderColumn,
+    //     filters,
+    //   })
+    //   .then((response) => {
+    //     setTotalCount(response.data.data.totalCount);
+    //     setShowJobCards(response.data.data.data);
+    //     Loading();
+    //   })
+    //   .catch((error) =>{console.log(error); Loading();});
+      if(filterStatus){
+        status !== "" ?
+        jobCardInfoService.getJobCardDetailsForOperator({
+            pageNumber,
+            pageSize : parseInt(event.target.value, 10),
+            sortOrderBy,
+            sortOrderColumn,
+            filters : {
+                "region" : region,
+                "dealerId" : dealerId,
+                "status" : status === 'true' ? true : false,
+                "jobcardNumber" : _jobcardNumber
+            }
+        })
+        .then((response) => {
+            setTotalCount(response.data.data.totalCount);
+            setShowJobCards(response.data.data.data);
+            Loading();
+        })
+        .catch((error) =>{console.log(error); Loading();})
+        :
+        jobCardInfoService.getJobCardDetailsForOperator({
+            pageNumber,
+            pageSize:parseInt(event.target.value, 10),
+            sortOrderBy,
+            sortOrderColumn,
+            filters : {
+                "region" : region,
+                "dealerId" : dealerId,
+                "jobcardNumber" : _jobcardNumber
+            }
+        })
+        .then((response) => {
+            setTotalCount(response.data.data.totalCount);
+            setShowJobCards(response.data.data.data);
+            Loading();
+        })
+        .catch((error) =>{console.log(error); Loading();});
+        
+     }
+     else{
+        jobCardInfoService.getJobCardDetailsForOperator({
+            pageNumber,
+            pageSize:parseInt(event.target.value, 10),
+            sortOrderBy,
+            sortOrderColumn,
+            filters,
+        })
+        .then((response) => {
+            setTotalCount(response.data.data.totalCount);
+            setShowJobCards(response.data.data.data);
+            Loading();
+        })
+        .catch((error) =>{console.log(error); Loading();});
+        
+        }
       setRowsPerPage(parseInt(event.target.value, 10));
       setPage(1);
   

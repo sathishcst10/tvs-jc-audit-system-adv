@@ -332,7 +332,6 @@ const {error, loading, update} = values;
   const handleChange = (name) => (event) => {
     const value = event.target.value;
     //formData = new FormData()
-
     //formData.set(name, value);
     setUsers({ ...users, [name]: value });
     //console.log(dealer);
@@ -614,7 +613,7 @@ const filterData = () => {
                   </select>
                 </div>
                 {
-                  roleId === 3 &&
+                  roleId == 3 &&
                 
                   <div className="mb-2">
                     <label htmlFor="dealerName" className="form-label">
