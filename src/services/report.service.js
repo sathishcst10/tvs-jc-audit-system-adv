@@ -18,7 +18,9 @@ const getMonth = (argItems) =>{
 const getJobcardAuditReport = (argItems)=>{   
     return axios.post(APP_API_URL + "/Report/AuditReport", argItems, { headers : authHeader() });
 }
-
+const getJobcardAuditPercentageReport = (argItems)=>{   
+    return axios.post(APP_API_URL + "/Report/AuditReportPercentage", argItems, { headers : authHeader() });
+}
 const getJobcardComplaintReport = (argItems)=>{   
     return axios.post(APP_API_URL + "/Report/ComplaintReport", argItems, { headers : authHeader() });
 }
@@ -32,5 +34,6 @@ export default {
     getMonth,
     getJobcardAuditReport,
     getJobcardComplaintReport,
-    getMonthlyReport
+    getMonthlyReport,
+    getJobcardAuditPercentageReport
 }

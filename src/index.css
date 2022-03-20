@@ -118,6 +118,12 @@ table.table-custom thead th{
   color: rgb(236 240 241 / 85%);
   white-space: nowrap;
 }
+table.table-custom.table-custom-2 thead th {
+  white-space: pre-wrap !important;
+}
+table.table-custom.table-custom-2 tbody td {
+  text-align: center;
+}
 table.table-custom tbody tr{
   cursor: pointer;
 }
@@ -261,7 +267,7 @@ p.secondary-text.mb-0 {
 .badge.bg-dark{
   background-color: rgb(33 37 41 / 15%) !important;
   border: 1px solid rgb(33 37 41 / 15%);
-  color: #212529;
+  color: #212529; 
 }
 
 .badge.bg-primary{
@@ -269,7 +275,10 @@ p.secondary-text.mb-0 {
   border: 1px solid rgb(1  67 163 / 12%);
   color: #0143a3;
 }
-
+.text-wrap{
+  text-align: left;
+  white-space: pre-wrap
+}
 /* .btn i.bi{
   font-size: 1.15rem;
 } */

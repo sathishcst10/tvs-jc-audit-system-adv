@@ -22,6 +22,7 @@ import JobCardInformation from "./components/jobCardInfo";
 import AuditReport from "./components/reports/auditReport";
 import ComplaintReport from "./components/reports/complaintReport";
 import MonthlyReport from "./components/reports/monthlyReport";
+import AuditPercentageReport from "./components/reports/auditPercentageReports";
 
 
 function App() {
@@ -78,6 +79,7 @@ function App() {
         {/* Reports */}
 
         <Route path="/reports/AuditReports" element={<AuditReport/>}/>
+        <Route path="/reports/AuditPercentageReports" element={<AuditPercentageReport/>}/>
         <Route path="/reports/ComplaintReport" element={<ComplaintReport/>}/>
         <Route path="/reports/MonthlyReport" element={<MonthlyReport/>}/>
       </Routes>      

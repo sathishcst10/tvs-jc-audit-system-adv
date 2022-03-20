@@ -800,20 +800,41 @@ const JobCardCaller = () => {
         }
     };
     const removeTags = (indexToRemove, items) => {
+        debugger;
         if (items === "CustomerVoice") {
             setTagDesc([...getTagDesc.filter((_, index) => index !== indexToRemove)]);
+            setSaveJobCard({
+                ...saveJobCard,
+                customerVoice: [...customerVoice.filter((_, index) => index !== indexToRemove)]
+            });
         }
         else if (items === "InitialObs") {
             setInitialObs([...getInitialObs.filter((_, index) => index !== indexToRemove)]);
+            setSaveJobCard({
+                ...saveJobCard,
+                initialObservation: [...initialObservation.filter((_, index) => index !== indexToRemove)]
+            })
         }
         else if (items === "FinalFindings") {
             setFinalFindings([...getFinalFindings.filter((_, index) => index !== indexToRemove)]);
+            setSaveJobCard({
+                ...saveJobCard,
+                finalFinding: [...finalFinding.filter((_, index) => index !== indexToRemove)]
+            });
         }
         else if (items === "ActionTaken") {
             setActionTaken([...getActionTaken.filter((_, index) => index !== indexToRemove)]);
+            setSaveJobCard({
+                ...saveJobCard,
+                actionTaken: [...actionTaken.filter((_, index) => index !== indexToRemove)]
+            });
         }
         else if (items === "DealerObs") {
             setDealerObs([...getDealerObs.filter((_, index) => index !== indexToRemove)]);
+            setSaveJobCard({
+                ...saveJobCard,
+                dealerObservation: [...dealerObservation.filter((_, index) => index !== indexToRemove)]
+            });
         }
         else if(items === "CustomerVoiceByWM"){
             setCustomerVoiceByWMHO([...getCustomerVoiceByWMHO.filter((_, index) => index !== indexToRemove)]);
@@ -828,15 +849,17 @@ const JobCardCaller = () => {
 
     const handleChange = (name) => (event) => {
         const value = event.target.value;
-        // setSaveJobCard({
-        //     ...saveJobCard,
-        //     [name]: value
-        // });
+        setSaveJobCard({
+            ...saveJobCard,
+            [name]: value
+        });
         setJobCardAudit({
             ...getJobCardAudit,
             [name] : value
         })
     }
+
+
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -921,26 +944,26 @@ const JobCardCaller = () => {
                     console.log(response);
                     if(response.data.success){
                         
-                        toast.current.show(
-                            {
-                                severity: 'success',
-                                summary: 'Success Message',
-                                detail: response.data.message,
-                                life: 3000
-                            }
-                        );
+                        // toast.current.show(
+                        //     {
+                        //         severity: 'success',
+                        //         summary: 'Success Message',
+                        //         detail: response.data.message,
+                        //         life: 3000
+                        //     }
+                        // );
                         getAllJobCardsList();
                         closeForm();
                     }else{
                         
-                        toast.current.show(
-                            {
-                                severity: 'warn',
-                                summary: 'Warning Message',
-                                detail: response.data.message,
-                                life: 3000
-                            }
-                        );
+                        // toast.current.show(
+                        //     {
+                        //         severity: 'warn',
+                        //         summary: 'Warning Message',
+                        //         detail: response.data.message,
+                        //         life: 3000
+                        //     }
+                        // );
                     }
                     Loading();
                 }
@@ -949,7 +972,68 @@ const JobCardCaller = () => {
                     Loading()
                     console.log(err);
                 }
-            )
+            );
+
+            //Previous Information to be updated....
+            debugger
+            jobCardInfoService.updateJobCard({
+                jcid,
+                userID,
+                dealerID,
+                jcNumber,
+                jobcardNumber,
+                jcBack,
+                jcFront,
+                isDataEntryTaken,
+                dataEntryTakenBy,
+                isDataEntryCompleted : true,
+                isTelecallCompleted,
+                dmsNumber,
+                engineFrameNumber,
+                modelID,
+                vehicleNumber,
+                kMs,
+                serviceDate,
+                customerName,
+                customerMobile,
+                customerAddress,
+                saName,
+                technicianName,
+                customerVoice: customerVoice !== "" ? JSON.stringify(customerVoice) : "[]",
+                initialObservation: initialObservation !== "" ? JSON.stringify(initialObservation) : "[]",
+                finalFinding: finalFinding !== "" ? JSON.stringify(finalFinding) : "[]",
+                actionTaken: actionTaken !== "" ? JSON.stringify(actionTaken) : "[]",
+                dealerObservation : dealerObservation !== "" ? JSON.stringify(dealerObservation) : "[]",
+                serviceTypeID,
+                isActive,
+                assignTeleCallerID
+            }).then(
+                (response)=>{
+                    console.log(response);
+                    if(response.data.success){
+                        toast.current.show(
+                            {
+                                severity: 'success',
+                                summary: 'Success Message',
+                                detail: response.data.message,
+                                life: 3000
+                            }
+                        );
+                        // Loading();
+                        closeForm();
+                    }else{
+                        toast.current.show(
+                            {
+                                severity: 'warn',
+                                summary: 'Warning Message',
+                                detail: response.data.message,
+                                life: 3000
+                            }
+                        );
+                        //Loading();
+                    }
+                }
+            ).catch((err)=>{console.log(err); Loading()})
         }
     }
 
@@ -1280,7 +1364,7 @@ const JobCardCaller = () => {
                             <div className="col-12">
                                 <div className="card shadow-sm">
                                     <div className="card-body p-1">
-                                        {/* <form onSubmit={handleSubmit}> */}
+                                        {/* <form> */}
                                             <div className="d-flex justify-content-end pb-1 shadow-sm">
                                                 <button
                                                     className="btn btn-sm btn-outline-danger me-1"
@@ -1316,7 +1400,6 @@ const JobCardCaller = () => {
                                                                 className="form-control"
                                                                 name="customerName"
                                                                 value={customerName}
-                                                                disabled='disabled'
                                                                 onChange={handleChange("customerName")}
                                                             />
                                                         </div>
@@ -1326,7 +1409,6 @@ const JobCardCaller = () => {
                                                                 className="form-control"
                                                                 name="customerMobile"
                                                                 value={customerMobile}
-                                                                disabled='disabled'
                                                                 onChange={handleChange("customerMobile")}
                                                             />
                                                         </div>
@@ -1336,7 +1418,6 @@ const JobCardCaller = () => {
                                                                 className="form-control"
                                                                 name="customerAddress"
                                                                 value={customerAddress}
-                                                                disabled='disabled'
                                                                 onChange={handleChange("customerAddress")}
                                                             />
                                                         </div>
@@ -1349,7 +1430,6 @@ const JobCardCaller = () => {
                                                                 name="modelID"
                                                                 value={modelID}
                                                                 onChange={handleChange("modelID")}
-                                                                disabled='disabled'
                                                             >
                                                                 <option value={-1}>--Select model--</option>
                                                                 {
@@ -1366,7 +1446,6 @@ const JobCardCaller = () => {
                                                                 className="form-control"
                                                                 name="engineFrameNumber"
                                                                 value={engineFrameNumber}
-                                                                disabled='disabled'
                                                                 onChange={handleChange("engineFrameNumber")}
                                                             />
                                                         </div>
@@ -1376,7 +1455,6 @@ const JobCardCaller = () => {
                                                                 className="form-control"
                                                                 name="kMs"
                                                                 value={kMs}
-                                                                disabled='disabled'
                                                                 onChange={handleChange("kMs")}
                                                             />
                                                         </div>
@@ -1389,7 +1467,6 @@ const JobCardCaller = () => {
                                                                 className="form-control"
                                                                 name="dmsNumber"
                                                                 value={dmsNumber}
-                                                                disabled='disabled'
                                                                 onChange={handleChange("dmsNumber")}
                                                             />
                                                         </div>
@@ -1399,7 +1476,6 @@ const JobCardCaller = () => {
                                                                 className="form-control"
                                                                 name="vehicleNumber"
                                                                 value={vehicleNumber}
-                                                                disabled='disabled'
                                                                 onChange={handleChange("vehicleNumber")}
                                                             />
                                                         </div>
@@ -1416,7 +1492,6 @@ const JobCardCaller = () => {
                                                                 id="basic"
                                                                 value={serviceDate}
                                                                 name="serviceDate"
-                                                                disabled='disabled'
                                                                 onChange={handleChange("serviceDate")}
                                                             />
                                                         </div>
@@ -1429,7 +1504,6 @@ const JobCardCaller = () => {
                                                                 name="serviceTypeID"
                                                                 value={serviceTypeID}
                                                                 onChange={handleChange("serviceTypeID")}
-                                                                disabled='disabled'
                                                             >
                                                                 <option value={-1}>--Select Service type--</option>
                                                                 {
@@ -1447,7 +1521,6 @@ const JobCardCaller = () => {
                                                                 className="form-control"
                                                                 name="saName"
                                                                 value={saName}
-                                                                disabled='disabled'
                                                                 onChange={handleChange("saName")}
                                                             />
                                                         </div>
@@ -1457,7 +1530,6 @@ const JobCardCaller = () => {
                                                                 className="form-control"
                                                                 name="technicianName"
                                                                 value={technicianName}
-                                                                disabled='disabled'
                                                                 onChange={handleChange("technicianName")}
                                                             />
                                                         </div>
@@ -1488,7 +1560,6 @@ const JobCardCaller = () => {
                                                                         type="text"
                                                                         placeholder="Press enter"
                                                                         name="customerVoice"
-                                                                        disabled='disabled'
                                                                         onKeyUp={event => event.key === "Enter" ? addTags(event, "CustomerVoice") : null}
 
                                                                     />
@@ -1518,7 +1589,6 @@ const JobCardCaller = () => {
                                                                     <input
                                                                         type="text"
                                                                         placeholder="Press enter"
-                                                                        disabled='disabled'
                                                                         onKeyUp={event => event.key === "Enter" ? addTags(event, "InitialObs") : null}
                                                                     />
                                                                 </div>
@@ -1547,7 +1617,6 @@ const JobCardCaller = () => {
                                                                     <input
                                                                         type="text"
                                                                         placeholder="Press enter"
-                                                                        disabled='disabled'
                                                                         onKeyUp={event => event.key === "Enter" ? addTags(event, "FinalFindings") : null}
                                                                     />
                                                                 </div>
@@ -1579,7 +1648,6 @@ const JobCardCaller = () => {
                                                                     <input
                                                                         type="text"
                                                                         placeholder="Press enter"
-                                                                        disabled='disabled'
                                                                         onKeyUp={event => event.key === "Enter" ? addTags(event, "ActionTaken") : null}
                                                                     />
                                                                 </div>
@@ -1608,7 +1676,6 @@ const JobCardCaller = () => {
                                                                     <input
                                                                         type="text"
                                                                         placeholder="Press enter"
-                                                                        disabled='disabled'
                                                                         onKeyUp={event => event.key === "Enter" ? addTags(event, "DealerObs") : null}
                                                                     />
                                                                 </div>

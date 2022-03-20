@@ -159,6 +159,16 @@ const MasterLayout = ({ title = "", desc = "", pageMap = [], children }) => {
                         Audit Report
                       </Link>
                     </li>
+                    {
+                      currentUser.data.roles.roleName !== 'Dealers' ? (
+                        <li>
+                          <Link className="dropdown-item" to="/reports/AuditPercentageReports">
+                            Audit Report Percentage
+                          </Link>
+                        </li>
+                      ):(<></>)
+                    }
+                    
                     <li>
                       <Link className="dropdown-item" to="/reports/ComplaintReport">
                         Complaint Report

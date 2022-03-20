@@ -48,6 +48,9 @@ const JobCardAuditTeam = () =>{
         openJobcard : false,
         updateJobCard : false
     });
+    const [getCustomerVoiceByWMHO, setCustomerVoiceByWMHO] = useState([]);
+    const [getJcGapRemarks, setJcGapRemarks] = useState([]);
+    const [getGapIdentifiedWMSA, setGapIdentifiedWMSA] = useState([]);
     const [jobCardDetails, setJobCardDetails] = useState({
         "jcid": 0,
         "userID": 0,
@@ -92,7 +95,58 @@ const JobCardAuditTeam = () =>{
         "gapIdendtified": "",
         "status": 0,
         "statusName": ""
-    })
+    });
+    const [getJobCardAudit, setJobCardAudit] = useState(
+        {
+            "isActive": true,
+            "jcaid": 0,
+            "jcid": 0,
+            "jcCategory": 0,
+            "customerVoiceByWMHO": "",
+            "gapIdentifiedWMSA": "",
+            "jcStatus": 0,
+            "vps": 0,
+            "vpsReason1": 0,
+            "vpsReason2": 0,
+            "vpsReason3": 0,
+            "customerFeedbackDate": "",
+            "newProblem": 0,
+            "problemNotCaptured": 0,
+            "sameProblemInJC": 0,
+            "jcGapRemarks": "",
+            "auditStatus": 0,
+            "callResponse": 0,
+            "createdDate": "",
+            "createdBy": 0,
+            "modifiedDate": "",
+            "modifiedBy": 0,
+            "isActive": true,
+            "isDeleted": true
+        }
+    );
+    const {
+        jcaid,       
+        jcCategory,
+        customerVoiceByWMHO,
+        gapIdentifiedWMSA,
+        jcStatus,
+        vps,
+        vpsReason1,
+        vpsReason2,
+        vpsReason3,
+        customerFeedbackDate,
+        newProblem,
+        problemNotCaptured,
+        sameProblemInJC,
+        jcGapRemarks,
+        auditStatus,
+        callResponse,
+        createdDate,
+        createdBy,
+        modifiedDate,
+        modifiedBy,
+    
+    } = getJobCardAudit
     const { pageNumber, pageSize, sortOrderBy, sortOrderColumn, filters } = getRequest;
     const { openJobcard, updateJobCard } = jobcardActions;
     const {
@@ -315,10 +369,9 @@ const JobCardAuditTeam = () =>{
     }
     const changeItemsWM=(argItems)=>{
         console.log(argItems);
-        let items = JSON.parse(argItems.customerVoiceByWMHO).map((items,idx)=>(
-            <span className="badge bg-dark me-1" key={idx}>{items}</span>
-        ));
-        console.log(items);
+        // let items = JSON.parse(argItems.customerVoiceByWMHO).map((items,idx)=>(
+        //     <span className="badge bg-dark me-1" key={idx}>{items}</span>
+        // ));
         
             if( JSON.parse(argItems.customerVoiceByWMHO).length !== 0){
                 return <>
@@ -352,10 +405,10 @@ const JobCardAuditTeam = () =>{
     }
     const changeItemsGapIden=(argItems)=>{
         console.log(argItems);
-        let items = JSON.parse(argItems.gapIdentifiedWMSA).map((items,idx)=>(
-            <span className="badge bg-dark me-1" key={idx}>{items}</span>
-        ));
-        console.log(items);
+        // let items = JSON.parse(argItems.gapIdentifiedWMSA).map((items,idx)=>(
+        //     <span className="badge bg-dark me-1" key={idx}>{items}</span>
+        // ));
+        
          
         
             if(JSON.parse(argItems.gapIdentifiedWMSA).length > 0){
@@ -392,10 +445,10 @@ const JobCardAuditTeam = () =>{
     }
     const changeItemsJCGap=(argItems)=>{
         console.log(argItems);
-        let items = JSON.parse(argItems.jcGapRemarks).map((items,idx)=>(
-            <span className="badge bg-dark me-1" key={idx}>{items}</span>
-        ));
-        console.log('dsadsa',items);
+        // let items = JSON.parse(argItems.jcGapRemarks).map((items,idx)=>(
+        //     <span className="badge bg-dark me-1" key={idx}>{items}</span>
+        // ));
+        // console.log('dsadsa',items);
         if(JSON.parse(argItems.jcGapRemarks).length > 0){
             return  <>
                         <span className="badge captionTxt bg-dark me-1">
@@ -507,8 +560,56 @@ const JobCardAuditTeam = () =>{
 
     const showJobCardDetails = (argID) =>{
         Loading(settings);
+
+
+        jobCardInfoService.getJobCardListForAudit({
+            pageNumber, 
+            pageSize, 
+            sortOrderBy, 
+            sortOrderColumn, 
+            filters : {
+                "jcid" : argID 
+            }
+        }).then(
+            (response)=>{
+                Loading();
+                console.log("deep test",response);     
+                setCustomerVoiceByWMHO(JSON.parse(response.data.data.data[0].customerVoiceByWMHO));
+                setGapIdentifiedWMSA(JSON.parse(response.data.data.data[0].gapIdentifiedWMSA));
+                setJcGapRemarks(JSON.parse(response.data.data.data[0].jcGapRemarks));
+                setJobCardAudit({
+                    ...getJobCardAudit,
+                    isActive : response.data.data.data[0].isActive,
+                    jcaid : response.data.data.data[0].jcaid,
+                    jcid : argID,
+                    jcCategory : response.data.data.data[0].jcCategoryStatus,
+                    customerVoiceByWMHO : response.data.data.data[0].customerVoiceByWMHO !== "" ? JSON.parse(response.data.data.data[0].customerVoiceByWMHO) : [],
+                    gapIdentifiedWMSA : response.data.data.data[0].gapIdentifiedWMSA !== "" ? JSON.parse(response.data.data.data[0].gapIdentifiedWMSA) : [],
+                    jcStatus : response.data.data.data[0].jcStatus,
+                    vps : response.data.data.data[0].vpsStatus,
+                    vpsReason1 : response.data.data.data[0].vpsReason1,
+                    vpsReason2 : response.data.data.data[0].vpsReason2,
+                    vpsReason3 : response.data.data.data[0].vpsReason3,
+                    customerFeedbackDate : new Date(response.data.data.data[0].customerFeedbackDate),
+                    newProblem : response.data.data.data[0].newProblemStatus,
+                    problemNotCaptured : response.data.data.data[0].problemNotCapturedStatus,
+                    sameProblemInJC : response.data.data.data[0].sameProblemInJCStatus,
+                    jcGapRemarks : response.data.data.data[0].jcGapRemarks !== "" ? JSON.parse(response.data.data.data[0].jcGapRemarks) : [],
+                    auditStatus : response.data.data.data[0].auditStatus,
+                    callResponse : response.data.data.data[0].callResponseStatus    
+                })           
+            }
+        ).catch(
+            (err)=>{
+                Loading();
+                console.error(err);
+            }
+        )
+
+
         jobCardInfoService.getJobCardDataById(argID).then(
             (response)=>{
+                
                 console.log("DataByID", response.data.data.data[0]);
 
                 setJobCardDetails({
@@ -555,7 +656,8 @@ const JobCardAuditTeam = () =>{
                     gapAggregateName: response.data.data.data[0].gapAggregateName,
                     gapIdendtified: response.data.data.data[0].gapIdendtified,
                     status: response.data.data.data[0].status,
-                    statusName: response.data.data.data[0].statusName
+                    statusName: response.data.data.data[0].statusName,
+                    // customerVoiceByWMHO : response.data.data.data[0].customerVoiceByWMHO !== "" ? JSON.parse(response.data.data.data[0].customerVoiceByWMHO): [],
                 });
                 console.log(customerVoice);
                 setJobCardActions({
@@ -568,8 +670,40 @@ const JobCardAuditTeam = () =>{
                 console.log(err)
             }
         )
+
+
+        // jobCardInfoService.getJobCardAuditByID(argID).then(
+        //     (response)=>{
+        //         console.log("Audit", response);
+        //         setCustomerVoiceByWMHO(JSON.parse(response.data.data.customerVoiceByWMHO));
+        //         setGapIdentifiedWMSA(JSON.parse(response.data.data.gapIdentifiedWMSA));
+        //         setJcGapRemarks(JSON.parse(response.data.data.jcGapRemarks));
+        //         setJobCardAudit({
+        //             ...getJobCardAudit,
+        //             isActive : response.data.data.isActive,
+        //             jcaid : response.data.data.jcaid,
+        //             jcid : argID,
+        //             jcCategory : response.data.data.jcCategory,
+        //             customerVoiceByWMHO : response.data.data.customerVoiceByWMHO !== "" ? JSON.parse(response.data.data.customerVoiceByWMHO) : [],
+        //             gapIdentifiedWMSA : response.data.data.gapIdentifiedWMSA !== "" ? JSON.parse(response.data.data.gapIdentifiedWMSA) : [],
+        //             jcStatus : response.data.data.jcStatus,
+        //             vps : response.data.data.vps,
+        //             vpsReason1 : response.data.data.vpsReason1,
+        //             vpsReason2 : response.data.data.vpsReason2,
+        //             vpsReason3 : response.data.data.vpsReason3,
+        //             customerFeedbackDate : new Date(response.data.data.customerFeedbackDate),
+        //             newProblem : response.data.data.newProblem,
+        //             problemNotCaptured : response.data.data.problemNotCaptured,
+        //             sameProblemInJC : response.data.data.sameProblemInJC,
+        //             jcGapRemarks : response.data.data.jcGapRemarks !== "" ? JSON.parse(response.data.data.jcGapRemarks) : [],
+        //             auditStatus : response.data.data.auditStatus,
+        //             callResponse : response.data.data.callResponse    
+        //         })
+        //     }
+        // ).catch((err)=>{console.log(err)});
+
              
-        Loading();
+        //Loading();
     }
     const closeForm = ()=>{
         setJobCardActions({
@@ -943,288 +1077,7 @@ const JobCardAuditTeam = () =>{
                                             Export Data
                                         </button>
                                     </div> */}
-                                    <div className="table-responsive d-none">
-                                        <table className="table table-striped table-hover table-custom">
-                                            <thead className="table-dark">                                        
-                                                <tr>
-                                                    <th>
-                                                        JC ID
-                                                    </th>
-                                                    <th>
-                                                        Job Card Number
-                                                    </th>
-                                                    <th>
-                                                        Audit Date
-                                                    </th>
-                                                    <th>
-                                                        Service Date
-                                                    </th>
-                                                    <th>
-                                                        Dealer Code
-                                                    </th>
-                                                    <th>
-                                                        Dealer Name
-                                                    </th>
-                                                    <th>
-                                                        Dealer Location
-                                                    </th>
-                                                    <th>
-                                                        Area Office
-                                                    </th>
-                                                    <th>
-                                                        Zone
-                                                    </th>
-                                                    <th>
-                                                        DMS No.
-                                                    </th>
-                                                   
-                                                    <th>
-                                                        Frame Number
-                                                    </th>
-                                                    <th>
-                                                        Vehicle Reg.No
-                                                    </th>
-                                                    <th>
-                                                        Model    
-                                                    </th>
-                                                    <th>
-                                                        KMS Run
-                                                    </th>
-                                                    <th>
-                                                        Jobcard Date
-                                                    </th>
-                                                    <th>
-                                                        Type of Service
-                                                    </th>
-                                                    <th>
-                                                        Customer Name
-                                                    </th>                                                        
-                                                    <th>
-                                                        Contact No.
-                                                    </th>
-                                                    <th>
-                                                        S/A Name
-                                                    </th>
-                                                    <th>
-                                                        Technician Name
-                                                    </th>
-                                                    <th>
-                                                        JC Category(Live/Closed)
-                                                    </th>
-                                                    <th>
-                                                        Customer Voice
-                                                    </th>
-                                                    <th>
-                                                        Initial Observation
-                                                    </th>
-                                                    <th>
-                                                        Final Finding
-                                                    </th>
-                                                    <th>
-                                                        Action Taken
-                                                    </th>
-                                                    <th>
-                                                        Understanding of Customer Voice by WM/HO 
-                                                        Probing is Improper
-                                                    </th>
-                                                    <th>
-                                                        Gap Identified Between WM/SA or Tech.
-                                                    </th>
-                                                    <th>
-                                                        JC (OK/Not OK)
-                                                    </th>
-                                                    <th>
-                                                        Vehicle Performance After Service(VPS)
-                                                    </th>
-                                                    <th>
-                                                        Reason 1 For VPS NOT OK
-                                                    </th>
-                                                    <th>
-                                                        Reason 2 For VPS NOT OK
-                                                    </th>
-                                                    <th>
-                                                        Reason 3 For VPS NOT OK
-                                                    </th>
-                                                    <th>
-                                                        Customer Feedback Date
-                                                    </th>
-                                                    <th>
-                                                        No.of Days(Service to Feedback)
-                                                    </th>
-                                                    <th>
-                                                        New Problem Reported Aftr Service
-                                                    </th>
-                                                    <th>
-                                                        Customer Told Problem Not Capturd
-                                                    </th>
-                                                    <th>
-                                                        Same Problem IN JC(Y/N)
-                                                    </th>
-                                                    <th>
-                                                        JC Gap Remarks
-                                                    </th>
-                                                    <th>
-                                                        Audit Status
-                                                    </th>
-                                                    <th>
-                                                        Audit Done By
-                                                    </th>
-                                                    <th>
-                                                        Call Response By Customer
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {
-                                                    jobCardList.map((items, idx)=>(
-                                                        <tr key={idx} onClick={()=>showJobCardDetails(items.jcid)}>
-                                                            <td>{items.jcNumber}</td>
-                                                            <td>{items.jobcardNumber}</td>
-                                                            <td>{new Date(items.auditDate).toLocaleDateString() }</td>
-                                                            <td>{new Date(items.serviceDate).toLocaleDateString()}</td>
-                                                            <td>{items.dealerCode}</td>
-                                                            <td>
-                                                                {items.dealerName}
-                                                            </td>
-                                                            <td>{items.dealerLocation}</td>
-                                                            <td>{items.dealerState}</td>
-                                                            <td>{items.dealerZone}</td>
-                                                            <td>{items.dmsNumber}</td>
-                                                           
-                                                            <td>{items.engineFrameNumber}</td>
-                                                            <td>{items.vehicleNumber}</td>
-                                                            <td>{items.modelName}</td>
-                                                            <td>{items.kMs}</td>
-                                                            <td>{new Date(items.auditDate).toLocaleDateString()}</td>
-                                                            <td>{items.serviceTypeName}</td>
-                                                            <td>{items.customerName}</td>
-                                                            <td>{items.customerMobile}</td>
-                                                            <td>{items.saName}</td>
-                                                            <td>{items.technicianName}</td>
-                                                            <td>{items.jcCategoryStatus}</td>                                                            
-                                                            <td>
-                                                                {
-                                                                    JSON.parse(items.customerVoice).map((_items, index)=>(
-                                                                        <span key={index} className="badge bg-dark mx-1 mb-1">
-                                                                            {_items}
-                                                                        </span>
-                                                                    ))
-                                                                }
-                                                            </td>
-                                                            <td>
-                                                                {
-                                                                    JSON.parse(items.initialObservation).map((_items, index)=>(
-                                                                        <span key={index} className="badge bg-dark mx-1 mb-1">
-                                                                            {_items}
-                                                                        </span>
-                                                                    ))
-                                                                }
-                                                            </td>
-                                                            <td>
-                                                                {
-                                                                    JSON.parse(items.finalFinding).map((_items, index)=>(
-                                                                        <span key={index} className="badge bg-dark mx-1 mb-1">
-                                                                            {_items}
-                                                                        </span>
-                                                                    ))
-                                                                }
-                                                            </td>
-                                                            <td>
-                                                                {
-                                                                    JSON.parse(items.actionTaken).map((_items, index)=>(
-                                                                        <span key={index} className="badge bg-dark mx-1 mb-1">
-                                                                            {_items}
-                                                                        </span>
-                                                                    ))
-                                                                }
-                                                            </td>
-                                                            <td>
-                                                                {
-                                                                    JSON.parse(items.customerVoiceByWMHO).map((_items, index)=>(
-                                                                        <span key={index} className="badge bg-dark mx-1 mb-1">
-                                                                            {_items}
-                                                                        </span>
-                                                                    ))
-                                                                }
-                                                            </td>
-                                                            <td>
-                                                                {
-                                                                    JSON.parse(items.gapIdentifiedWMSA).map((_items, index)=>(
-                                                                        <span key={index} className="badge bg-dark mx-1 mb-1">
-                                                                            {_items}
-                                                                        </span>
-                                                                    ))
-                                                                }
-                                                            </td>
-                                                            <td>
-                                                                {
-                                                                   items.jcAuditStatus
-                                                                }
-                                                            </td>
-                                                            <td>
-                                                                {
-                                                                    items.vpsStatus
-                                                                }
-                                                            </td>
-                                                            <td>
-                                                                {items.vpsReason1}
-                                                            </td>
-                                                            <td>
-                                                                {items.vpsReason2}
-                                                            </td>
-                                                            <td>
-                                                                {items.vpsReason3}
-                                                            </td>
-                                                            <td>
-                                                                {items.customerFeedbackDate}
-                                                            </td>
-                                                            <td>
-                                                                {items.feedbackAgeing}
-                                                            </td>
-                                                            <td>
-                                                                {items.newProblemStatus}
-                                                            </td>
-                                                            <td>
-                                                                {items.problemNotCapturedStatus}
-                                                            </td>
-                                                            <td>
-                                                                {items.sameProblemInJCStatus}
-                                                            </td>
-                                                            <td>
-                                                                {
-                                                                    JSON.parse(items.jcGapRemarks).map((_items, index)=>(
-                                                                        <span key={index} className="badge bg-dark mx-1 mb-1">
-                                                                            {_items}
-                                                                        </span>
-                                                                    ))
-                                                                }
-                                                            </td>
-                                                            <td>
-                                                                {items.auditStatus}
-                                                            </td>
-                                                            <td>
-                                                                {items.auditPerson}
-                                                            </td>
-                                                            <td>
-                                                                {items.callResponseStatus}
-                                                            </td>
-                                                            {/* <td>
-                                                                {
-                                                                    items.status === 'Satisfied' ?
-                                                                    <span className="badge bg-success">{items.status}</span>
-                                                                    :
-                                                                    items.status === 'Not Satisfied' ?
-                                                                    <span className="badge bg-danger">{items.satisfied}</span>
-                                                                    :
-                                                                    <span className="badge bg-danger">{items.status}</span>
-                                                                }
-                                                            </td> */}
-                                                        </tr>
-                                                    ))
-                                                }
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                   
 
                                     <div>
                                         <DataTable value={jobCardList} scrollable scrollHeight="400px"  scrollDirection="both" className="mt-3">
@@ -1560,12 +1413,6 @@ const JobCardAuditTeam = () =>{
                                                 </div>
                                             </div>
                                             
-                                            
-                                        </div>
-
-                                        <div className="row g-1">
-                                           
-                                            
                                             <div className="col-3">
                                                 <label className="form-label">
                                                     Jobcard Attachments
@@ -1595,7 +1442,169 @@ const JobCardAuditTeam = () =>{
                                                 </div>
                                                 
                                             </div>
-                                          
+                                        </div>
+
+                                        <div className="row g-1">
+                                            <div className="col-3">
+                                                <label className="form-label">
+                                                    Job Card Category
+                                                </label>
+                                                <input 
+                                                    value={jcCategory} 
+                                                    className="form-control"  
+                                                    disabled
+                                                />
+                                            </div>
+                                            <div className="col-3">
+                                                <label className="form-label">
+                                                    Understanding of Customer Voice by WM/HO
+                                                </label>
+                                                <div className="form-control disabled">
+                                                    {
+                                                        customerVoiceByWMHO.length !== 0 ? (
+                                                            customerVoiceByWMHO.map((items, idx)=>(
+                                                                <span key={idx} className="badge bg-dark text-wrap me-1 mb-1">
+                                                                    {items}
+                                                                </span>
+                                                            ))
+                                                        ):(<></>)                      
+                                                        //dealerObservation
+                                                    }
+                                                </div>
+                                            </div>
+                                            <div className="col-3">
+                                                <label className="form-label">
+                                                    Gap Identified by WM/SA
+                                                </label>
+                                                <div className="form-control disabled">
+                                                    {
+                                                        gapIdentifiedWMSA.length !==0 ?(
+                                                        gapIdentifiedWMSA.map((items, idx)=>(
+                                                            <span key={idx} className="badge bg-dark text-wrap me-1 mb-1">
+                                                                {items}
+                                                            </span>
+                                                        ))
+                                                        ):(<></>)
+                                                        //dealerObservation
+                                                    }
+                                                </div>
+                                            </div>
+                                            <div className="col-3">
+                                                <label className="form-label">
+                                                    Jobcard Gap  Remarks
+                                                </label>
+                                                <div className="form-control disabled">
+                                                    {
+                                                        jcGapRemarks.length !== 0 ? (
+                                                        jcGapRemarks.map((items, idx)=>(
+                                                            <span key={idx} className="badge bg-dark text-wrap me-1 mb-1">
+                                                                {items}
+                                                            </span>
+                                                        ))
+                                                        ):(<></>)
+                                                        //dealerObservation
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="row g-1">
+                                        <div className="col-3"> 
+                                                <label className="form-label">
+                                                    VPS Status
+                                                </label>
+                                                <input 
+                                                    value={vps} 
+                                                    className="form-control"  
+                                                    disabled
+                                                />
+                                            </div>
+                                            <div className="col-3"> 
+                                                <label className="form-label">
+                                                    VPS Reason 1
+                                                </label>
+                                                <input 
+                                                    value={vpsReason1} 
+                                                    className="form-control"  
+                                                    disabled
+                                                />
+                                            </div>
+                                            <div className="col-3"> 
+                                                <label className="form-label">
+                                                    VPS Reason 2
+                                                </label>
+                                                <input 
+                                                    value={vpsReason2} 
+                                                    className="form-control"  
+                                                    disabled
+                                                />
+                                            </div>
+                                            <div className="col-3"> 
+                                                <label className="form-label">
+                                                    VPS Reason 3
+                                                </label>
+                                                <input 
+                                                    value={vpsReason3} 
+                                                    className="form-control"  
+                                                    disabled
+                                                />
+                                            </div>
+                                            
+                                        </div>
+                                        <div className="row g-1">
+                                            <div className="col-3"> 
+                                                <label className="form-label">
+                                                    New Problem Reported
+                                                </label>
+                                                <input 
+                                                    value={newProblem} 
+                                                    className="form-control"  
+                                                    disabled
+                                                />
+                                            </div>
+                                            <div className="col-3"> 
+                                                <label className="form-label">
+                                                    Same Problem Reported
+                                                </label>
+                                                <input 
+                                                    value={sameProblemInJC} 
+                                                    className="form-control"  
+                                                    disabled
+                                                />
+                                            </div>
+                                            <div className="col-3"> 
+                                                <label className="form-label">
+                                                    Problem Not Captured
+                                                </label>
+                                                <input 
+                                                    value={problemNotCaptured} 
+                                                    className="form-control"  
+                                                    disabled
+                                                />
+                                            </div>
+                                            <div className="col-3"> 
+                                                <label className="form-label">
+                                                    Call Response
+                                                </label>
+                                                <input 
+                                                    value={callResponse} 
+                                                    className="form-control"  
+                                                    disabled
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="row g-1">
+                                            <div className="col-3"> 
+                                                <label className="form-label">
+                                                    Call Response
+                                                </label>
+                                                <input 
+                                                    value={callResponse} 
+                                                    className="form-control"  
+                                                    disabled
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

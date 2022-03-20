@@ -308,7 +308,7 @@ const JobCardOperator = () => {
                 getDealerDetailsById(response.data.data.dealerID);
                 setTagDesc(JSON.parse(response.data.data.customerVoice));
                 setInitialObs(JSON.parse(response.data.data.initialObservation));
-                setFinalFindings(JSON.parse(response.data.data.initialObservation));
+                setFinalFindings(JSON.parse(response.data.data.finalFinding));
                 setActionTaken(JSON.parse(response.data.data.actionTaken))
                 setDealerObs(
                      response.data.data.dealerObservation !== "" ? JSON.parse(response.data.data.dealerObservation) : []);
