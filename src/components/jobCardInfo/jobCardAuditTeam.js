@@ -198,8 +198,8 @@ const JobCardAuditTeam = () =>{
     const getAllJobCardLists = () =>{
         Loading(settings)
         jobCardInfoService.getJobCardListForAudit({
-            pageNumber, 
-            pageSize, 
+            pageNumber : page,
+            pageSize : rowsPerPage,
             sortOrderBy, 
             sortOrderColumn, 
             filters
@@ -748,7 +748,7 @@ const JobCardAuditTeam = () =>{
         status !== "" ?
             jobCardInfoService.getJobCardListForAudit({
                 pageNumber : newPage + 1,
-                pageSize,
+                pageSize: rowsPerPage,
                 sortOrderBy,
                 sortOrderColumn,
                 filters : {
@@ -767,7 +767,7 @@ const JobCardAuditTeam = () =>{
         :
             jobCardInfoService.getJobCardListForAudit({
                 pageNumber : newPage + 1,
-                pageSize,
+                pageSize: rowsPerPage,
                 sortOrderBy,
                 sortOrderColumn,
                 filters : {
@@ -787,7 +787,7 @@ const JobCardAuditTeam = () =>{
      else{
             jobCardInfoService.getJobCardListForAudit({
                 pageNumber : newPage + 1,
-                pageSize,
+                pageSize: rowsPerPage,
                 sortOrderBy,
                 sortOrderColumn,
                 filters,

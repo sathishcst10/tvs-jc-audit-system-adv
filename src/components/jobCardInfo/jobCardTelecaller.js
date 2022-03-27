@@ -206,8 +206,8 @@ const JobCardCaller = () => {
     const getAllJobCardsList = () => {
         Loading(settings);
         jobCardInfoService.getJobCardListForTeleCaller({
-            pageNumber,
-            pageSize,
+            pageNumber : page,
+            pageSize : rowsPerPage,
             sortOrderBy,
             sortOrderColumn,
             filters
@@ -254,7 +254,7 @@ const JobCardCaller = () => {
                 getDealerDetailsById(response.data.data.dealerID);
                 setTagDesc(JSON.parse(response.data.data.customerVoice));
                 setInitialObs(JSON.parse(response.data.data.initialObservation));
-                setFinalFindings(JSON.parse(response.data.data.initialObservation));
+                setFinalFindings(JSON.parse(response.data.data.finalFinding));
                 setActionTaken(JSON.parse(response.data.data.actionTaken))
                 setDealerObs(
                     response.data.data.dealerObservation !== "" ? JSON.parse(response.data.data.dealerObservation) : []);
@@ -469,12 +469,12 @@ const JobCardCaller = () => {
     const handleChangePage = (event, newPage) => {
         Loading(settings);
         setPage(newPage + 1);
-        //debugger
+       
        if(filterStatus){
           status !== "" ?
           jobCardInfoService.getJobCardListForTeleCaller({
               pageNumber : newPage + 1,
-              pageSize,
+              pageSize : rowsPerPage,
               sortOrderBy,
               sortOrderColumn,
               filters : {
@@ -494,7 +494,7 @@ const JobCardCaller = () => {
           
           jobCardInfoService.getJobCardListForTeleCaller({
             pageNumber: newPage + 1,
-            pageSize,
+            pageSize : rowsPerPage,
             sortOrderBy,
             sortOrderColumn,
             filters : {
@@ -514,7 +514,7 @@ const JobCardCaller = () => {
        else{
         jobCardInfoService.getJobCardListForTeleCaller({
             pageNumber: newPage + 1,
-            pageSize,
+            pageSize : rowsPerPage,
             sortOrderBy,
             sortOrderColumn,
             filters,
@@ -724,7 +724,8 @@ const JobCardCaller = () => {
             "isActive": true,
             "isDeleted": true
             }
-        )
+        );
+        
     }
     const addTags = async (event, items) => {
         //debugger
@@ -975,7 +976,7 @@ const JobCardCaller = () => {
             );
 
             //Previous Information to be updated....
-            debugger
+            //debugger
             jobCardInfoService.updateJobCard({
                 jcid,
                 userID,
@@ -1123,6 +1124,7 @@ const JobCardCaller = () => {
                                                         </option>
                                                     ))
                                                 }
+                                                <option value="10">OPEN</option>
                                             </select>
                                             <div className="input-group me-2 searchBox" >
                                                 <input

@@ -31,6 +31,11 @@ const updateJobCard = (argItems)=>{
     return axios.put(APP_API_URL + "/JobCard", argItems, {headers : authHeader()});
 }
 
+const updateJobcardByTelecaller=(argItems)=>{
+    debugger
+    return axios.post(APP_API_URL + "/UpdateJobCardByTelecaller", argItems, {headers : authHeader()});
+}
+
 const deleteJobCard = (argID)=>{
     return axios.delete(APP_API_URL + "/JobCard/" + argID, {headers : authHeader()});
 }
@@ -73,6 +78,7 @@ const saveJobCardAudit = (argItems) =>{
 const updateJobCardAudit = (argItems)=>{
     return axios.put(APP_API_URL + "/JobCardAudit", argItems, { headers : authHeader() });
 }
+
 const getJobCardAuditByID = (argID)=>{
     return axios.get(APP_API_URL + "/JobCardAudit/" + argID, { headers : authHeader() });
 }
@@ -116,5 +122,7 @@ export default {
     getJobCardDataById,
 
     getAllDataForExport,
-    getExcelExport
+    getExcelExport,
+
+    updateJobcardByTelecaller
 }

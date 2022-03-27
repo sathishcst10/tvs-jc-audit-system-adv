@@ -28,7 +28,7 @@ import AuditPercentageReport from "./components/reports/auditPercentageReports";
 function App() {
   const {user : currentUser} = useSelector((state)=>state.auth);
   const dispatch = useDispatch();
-  //const _navigateTo = useNavigate();
+  // const _navigateTo = useNavigate();
   const {isLoggedIn} = useSelector(state => state.auth);
   
   useEffect(()=>{

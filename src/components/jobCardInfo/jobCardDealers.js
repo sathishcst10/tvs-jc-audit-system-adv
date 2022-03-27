@@ -401,32 +401,72 @@ useEffect(()=>{
     }
 
     const uploadFront = () => {
+        Loading(settings)
         jobCardInfoService.uploadJobCard(formData_front).then(
             (res) => {
-                //debugger;
+              
                 console.log(res);
-                // setSaveJobCard({
-                //     ...saveJobCard,
-                //     jcFront : res.data.data.documentId
-                // })
+                if(res.data.success){
+                    Loading();
+                    toast.current.show(
+                        {
+                            severity: 'success',
+                            summary: 'Success Message',
+                            detail: res.data.message,
+                            life: 3000
+                        }
+                    );
+                    setFileUpload({
+                        ...fileUpload,
+                        jcfront: res.data.data.documentId
+                    })
+                }else{
+                    Loading();
+                    toast.current.show(
+                        {
+                            severity: 'error',
+                            summary: 'Error Message',
+                            detail: res.data.message,
+                            life: 3000
+                        }
+                    );
+                }
 
-                setFileUpload({
-                    ...fileUpload,
-                    jcfront: res.data.data.documentId
-                })
+                
             }
-        ).catch((err) => console.log(err))
+        ).catch((err) => {console.log(err); Loading()})
     }
     const uploadBack = () => {
-
+        Loading(settings)
         jobCardInfoService.uploadJobCard(formData_back).then(
             (response) => {
                 console.log(response);
-
-                setFileUpload({
-                    ...fileUpload,
-                    jcback: response.data.data.documentId
-                })
+                if(response.data.success){
+                    Loading();
+                    toast.current.show(
+                        {
+                            severity: 'success',
+                            summary: 'Success Message',
+                            detail: response.data.message,
+                            life: 3000
+                        }
+                    );
+                    setFileUpload({
+                        ...fileUpload,
+                        jcback: response.data.data.documentId
+                    })
+                }else{
+                    Loading();
+                    toast.current.show(
+                        {
+                            severity: 'error',
+                            summary: 'Error Message',
+                            detail: response.data.message,
+                            life: 3000
+                        }
+                    );
+                }
+               
                 // setSaveJobCard({
                 //     ...saveJobCard,
                 //     jcBack : res.data.data.documentId
@@ -641,7 +681,11 @@ useEffect(()=>{
     const getJobCardForDealer = () => {
         Loading(settings);
         jobCardInfoService.getJobCardDetailForDealer({
-            pageNumber, pageSize, sortOrderBy, sortOrderColumn, filters
+            pageNumber : page,
+            pageSize : rowsPerPage, 
+            sortOrderBy, 
+            sortOrderColumn, 
+            filters
         }).then(
             (response) => {
                 console.log(response);
@@ -681,7 +725,7 @@ useEffect(()=>{
      
       jobCardInfoService.getJobCardDetailForDealer({
         pageNumber : newPage + 1,
-        pageSize,
+        pageSize: rowsPerPage,
         sortOrderBy,
         sortOrderColumn,
         filters,

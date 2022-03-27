@@ -163,8 +163,8 @@ const JobCardOperator = () => {
     const getAllJobCardsList = () => {
         Loading(settings);
         jobCardInfoService.getJobCardDetailsForOperator({
-            pageNumber,
-            pageSize,
+            pageNumber : page,
+            pageSize : rowsPerPage,
             sortOrderBy,
             sortOrderColumn,
             filters
@@ -485,7 +485,7 @@ const JobCardOperator = () => {
         status !== "" ?
         jobCardInfoService.getJobCardDetailsForOperator({
             pageNumber : newPage + 1,
-            pageSize,
+            pageSize : rowsPerPage,
             sortOrderBy,
             sortOrderColumn,
             filters : {
@@ -504,7 +504,7 @@ const JobCardOperator = () => {
         :
         jobCardInfoService.getJobCardDetailsForOperator({
             pageNumber : newPage + 1,
-            pageSize,
+            pageSize: rowsPerPage,
             sortOrderBy,
             sortOrderColumn,
             filters : {
@@ -524,7 +524,7 @@ const JobCardOperator = () => {
      else{
         jobCardInfoService.getJobCardDetailsForOperator({
             pageNumber : newPage + 1,
-            pageSize,
+            pageSize: rowsPerPage,
             sortOrderBy,
             sortOrderColumn,
             filters,
@@ -624,38 +624,87 @@ const JobCardOperator = () => {
     };
 
     const uploadFront = () => {
+        Loading(settings);
         jobCardInfoService.uploadJobCard(formData_front).then(
             (res) => {
-                //debugger;
+                debugger;
                 console.log(res);
+                if(res.data.success){
+                    Loading();
+                    toast.current.show(
+                        {
+                            severity: 'success',
+                            summary: 'Success Message',
+                            detail: res.data.message,
+                            life: 3000
+                        }
+                    );
+                    setFileUpload({
+                        ...fileUpload,
+                        jcfront: res.data.data.documentId
+                    });
+                    
+                }else{
+                    Loading();
+                    toast.current.show(
+                        {
+                            severity: 'error',
+                            summary: 'Error Message',
+                            detail: res.data.message,
+                            life: 3000
+                        }
+                    );
+                }
                 // setSaveJobCard({
                 //     ...saveJobCard,
                 //     jcFront : res.data.data.documentId
                 // })
 
-                setFileUpload({
-                    ...fileUpload,
-                    jcfront: res.data.data.documentId
-                })
+               
+                
             }
-        ).catch((err) => console.log(err))
+        ).catch((err) => {console.log(err); Loading()})
     }
     const uploadBack = () => {
-
+        Loading(settings)
         jobCardInfoService.uploadJobCard(formData_back).then(
             (response) => {
-                console.log(response);
+                debugger;
 
-                setFileUpload({
-                    ...fileUpload,
-                    jcback: response.data.data.documentId
-                })
+                console.log(response);
+                if(response.data.success){
+                    Loading();
+                    toast.current.show(
+                        {
+                            severity: 'success',
+                            summary: 'Success Message',
+                            detail: response.data.message,
+                            life: 3000
+                        }
+                    );
+                    setFileUpload({
+                        ...fileUpload,
+                        jcback: response.data.data.documentId
+                    })
+                }else{
+                    toast.current.show(
+                        {
+                            severity: 'error',
+                            summary: 'Error Message',
+                            detail: response.data.message,
+                            life: 3000
+                        }
+                    );
+                    Loading()
+                }
+                
+               
                 // setSaveJobCard({
                 //     ...saveJobCard,
                 //     jcBack : res.data.data.documentId
                 // })
             }
-        ).catch((err) => console.log(err))
+        ).catch((err) => {console.log(err); Loading()})
 
     }
 

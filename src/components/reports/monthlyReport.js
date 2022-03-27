@@ -88,6 +88,12 @@ const MonthlyReport = ()=>{
         commonService.getStatesByRegion(argID).then(
           (response)=>{
             console.log("getStates", response);
+            setFilter({
+              ...getFilter,
+              "region" : argID,
+              "states": 0,
+              "dealer" : 0 
+            })
             setStates(response.data.data.data);
           }
         ).catch((err)=>{console.error(err)});
@@ -169,6 +175,7 @@ const MonthlyReport = ()=>{
               getAllStates();
             }else{
               getStateByRegion(value);
+              getAllDealer();
             }
           }else if(name === 'states'){
             if(value === ""){

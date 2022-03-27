@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -11,9 +11,33 @@ import 'bootstrap/dist/js/bootstrap.bundle.min';
 
 import App from './App';
 import store from './app/store';
-import { Provider } from 'react-redux';
+import { Provider, useDispatch, useSelector } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
 import './index.css';
+import axios from 'axios';
+
+axios.interceptors.request.use(
+  (req)=>{
+    console.log("Req-From-Interceptor", req);
+    return req;
+  },
+  (err)=>{
+    console.error("Req-Error-from-Iterceptor");
+    return Promise.reject(err);
+  }
+);
+
+axios.interceptors.response.use(
+  (res)=>{    
+    return res
+  },
+  (err)=>{
+    console.error("Res-Error-Interceptor", err);
+    return Promise.reject(err);
+  }
+)
+
+
 
 ReactDOM.render(
   <React.StrictMode>

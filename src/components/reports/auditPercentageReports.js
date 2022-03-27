@@ -44,6 +44,7 @@ const AuditPercentageReport = () => {
         reportService.getRegionDetails().then(
           (response)=>{
             console.log("region",response)
+            setDealers([]);
             setRegionDetails(response.data.data.data);
           }          
         ).catch((err)=>{console.log(err)})
@@ -67,6 +68,7 @@ const AuditPercentageReport = () => {
       const getDealerByState = (argId)=>{
         dealerMasterService.getDealerByState(argId).then(
           (response)=>{
+            //setDealers([])
             setDealers(response.data.data.data);
           }
         ).catch((err)=>{console.error(err)})
@@ -75,6 +77,13 @@ const AuditPercentageReport = () => {
         commonService.getStatesByRegion(argID).then(
           (response)=>{
             console.log("getStates", response);
+            // setStates([]);
+            setFilter({
+              ...getFilter,
+              "region" : argID,
+              "states": 0,
+              "dealer" : 0 
+            })
             setStates(response.data.data.data);
           }
         ).catch((err)=>{console.error(err)});
@@ -91,9 +100,9 @@ const AuditPercentageReport = () => {
           }
         }).then((response)=>{
           console.log("chart Data", response)
-          setReportValues([
-              response.data.data.data[0]
-            ]);
+          setReportValues(
+              response.data.data.data
+            );
           setReportCaptions(
             [
               "Total JC",
@@ -113,7 +122,8 @@ const AuditPercentageReport = () => {
     
       const getAuditReportDataByFilters = ()=>{
         Loading(settings)
-        reportService.getJobcardAuditReport({
+       
+        reportService.getJobcardAuditPercentageReport({
           pageNumber,
           pageSize,
           sortOrderBy,
@@ -127,16 +137,9 @@ const AuditPercentageReport = () => {
           }
         }).then((response)=>{
           console.log("chart Data", response)
-          setReportValues([
-              response.data.data.data[0].totalJCReceived, 
-              response.data.data.data[0].totalJCAudited,
-              response.data.data.data[0].totalCallResponse,
-              response.data.data.data[0].jcFoundOK,
-              response.data.data.data[0].vpsokNos,
-              response.data.data.data[0].sameProblemReported,
-              response.data.data.data[0].newProblemReported,
-              response.data.data.data[0].complaintToldProblemNotCaptured
-            ]);
+          setReportValues(
+            response.data.data.data
+          );
           setReportCaptions(
             [
               "Total JC",
@@ -158,13 +161,17 @@ const AuditPercentageReport = () => {
         const value = event.target.value;
 
         if(name === 'region'){
-          if(value == ""){
+          if(value === ""){
             getAllStates();
           }else{
+           
             getStateByRegion(value);
+            getAllDealer();
+            
           }
         }else if(name === 'states'){
-          if(value == ""){
+          
+          if(value === ""){
             getAllDealer();
           }else{
             getDealerByState(value)

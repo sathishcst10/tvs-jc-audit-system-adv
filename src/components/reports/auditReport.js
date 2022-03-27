@@ -75,6 +75,12 @@ const AuditReport = () => {
         commonService.getStatesByRegion(argID).then(
           (response)=>{
             console.log("getStates", response);
+            setFilter({
+              ...getFilter,
+              "region" : argID,
+              "states": 0,
+              "dealer" : 0 
+            })
             setStates(response.data.data.data);
           }
         ).catch((err)=>{console.error(err)});
@@ -165,13 +171,14 @@ const AuditReport = () => {
         const value = event.target.value;
 
         if(name === 'region'){
-          if(value == ""){
+          if(value === ""){
             getAllStates();
           }else{
             getStateByRegion(value);
+            getAllDealer();
           }
         }else if(name === 'states'){
-          if(value == ""){
+          if(value === ""){
             getAllDealer();
           }else{
             getDealerByState(value)
