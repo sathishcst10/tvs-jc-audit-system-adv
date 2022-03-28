@@ -31,8 +31,7 @@ const updateJobCard = (argItems)=>{
     return axios.put(APP_API_URL + "/JobCard", argItems, {headers : authHeader()});
 }
 
-const updateJobcardByTelecaller=(argItems)=>{
-    debugger
+const updateJobcardByTelecaller=(argItems)=>{    
     return axios.post(APP_API_URL + "/UpdateJobCardByTelecaller", argItems, {headers : authHeader()});
 }
 

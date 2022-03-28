@@ -627,7 +627,6 @@ const JobCardOperator = () => {
         Loading(settings);
         jobCardInfoService.uploadJobCard(formData_front).then(
             (res) => {
-                debugger;
                 console.log(res);
                 if(res.data.success){
                     Loading();

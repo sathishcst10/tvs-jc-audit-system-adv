@@ -661,7 +661,7 @@ const JobCardCaller = () => {
         Loading(settings)
         jobCardInfoService.getJobCardListForTeleCaller({
             pageNumber,
-            pageSize,
+            pageSize : rowsPerPage,
             sortOrderBy,
             sortOrderColumn,
             filters : {
@@ -919,7 +919,67 @@ const JobCardCaller = () => {
                     Loading()
                     console.log(err);
                 }
-            )
+            );
+
+            jobCardInfoService.updateJobCard({
+                jcid,
+                userID,
+                dealerID,
+                jcNumber,
+                jobcardNumber,
+                jcBack,
+                jcFront,
+                isDataEntryTaken,
+                dataEntryTakenBy,
+                isDataEntryCompleted : true,
+                isTelecallCompleted,
+                dmsNumber,
+                engineFrameNumber,
+                modelID,
+                vehicleNumber,
+                kMs,
+                serviceDate,
+                customerName,
+                customerMobile,
+                customerAddress,
+                saName,
+                technicianName,
+                customerVoice: customerVoice !== "" ? JSON.stringify(customerVoice) : "[]",
+                initialObservation: initialObservation !== "" ? JSON.stringify(initialObservation) : "[]",
+                finalFinding: finalFinding !== "" ? JSON.stringify(finalFinding) : "[]",
+                actionTaken: actionTaken !== "" ? JSON.stringify(actionTaken) : "[]",
+                dealerObservation : dealerObservation !== "" ? JSON.stringify(dealerObservation) : "[]",
+                serviceTypeID,
+                isActive,
+                assignTeleCallerID
+            }).then(
+                (response)=>{
+                    console.log(response);
+                    if(response.data.success){
+                        // toast.current.show(
+                        //     {
+                        //         severity: 'success',
+                        //         summary: 'Success Message',
+                        //         detail: response.data.message,
+                        //         life: 3000
+                        //     }
+                        // );
+                        // // Loading();
+                        // closeForm();
+                    }else{
+                        // toast.current.show(
+                        //     {
+                        //         severity: 'warn',
+                        //         summary: 'Warning Message',
+                        //         detail: response.data.message,
+                        //         life: 3000
+                        //     }
+                        // );
+                        //Loading();
+                    }
+                }
+            ).catch((err)=>{console.log(err); })
+
         }else{
             jobCardInfoService.updateJobCardAudit({
                 jcid,
@@ -994,7 +1054,7 @@ const JobCardCaller = () => {
                 modelID,
                 vehicleNumber,
                 kMs,
-                serviceDate,
+                serviceDate : new Date(serviceDate),
                 customerName,
                 customerMobile,
                 customerAddress,
@@ -1493,6 +1553,7 @@ const JobCardCaller = () => {
                                                             <Calendar
                                                                 id="basic"
                                                                 value={serviceDate}
+                                                                dateFormat="dd/mm/yy"
                                                                 name="serviceDate"
                                                                 onChange={handleChange("serviceDate")}
                                                             />

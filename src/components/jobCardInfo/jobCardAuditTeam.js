@@ -942,7 +942,7 @@ const JobCardAuditTeam = () =>{
         Loading(settings)
         jobCardInfoService.getJobCardListForAudit({
             pageNumber, 
-            pageSize, 
+            pageSize : rowsPerPage, 
             sortOrderBy, 
             sortOrderColumn, 
             filters : {
