@@ -65,6 +65,7 @@ const updateJobCardStatus = (argItems)=>{
 
 //Job Card for Telecaller
 const getJobCardListForTeleCaller = (argItems) =>{
+    
     return axios.post(APP_API_URL + "/JobCard/AllByPagingByTeleCallers", argItems,  {headers : authHeader()})
 }
 const getCustomerFeedback = (argID)=>{

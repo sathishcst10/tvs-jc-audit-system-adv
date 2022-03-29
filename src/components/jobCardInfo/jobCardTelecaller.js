@@ -69,6 +69,7 @@ const JobCardCaller = () => {
     const [getCustomerVoiceByWMHO, setCustomerVoiceByWMHO] = useState([]);
     const [getJcGapRemarks, setJcGapRemarks] = useState([]);
     const [getGapIdentifiedWMSA, setGapIdentifiedWMSA] = useState([]);
+    const [myInputFocus, setInputFocus] =useState(false);
     const [getFilter, setFilter] = useState({
         "filterStatus":false,
         "region" : "",
@@ -277,7 +278,7 @@ const JobCardCaller = () => {
                     modelID: response.data.data.modelID,
                     vehicleNumber: response.data.data.vehicleNumber,
                     kMs: response.data.data.kMs,
-                    serviceDate: new Date(response.data.data.serviceDate),
+                    serviceDate: new Date(response.data.data.serviceDate).toLocaleDateString(),
                     customerName: response.data.data.customerName,
                     customerMobile: response.data.data.customerMobile,
                     customerAddress: response.data.data.customerAddress,
@@ -480,7 +481,7 @@ const JobCardCaller = () => {
               filters : {
                   "region" : region,
                   "dealerId" : dealerId,
-                  "status" : status === 'true' ? true : false,
+                  "status" : status,
                   "jobcardNumber" : _jobcardNumber
               }
           })
@@ -560,7 +561,7 @@ const JobCardCaller = () => {
                 filters : {
                     "region" : region,
                     "dealerId" : dealerId,
-                    "status" : status === 'true' ? true : false,
+                    "status" : status ,
                     "jobcardNumber" : _jobcardNumber
                 }
             })
@@ -1549,12 +1550,23 @@ const JobCardCaller = () => {
                                                                 value={serviceDate}     
                                                                 onChange={handleChange("serviceDate")}                                                   
                                                             /> */}
-
+{/* 
                                                             <Calendar
                                                                 id="basic"
                                                                 value={serviceDate}
                                                                 dateFormat="dd/mm/yy"
                                                                 name="serviceDate"
+                                                                onChange={handleChange("serviceDate")}
+                                                            /> */}
+
+                                                            <input 
+                                                                id="basic"
+                                                                type="text"
+                                                                onFocus={(e) => (e.currentTarget.type = "date")}
+                                                                onBlur={(e) => {e.currentTarget.type = "text"; e.currentTarget.value = serviceDate}}
+                                                                className="form-control"
+                                                                value={serviceDate}
+                                                                name="serviceDate"                                                                                                                   
                                                                 onChange={handleChange("serviceDate")}
                                                             />
                                                         </div>

@@ -728,8 +728,7 @@ const JobCardAuditTeam = () =>{
   
     const handleChangePage = (event, newPage) => {
       Loading(settings);
-      setPage(newPage + 1);
-     
+      setPage(newPage + 1);     
     //   jobCardInfoService.getJobCardListForAudit({
     //     pageNumber : newPage + 1,
     //     pageSize,
@@ -754,7 +753,7 @@ const JobCardAuditTeam = () =>{
                 filters : {
                     "region" : region,
                     "dealerId" : dealerId,
-                    "status" : status === 'true' ? true : false,
+                    "status" : _status,
                     "jobcardNumber" : _jobcardNumber
                 }
             })
@@ -828,7 +827,7 @@ const JobCardAuditTeam = () =>{
             filters : {
                 "region" : region,
                 "dealerId" : dealerId,
-                "status" : status === 'true' ? true : false,
+                "status" : _status,
                 "jobcardNumber" : _jobcardNumber
             }
         })
@@ -934,6 +933,7 @@ const JobCardAuditTeam = () =>{
 
         setFilter({
             ...getFilter,
+            "filterStatus" : true,
             [name] : value
         });
     }

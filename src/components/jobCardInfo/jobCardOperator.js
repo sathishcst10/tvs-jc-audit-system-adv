@@ -331,7 +331,7 @@ const JobCardOperator = () => {
                     modelID : response.data.data.modelID,
                     vehicleNumber : response.data.data.vehicleNumber,
                     kMs : response.data.data.kMs,
-                    serviceDate : new Date(response.data.data.serviceDate),
+                    serviceDate: new Date(response.data.data.serviceDate).toLocaleDateString(),
                     customerName : response.data.data.customerName,
                     customerMobile : response.data.data.customerMobile,
                     customerAddress : response.data.data.customerAddress,
@@ -1451,13 +1451,24 @@ const JobCardOperator = () => {
                                                             onChange={handleChange("serviceDate")}                                                   
                                                         /> */}
 
-                                                        <Calendar 
+                                                        {/* <Calendar 
                                                             id="basic" 
                                                             value={serviceDate} 
                                                             name = "serviceDate"
                                                             onChange={handleChange("serviceDate")} 
                                                             required
-                                                        />
+                                                        /> */}
+                                                            <input 
+                                                                id="basic"
+                                                                type="text"
+                                                                onFocus={(e) => (e.currentTarget.type = "date")}
+                                                                onBlur={(e) => {e.currentTarget.type = "text"; e.currentTarget.value = serviceDate}}
+                                                                className="form-control"
+                                                                value={serviceDate}
+                                                                name="serviceDate"  
+                                                                required                                                                                                                 
+                                                                onChange={handleChange("serviceDate")}
+                                                            />
                                                     </div>
                                                 </div>
                                                 <div className="row">
