@@ -55,12 +55,18 @@ const getAdminDashboardList = () => {
 const getTeleCallerAssignData = ()=>{
   dashboardService.getTeleCallerAssignChart(true).then(
     (response)=>{
-      console.log("Res-TeleCallerAssign", response);
-      response.data.data.data.map((items,idx)=>{
-        setTelecallerCatogory([items.name]);
-        setTelecallerData([items.values]);
-      })
       
+      var tempArray =[];
+      var tempArray2 = [];
+      console.log("Res-TeleCallerAssign", response);
+      response.data.data.data.map((items,idx)=>{        
+        tempArray.push(items.values);
+        tempArray2.push(items.name);
+      })
+      setTelecallerCatogory(tempArray2);
+      setTelecallerData(tempArray);
+      console.log(tempArray, tempArray2);
+      console.log(getTelecallerCatogory, getTelecallerData);
     }
   ).catch((err)=>{
     console.error(err);
@@ -138,13 +144,14 @@ const getJobCardStatusChart = () =>{
   dashboardService.getJobCardStatus(true).then(
     (response)=>{
       console.log("Res-JobCardStatus", response);
-      setTimeout(() => {
-        setJobCardStatus([
-          response.data.data.data[1].values,
-          response.data.data.data[0].values
-        ])  
+      // setTimeout(() => {
+        var temp_array =[];
+        response.data.data.data.map((items, idx)=>{
+          temp_array.push(items.values);
+        })
+        setJobCardStatus(temp_array)  
         console.log(getJobCardStatus)
-      }, 1500);
+      // }, 1500);
       
     }
   ).catch((err)=>{console.error(err)})
@@ -188,6 +195,7 @@ const getJobCardStatusChart = () =>{
         },
         series: [{data:getTelecallerData}]
       };
+
       const lineState = {          
         series: [{
             name: "Desktops",
@@ -347,8 +355,8 @@ const getJobCardStatusChart = () =>{
               opacity: 0.0
             }
           },         
-          colors: ['#f39c12','#05c46b'],
-          labels: ['Live', 'Closed'],
+          colors: ['#05c46b','#f39c12'],
+          labels: ['Closed','Live'],
           responsive: [{
             breakpoint: 480,
             options: {
@@ -708,10 +716,10 @@ const getJobCardStatusChart = () =>{
                         </h6>
                         <div className='card-body'>
                             <Chart
-                            options={state.options}
-                            series={state.series}
-                            type="bar"
-                            height="320px"
+                              options={state.options}
+                              series={state.series}
+                              type="bar"
+                              height="320px"
                             />      
                         </div>
                     </div>  

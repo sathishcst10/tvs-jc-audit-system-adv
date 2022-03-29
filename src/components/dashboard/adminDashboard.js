@@ -55,12 +55,19 @@ const getAdminDashboardList = () => {
 const getTeleCallerAssignData = ()=>{
   dashboardService.getTeleCallerAssignChart(true).then(
     (response)=>{
+      var tempArray =[];
+      var tempArray2 = [];
       console.log("Res-TeleCallerAssign", response);
       response.data.data.data.map((items,idx)=>{
-        setTelecallerCatogory([items.name]);
-        setTelecallerData([items.values]);
+        tempArray.push(items.values);
+        tempArray2.push(items.name);
+        // setTelecallerCatogory([items.name]);
+        // setTelecallerData([items.values]);
       })
-      
+      setTelecallerCatogory(tempArray2);
+      setTelecallerData(tempArray);
+      console.log(tempArray, tempArray2);
+      console.log(getTelecallerCatogory, getTelecallerData);
     }
   ).catch((err)=>{
     console.error(err);
@@ -71,10 +78,12 @@ const getJCProcessStatusChart = ()=>{
   dashboardService.getJCProcessStatus(true).then(
     (response)=>{
       console.log("Res-OPen/WIP Status", response);
-      setJCProcessStatusCount([
-        response.data.data.data[0].wipCount,
-        response.data.data.data[0].openCount
-      ])
+      var temp_array_2 = [];
+      response.data.data.data.map((items, idx)=>{
+        temp_array_2.push(items.wipCount, items.openCount);        
+      })
+      console.log(temp_array_2)
+      setJCProcessStatusCount(temp_array_2);
     }
   ).catch((err)=>{
     console.error(err)
@@ -138,13 +147,21 @@ const getJobCardStatusChart = () =>{
   dashboardService.getJobCardStatus(true).then(
     (response)=>{
       console.log("Res-JobCardStatus", response);
-      setTimeout(() => {
-        setJobCardStatus([
-          response.data.data.data[1].values,
-          response.data.data.data[0].values
-        ])  
-        console.log(getJobCardStatus)
-      }, 1500);
+      var temp_array =[];
+      //setTimeout(() => {
+        response.data.data.data.map((items, idx)=>{
+          temp_array.push(items.values);
+        })
+        // temp_array=[
+        //   response.data.data.data[1].values,
+        //   response.data.data.data[0].values
+        // ]
+
+        setJobCardStatus(temp_array);
+        
+        //JCState.series = [response.data.data.data[1].values,response.data.data.data[0].values]
+        console.log("jcState:>>>",getJobCardStatus)
+      //}, 1000);
       
     }
   ).catch((err)=>{console.error(err)})
@@ -347,8 +364,8 @@ const getJobCardStatusChart = () =>{
               opacity: 0.0
             }
           },         
-          colors: ['#f39c12','#05c46b'],
-          labels: ['Live', 'Closed'],
+          colors: ['#05c46b','#f39c12'],
+          labels: ['Closed', 'Live'],
           responsive: [{
             breakpoint: 480,
             options: {

@@ -318,7 +318,7 @@ const JobCardCaller = () => {
                     vpsReason1 : response.data.data.vpsReason1,
                     vpsReason2 : response.data.data.vpsReason2,
                     vpsReason3 : response.data.data.vpsReason3,
-                    customerFeedbackDate : new Date(response.data.data.customerFeedbackDate),
+                    customerFeedbackDate : new Date(response.data.data.customerFeedbackDate).toLocaleDateString(),
                     newProblem : response.data.data.newProblem,
                     problemNotCaptured : response.data.data.problemNotCaptured,
                     sameProblemInJC : response.data.data.sameProblemInJC,
@@ -1963,12 +1963,23 @@ const JobCardCaller = () => {
                                                             <label className="form-label">
                                                                 Customer Feedback Date
                                                             </label>    
-                                                            <Calendar 
+                                                            {/* <Calendar 
                                                                 id="basic" 
                                                                 value={customerFeedbackDate} 
                                                                 name = "customerFeedbackDate"
                                                                 onChange={handleChange("customerFeedbackDate")} 
                                                                 required
+                                                            /> */}
+
+                                                            <input 
+                                                                id="basic"
+                                                                type="text"
+                                                                onFocus={(e) => (e.currentTarget.type = "date")}
+                                                                onBlur={(e) => {e.currentTarget.type = "text"; e.currentTarget.value = customerFeedbackDate}}
+                                                                className="form-control"
+                                                                value={customerFeedbackDate}
+                                                                name="customerFeedbackDate"                                                                                                                   
+                                                                onChange={handleChange("customerFeedbackDate")}
                                                             />
                                                         </div>
                                                         <div className="col">

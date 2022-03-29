@@ -49,12 +49,17 @@ const DataOperatorDashboard = () =>{
     const getTeleCallerAssignData = ()=>{
         dashboardService.getTeleCallerAssignChart(true).then(
         (response)=>{
+            var tempArray =[];
+            var tempArray2 = [];
             console.log("Res-TeleCallerAssign", response);
             response.data.data.data.map((items,idx)=>{
-            setTelecallerCatogory([items.name]);
-            setTelecallerData([items.values]);
+                tempArray.push(items.values);
+                tempArray2.push(items.name);
+                // setTelecallerCatogory([items.name]);
+                // setTelecallerData([items.values]);
             })
-            
+            setTelecallerCatogory(tempArray2);
+            setTelecallerData(tempArray);
         }
         ).catch((err)=>{
         console.error(err);
